@@ -1,0 +1,25 @@
+# Este repositório tem só código. Documentação fica em ../Projeto_Documento e nunca sobe.
+# O único .md permitido é o README.md da raiz.
+*.md
+*.markdown
+!/README.md
+docs/
+
+# Segredos e chaves ficam em ../Projeto_Documento/sensivel, nunca aqui.
+.env
+.env.*
+!.env.example
+*.pem
+*.pfx
+*.p12
+*.key
+*.cer
+*.crt
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+secrets.json
+segredo.json
+
+# Padrões da stack: o /iniciar-projeto propõe na Fase 3 (ex.: bin/ e obj/ em .NET).

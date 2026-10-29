@@ -1,0 +1,53 @@
+# Padrões de segredo usados por bloquear-segredos.sh (edição do Claude) e pelo pre-commit do git
+# em .claude/git-hooks/ (commit de qualquer pessoa). Expressão regular estendida do grep.
+# Formato: PADRAO  ou  PADRAO|||EXCECAO
+#   EXCECAO é uma expressão regular aplicada ao caminho do arquivo relativo ao Root (ex.: Projeto/src/A.cs);
+#   quando casa, o padrão não vale para aquele arquivo.
+# Linhas vazias e começadas por # são ignoradas. Origem: vault (portado do gitleaks).
+
+# Atribuição de senha/token/chave com valor literal entre aspas (8+ caracteres)
+([Aa][Pp][Ii][_-]?[Kk][Ee][Yy]|[Pp]ass(word|wd)|PASS(WORD|WD)|[Tt]oken|TOKEN|[Ss]ecret|SECRET)\s*=\s*["'][^"']{8,}["']|||(^Projeto_Documento/|\.md$|\.example$|\.sample$)
+
+# Senha em connection string (Password=... ou Pwd=..., sem espaço antes do =)
+([Pp]assword|PASSWORD|[Pp]wd|PWD)=[^;"'[:space:]{$]{4,}|||(^Projeto_Documento/|\.md$|\.example$|\.sample$)
+
+# Chave privada (RSA, OPENSSH, DSA, EC, PGP, ENCRYPTED)
+-----BEGIN [A-Z ]*PRIVATE KEY-----
+
+# JWT aceitando algoritmo "none"
+(algorithms|alg)\s*[:=]\s*\[?\s*["']none["']
+
+# Nuvem e plataformas
+AKIA[0-9A-Z]{16}
+AIza[0-9A-Za-z_-]{35}
+AccountKey=[A-Za-z0-9+/=]{88}
+dop_v1_[a-f0-9]{64}
+v1\.0-[a-f0-9]{32}-[a-zA-Z0-9+/=]{128}
+
+# Git e registros de pacote
+ghp_[a-zA-Z0-9]{36}
+github_pat_[a-zA-Z0-9_]{22,}
+glpat-[0-9a-zA-Z_-]{20,}
+npm_[A-Za-z0-9]{36}
+pypi-AgEIcHlwaS5vcmc[A-Za-z0-9_-]{20,}
+
+# APIs de IA
+sk-[a-zA-Z0-9]{48}
+sk-ant-[a-zA-Z0-9_-]{48,}
+sk-proj-[a-zA-Z0-9_-]{20,}
+sk-svcacct-[a-zA-Z0-9_-]{20,}
+
+# Pagamento
+sk_(live|test)_[a-zA-Z0-9]{24,}
+rk_(live|test)_[a-zA-Z0-9]{24,}
+pk_live_[a-zA-Z0-9]{24,}
+EAAA[A-Za-z0-9_-]{60}
+
+# Comunicação e ferramentas
+xox[baprs]-[0-9a-zA-Z-]+
+https://hooks\.slack\.com/services/T[A-Z0-9]{8,}/B[A-Z0-9]{8,}/[A-Za-z0-9]{24,}
+https://(discord|discordapp)\.com/api/webhooks/[0-9]+/[A-Za-z0-9_-]+
+SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}
+secret_[a-zA-Z0-9]{43}|||(^Projeto_Documento/|\.md$)
+lin_api_[a-zA-Z0-9]{40}
+figd_[a-zA-Z0-9_-]{40,}

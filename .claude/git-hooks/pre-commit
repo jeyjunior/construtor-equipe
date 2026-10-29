@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Git pre-commit de Projeto/: recusa o commit quando ele leva
+#  - documentação (.md e afins, pastas docs/), exceto o README.md da raiz;
+#  - arquivo sensível (.env com valores, chaves, certificados, pasta sensivel/);
+#  - segredo no conteúdo (padrões de .claude/hooks/padroes-segredos.txt).
+# Vale para commits do Claude e de qualquer pessoa, por qualquer ferramenta.
+# Ligado por: git -C Projeto config core.hooksPath ../.claude/git-hooks
+# As regras ficam em .claude/hooks/comum.sh, as mesmas do hook de edição do Claude.
+
+KIT_HOOKS="$(cd "$(dirname "$0")/../hooks" && pwd)"
+# shellcheck source=../hooks/comum.sh
+source "$KIT_HOOKS/comum.sh"
+
+DOCS=()
+SENSIVEIS=()
+while IFS= read -r -d '' arq; do
+  if eh_documentacao "$arq"; then DOCS+=("$arq")
+  elif eh_sensivel "$arq"; then SENSIVEIS+=("$arq")
+  fi
+done < <(git -c core.quotePath=false diff --cached --name-only --diff-filter=ACMR -z)
+
+# Segredos nas linhas adicionadas: "arquivo<TAB>linha", sem mostrar o valor encontrado.
+TAB=$'\t'
+ADICOES=$(git -c core.quotePath=false diff --cached -U0 --no-color --diff-filter=ACMR | awk '
+  /^\+\+\+ / { f = substr($0, 7); next }
+  /^\+/      { print f "\t" substr($0, 2) }')
+COM_SEGREDO=""
+PADROES="$KIT_HOOKS/padroes-segredos.txt"
+if [ -n "$ADICOES" ] && [ -f "$PADROES" ]; then
+  # Agrupa os padrões pela exceção de caminho: um grep por grupo, não um por padrão.
+  EXCECOES=(); EXPRESSOES=()
+  while IFS= read -r linha || [ -n "$linha" ]; do
+    linha=${linha%$'\r'}
+    [[ -z "$linha" || "$linha" == \#* ]] && continue
+    PADRAO="${linha%%|||*}"
+    EXCECAO=""
+    [[ "$linha" == *"|||"* ]] && EXCECAO="${linha#*|||}"
+    achou_grupo=0
+    for i in "${!EXCECOES[@]}"; do
+      if [ "${EXCECOES[$i]}" = "$EXCECAO" ]; then
+        EXPRESSOES[$i]="${EXPRESSOES[$i]}|($PADRAO)"; achou_grupo=1; break
+      fi
+    done
+    [ $achou_grupo -eq 1 ] || { EXCECOES+=("$EXCECAO"); EXPRESSOES+=("($PADRAO)"); }
+  done < "$PADROES"
+
+  for i in "${!EXCECOES[@]}"; do
+    ACHOU=$(printf '%s\n' "$ADICOES" \
+      | EXC="${EXCECOES[$i]}" PROJ="$PASTA_PROJETO" awk -F'\t' 'ENVIRON["EXC"] == "" || (ENVIRON["PROJ"] "/" $1) !~ ENVIRON["EXC"]' \
+      | grep -E -- "^[^$TAB]*$TAB.*(${EXPRESSOES[$i]})" | cut -f1 | sort -u)
+    [ -n "$ACHOU" ] && COM_SEGREDO+="$ACHOU"$'\n'
+  done
+fi
+COM_SEGREDO=$(printf '%s' "$COM_SEGREDO" | sed '/^$/d' | sort -u)
+
+[ ${#DOCS[@]} -eq 0 ] && [ ${#SENSIVEIS[@]} -eq 0 ] && [ -z "$COM_SEGREDO" ] && exit 0
+
+{
+  echo "Commit recusado pela regra do projeto: $PASTA_PROJETO/ só leva código para o GitHub."
+  if [ ${#DOCS[@]} -gt 0 ]; then
+    echo
+    echo "Documentação (mova para ../$PASTA_DOCUMENTO/):"
+    printf '  %s\n' "${DOCS[@]}"
+  fi
+  if [ ${#SENSIVEIS[@]} -gt 0 ]; then
+    echo
+    echo "Arquivo sensível (guarde em ../$PASTA_DOCUMENTO/sensivel/):"
+    printf '  %s\n' "${SENSIVEIS[@]}"
+  fi
+  if [ -n "$COM_SEGREDO" ]; then
+    echo
+    echo "Parece haver segredo no conteúdo (use o padrão segredo.json de .claude/rules/segredos.md):"
+    printf '%s\n' "$COM_SEGREDO" | sed 's/^/  /'
+  fi
+  echo
+  echo "Para tirar do commit: git restore --staged <arquivo>"
+} >&2
+exit 1

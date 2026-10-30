@@ -77,6 +77,14 @@ caminho_da_entrada() {
   printf '%s' "$arq"
 }
 
+# Id da sessão na entrada de qualquer hook. Funciona sem jq (o id não tem aspas nem barras).
+sessao_da_entrada() {
+  printf '%s' "$1" | sed -n 's/.*"session_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1
+}
+
+# Marca de que a sessão editou algo em Projeto/: só essa sessão compila no Stop.
+marca_de_edicao() { printf '%s' "$RAIZ/.claude/.cache/editou-$1"; }
+
 # --- Saídas de hook ---------------------------------------------------------------------------
 
 json_texto() {

@@ -6,12 +6,12 @@ disable-model-invocation: true
 
 # Progresso
 
-Você é o **gerente**. Não confie na memória desta conversa nem nos avisos das sessões vinculadas: a fonte é o que está em `Projeto_Documento/` e em `Projeto/`. Você não edita `Projeto/`.
+Você é o **gerente** (veja "Papéis" no `CLAUDE.md`). Não confie na memória desta conversa nem nos avisos das sessões vinculadas: a fonte é o que está em `Projeto_Documento/` e em `Projeto/`.
 
 ## 1. Situar
 
 1. Leia `Projeto_Documento/estado.md` e ache a etapa atual e o arquivo `Projeto_Documento/etapas/NN-*.md`.
-2. Leia o "Status final" do arquivo da etapa. Sem status final, a sessão da etapa não fechou: diga ao usuário para voltar a ela (link da sessão) e pare.
+2. Veja o status da etapa na tabela do roadmap. Se for `pendente`, `planejada` ou `em andamento`, a sessão da etapa não fechou: diga ao usuário para voltar a ela (link da sessão) e pare.
 
 ## 2. Conferência (subagente)
 
@@ -21,18 +21,22 @@ O trabalho pesado não passa pelo seu contexto. Dispare **um** subagente (tipo `
 
 ## 3. Revisão com o usuário
 
-1. Mostre o veredito do subagente e o "Status final" da etapa.
+1. Mostre o veredito do subagente, o status da etapa no roadmap e a seção "Fechamento" do arquivo da etapa.
 2. Pergunte se o usuário já testou, se ficou como esperado e se há algo a ajustar.
 3. Decida com ele, uma das saídas:
-   - **Aprovada:** marque `revisada` no roadmap e no arquivo da etapa; registre a conversa na seção "Revisão" do arquivo da etapa.
-   - **Correção:** liste os itens e grave-os na seção "Revisão" como pendentes. O usuário volta à sessão da etapa (link) ou, se ele pedir, você envia os itens a ela por mensagem. A etapa volta a `em andamento`. Depois, rode `/progresso` de novo.
-   - **Decisão pendente:** discuta, registre em `Projeto_Documento/decisoes/` e ajuste roadmap ou etapa com o ok.
-   - **Problema maior:** vira etapa nova ou item em "Fora do escopo e ideias" do roadmap, com o ok.
+   - **Aprovada:** marque `revisada` no roadmap e registre a conversa na seção "Revisão" do arquivo da etapa.
+   - **Correção:** liste os itens e grave-os na seção "Revisão" como pendentes. Volte a etapa para `em andamento` no roadmap. O usuário volta à sessão da etapa (link) ou, se ele pedir, você envia os itens a ela por mensagem. Depois, rode `/progresso` de novo.
+   - **Bloqueada ou decisão pendente:** resolva com o usuário o que falta ou a decisão. Registre a decisão em `Projeto_Documento/decisoes/` e ajuste o roadmap com o ok. Grave na seção "Revisão" o que muda no plano e volte a etapa para `planejada` no roadmap: a sessão da etapa ajusta o plano, mostra de novo e pede o ok. O usuário volta à sessão da etapa (link) ou você envia por mensagem, se ele pedir. Se não der para resolver agora, a etapa fica como está e o motivo vai para "Decisões pendentes" do `estado.md`.
+   - **Problema maior:** vira etapa nova ou item em "Fora do escopo e ideias" do roadmap, com o ok. A etapa atual segue por uma das saídas acima.
 
 ## 4. Registrar (sempre, nesta ordem)
 
-1. Acrescente a linha da etapa em `Projeto_Documento/metricas.md` (modelo em `.claude/modelos/documentos.md`). Rodada de correção conta a cada `/progresso` que não aprovou.
-2. Atualize `Projeto_Documento/estado.md`: etapa, status, decisões pendentes, próximo passo. Este é o último passo: um gerente novo tem que conseguir continuar só com ele.
+1. Atualize a linha da etapa em `Projeto_Documento/metricas.md` (uma linha por etapa; crie se não existir, no modelo de `.claude/modelos/documentos.md`):
+   - rodadas de correção: some 1 a cada saída **Correção**;
+   - bloqueios por decisão: some 1 a cada saída **Bloqueada ou decisão pendente**;
+   - compactou: o da etapa está no "Fechamento" dela; o seu, você sabe;
+   - custo: pergunte ao usuário (painel de uso do app). Se ele não souber, `—`.
+2. Atualize `Projeto_Documento/estado.md`: etapa atual, sessão da etapa (`nenhuma aberta` quando aprovada), decisões pendentes, próximo passo. Este é o último passo: um gerente novo tem que conseguir continuar só com ele.
 
 ## 5. Saúde do gerente
 

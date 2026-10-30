@@ -17,12 +17,13 @@ Numa sessão única, a conversa cresce a cada etapa, o contexto é compactado e 
 | | Gerente | Sessão de etapa (`etapa-NN`) |
 |---|---|---|
 | Onde roda | a sessão principal, aberta por você no Root | uma sessão vinculada, aberta pelo gerente |
+| Modelo | o que você escolher no app (use Opus) | Opus 5.5, esforço `medium`, contexto limpo |
 | O que faz | planeja, abre etapas, confere, registra o estado | executa **uma** etapa: perguntas, plano, código, evidências |
 | Escreve código | nunca | sim, só em `Projeto/` |
 | Grava `estado.md` e `metricas.md` | sim, é o único | nunca |
 | Memória | descartável: um gerente novo continua lendo `estado.md` | parte só dos documentos |
 
-Leituras pesadas (diff, build, conferência, análise de referências) vão para subagentes, que devolvem só a conclusão. Assim o contexto do gerente fica leve.
+Leituras pesadas (diff, build, conferência, análise de referências) vão para subagentes, que devolvem só a conclusão. Assim o contexto do gerente fica leve. Os subagentes são do tipo `general-purpose`, só leem e, como o kit não define modelo para eles, usam o padrão do app (em geral, o mesmo da sessão que os chamou).
 
 ## Como funciona
 
@@ -35,10 +36,11 @@ meu-projeto/                ← o "Root": abra o Claude Code sempre aqui
 ├── Projeto/                o código. É o ÚNICO repositório git e o que vai para o GitHub
 └── Projeto_Documento/      a documentação. Nunca entra em git nem vai para lugar nenhum
     ├── estado.md           onde o projeto está e qual é o próximo passo
-    ├── objetivo.md, referencias.md, arquitetura.md, roadmap.md
+    ├── objetivo.md, referencias.md, arquitetura.md
+    ├── roadmap.md          as etapas e o status de cada uma (o único lugar do status)
     ├── metricas.md         uma linha por etapa: correções, bloqueios, compactações, custo
     ├── padroes-observados.md   gerado no fim do projeto
-    ├── etapas/             um arquivo por etapa (plano, execução, status final, revisão)
+    ├── etapas/             um arquivo por etapa (plano, execução, fechamento, revisão)
     ├── decisoes/           uma decisão técnica por arquivo
     └── sensivel/           segredo.json, chaves e certificados (o Claude não lê nem grava)
 ```
@@ -60,7 +62,7 @@ A ideia é separar o que é **produto** (`Projeto/`, público) do que é **proce
 3. **`/progresso`** (depois de cada etapa): um subagente confere a entrega e o gerente revisa com você. O resultado é um destes:
    - **Aprovada:** a etapa fica marcada como revisada.
    - **Correção:** os itens voltam para a sessão da etapa.
-   - **Decisão pendente:** a decisão é registrada e o roadmap é ajustado.
+   - **Bloqueada ou decisão pendente:** o que falta é resolvido com você e a etapa volta para a sessão dela, com o plano ajustado.
    - **Problema maior:** vira uma etapa nova.
 
    No fim, `metricas.md` e `estado.md` são atualizados.
@@ -68,13 +70,13 @@ A ideia é separar o que é **produto** (`Projeto/`, público) do que é **proce
 
 **Na sessão de cada etapa:**
 
-- **`/etapa`**: apresenta a etapa, faz as perguntas e mostra o plano. Executa depois do seu ok e fecha com o status final e a evidência de cada critério de aceite.
+- **`/etapa`**: apresenta a etapa, faz as perguntas e mostra o plano. Executa depois do seu ok e fecha marcando o status no roadmap, com a evidência de cada critério de aceite.
 - **`depurar`** (automática): em caso de bug ou erro, o Claude é obrigado a achar a causa antes de mexer no código.
 
 ```
 você ──► gerente: /iniciar-projeto ──► /iniciar-etapa ──► etapa-01: /etapa ──┐
                ▲                                                             │
-               └──────────── /progresso ◄──── status final ◄─────────────────┘
+               └──────────── /progresso ◄──── fechamento ◄───────────────────┘
                      (aprova → /iniciar-etapa da próxima │ correção → volta para etapa-01)
 ```
 
@@ -91,7 +93,7 @@ Todas as chaves de API e senhas de banco ficam num único `Projeto_Documento/sen
 | `hooks/bloquear-segredos.sh` | Nega edições que escrevem chaves, tokens ou senhas literais no código. |
 | `hooks/bloquear-comandos.sh` | Bloqueia comandos destrutivos. |
 | `hooks/verificar-ambiente.sh` | Ao abrir a sessão, avisa se a estrutura está fora do padrão ou se falta alguma ferramenta. |
-| `hooks/formatar.sh` e `verificar-build.sh` | Formatam o arquivo depois de cada edição e compilam ao fim de cada resposta, se configurados. |
+| `hooks/formatar.sh` e `verificar-build.sh` | Formatam o arquivo depois de cada edição e compilam ao fim de cada resposta, se configurados. Só compila a sessão que editou código: o gerente nunca compila. |
 | `settings.json` | Nega leitura de `sensivel/`, `.env` e `segredo.json` e pede confirmação para `git push`, `git init` e `reset --hard`. |
 | `Projeto/.gitignore` | Ignora `.md` (menos o `README.md`), `docs/`, `.env` e chaves. |
 
@@ -124,7 +126,7 @@ Também dá para baixar o ZIP pelo GitHub (**Code → Download ZIP**) e apagar o
 
 ## Uso
 
-1. No app Claude desktop, abra uma sessão Code na pasta `meu-projeto/` (o Root). Essa é o gerente.
+1. No app Claude desktop, abra uma sessão Code na pasta `meu-projeto/` (o Root). Essa é o gerente. Use o modelo Opus: o app só deixa a sessão de etapa usar um modelo igual ou mais barato que o do gerente.
 2. Rode `/iniciar-projeto` e responda às fases. Ele pergunta se pode criar o git em `Projeto/` e ligar a trava de commit:
    ```bash
    git -C Projeto config core.hooksPath ../.claude/git-hooks

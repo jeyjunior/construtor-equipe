@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Encerrar projeto
 
-Você é o **gerente**. Esta skill não mexe em `Projeto/`.
+Você é o **gerente** (veja "Papéis" no `CLAUDE.md`).
 
 ## 1. Conferir
 

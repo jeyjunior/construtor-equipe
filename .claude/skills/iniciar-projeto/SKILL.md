@@ -11,14 +11,14 @@ Esta sessão é o **gerente** do projeto (veja "Papéis" no `CLAUDE.md`). Você 
 - **Pesquisa pesada vai para subagentes** (comparar tecnologias, bancos, bibliotecas, serviços; ler código existente grande). O subagente pesquisa e devolve 2 ou 3 opções com prós, contras, custo e uma recomendação, em no máximo uma página. **Ele não decide**: a decisão é do usuário, com você. Pesquisas independentes podem rodar em paralelo.
 
 - **Não escreva código de produto, não crie a estrutura do projeto e não rode geradores** (como `dotnet new` ou `npm init`) durante este fluxo. Isso é trabalho da primeira etapa do roadmap.
-- **Toda a documentação vai para `Projeto_Documento/`. Nada deste fluxo é gravado em `Projeto/`**, exceto `.gitignore`, `.gitattributes` e configuração do git.
+- **Nada deste fluxo é gravado em `Projeto/`**, exceto `.gitignore`, `.gitattributes` e configuração do git.
 - **Nunca avance de fase sem um "ok" explícito do usuário.** Ao fim de cada fase, mostre o que vai ser gravado e pergunte se pode seguir.
 - Enquanto uma fase está em andamento, o documento dela fica com `Status: rascunho`. Só grave `Status: aprovado (AAAA-MM-DD)` quando a fase inteira terminar com o ok. É assim que a retomada sabe onde parou.
 - **Não invente respostas.** O que o usuário não souber ou não quiser decidir agora entra como "Em aberto", com o motivo.
 - Se uma resposta contradizer algo já aprovado, aponte a contradição e pergunte qual vale. Atualize o documento afetado só depois da resposta.
-- Faça no máximo 4 perguntas por rodada, numeradas, priorizando as que mudam o desenho do sistema. Quando as alternativas forem poucas e claras, use a ferramenta de perguntas de múltipla escolha (AskUserQuestion); quando não forem, pergunte em texto.
+- Siga a regra de perguntas do `CLAUDE.md`, priorizando as que mudam o desenho do sistema.
 - Requisito com adjetivo ("rápido", "seguro", "escalável") precisa de número e unidade; sem isso, vira pergunta.
-- Testes automatizados ficam com o usuário: não entram como entregável nem como critério que depende do Claude escrevê-los.
+- Como os testes são do usuário (`CLAUDE.md`), eles não entram no roadmap como entregável nem como critério que dependa do Claude escrevê-los.
 - Escreva os documentos em português, curtos e objetivos. Use os modelos de `.claude/modelos/documentos.md`.
 
 ## Antes de começar
@@ -31,7 +31,7 @@ Esta sessão é o **gerente** do projeto (veja "Papéis" no `CLAUDE.md`). Você 
    - `Projeto_Documento/referencias.md` ausente ou sem status final (`aprovado` ou `sem referências`) → Fase 2.5;
    - `Projeto_Documento/arquitetura.md` ausente ou `rascunho` → Fase 3;
    - `Projeto_Documento/roadmap.md` ausente ou `rascunho` → Fase 4;
-   - os três aprovados, mas a seção "Projeto" do `CLAUDE.md` ainda com o texto padrão ou sem `Projeto_Documento/estado.md` → Fase 5;
+   - os três aprovados, mas o `CLAUDE.md` ainda com a linha `(Esta seção é preenchida no final do /iniciar-projeto.)` ou sem `Projeto_Documento/estado.md` → Fase 5;
    - tudo pronto → o projeto já foi iniciado: indique `/iniciar-etapa` ou `/progresso` conforme `estado.md`.
 4. Se é o começo (nada em `Projeto_Documento/`) e já existe código, faça a Fase 0 antes da Fase 1. Código fora de `Projeto/` (por exemplo, um repositório solto no Root) precisa ir para `Projeto/` antes: mostre o que mover e só mova com o ok.
 
@@ -88,7 +88,7 @@ Para cada escolha relevante, apresente 2 ou 3 opções com prós e contras e dig
 
 ## Fase 5 — Fechamento
 
-1. Substitua a seção "Projeto" do `CLAUDE.md` pelo bloco "Seção Projeto do CLAUDE.md" de `.claude/modelos/documentos.md`, preenchido. Ele importa o estado, o objetivo e a arquitetura para que sejam carregados em toda sessão (gerente e etapas); o roadmap fica fora, lido pelas skills. Mantenha as demais seções do `CLAUDE.md`.
+1. No `CLAUDE.md`, troque só a linha `(Esta seção é preenchida no final do /iniciar-projeto.)` pelo bloco "Seção Projeto do CLAUDE.md" de `.claude/modelos/documentos.md`, preenchido. Ele importa o estado, o objetivo e a arquitetura para que sejam carregados em toda sessão (gerente e etapas); o roadmap fica fora, lido pelas skills. Não mexa no resto do `CLAUDE.md`: as subseções "Como trabalhamos", "Como escrever código" e "Comandos" guardam as regras de todas as sessões.
 2. Crie `Projeto_Documento/estado.md` (próximo passo: etapa 1) e `Projeto_Documento/metricas.md` vazio, nos modelos.
 3. Mostre o `CLAUDE.md` final ao usuário.
 4. Encerre dizendo que o próximo passo é `/iniciar-etapa`, que abre a etapa 1 numa sessão vinculada. Não comece a etapa 1.

@@ -4,9 +4,9 @@ Todos estes documentos ficam em `Projeto_Documento/`, nunca em `Projeto/`. Mante
 
 ## Seção Projeto do CLAUDE.md
 
-```markdown
-# Projeto
+Entra no lugar da linha `(Esta seção é preenchida no final do /iniciar-projeto.)`, logo abaixo do título `# Projeto`. As subseções que vêm depois ("Como trabalhamos", "Como escrever código", "Comandos") ficam como estão.
 
+```markdown
 **Nome:** <nome>
 **Resumo:** <uma linha>
 **Stack:** <ex.: .NET 10 Worker Service, PostgreSQL, Dapper>
@@ -28,7 +28,7 @@ Painel do projeto. Só o gerente grava. Máximo de meia página: é por ele que 
 Atualizado: AAAA-MM-DD · Status: em andamento | projeto encerrado (AAAA-MM-DD)
 
 ## Agora
-- Etapa atual: N — <nome> — <status do roadmap>
+- Etapa atual: N — <nome> (o status fica na tabela do roadmap)
 - Sessão da etapa: etapa-NN (ou "nenhuma aberta")
 - Próximo passo: <ex.: /progresso da etapa N | /iniciar-etapa N+1>
 
@@ -44,14 +44,14 @@ Atualizado: AAAA-MM-DD · Status: em andamento | projeto encerrado (AAAA-MM-DD)
 
 ## Projeto_Documento/metricas.md
 
-Uma linha por `/progresso`. Só o gerente grava.
+Uma linha por etapa, atualizada a cada `/progresso` dela. Só o gerente grava.
 
 ```markdown
 # Métricas
 
-| Etapa | Início | Revisada | Rodadas de correção | Bloqueios por decisão | Compactou (etapa/gerente) | Tokens/custo | Bugs que vieram depois |
-|-------|--------|----------|---------------------|-----------------------|---------------------------|--------------|------------------------|
-| 1 | AAAA-MM-DD | AAAA-MM-DD | 0 | 0 | não/não | <do painel de uso> | — |
+| Etapa | Início | Revisada | Rodadas de correção | Bloqueios por decisão | Compactou (etapa/gerente) | Custo (informado pelo usuário) | Bugs que vieram depois |
+|-------|--------|----------|---------------------|-----------------------|---------------------------|--------------------------------|------------------------|
+| 1 | AAAA-MM-DD | AAAA-MM-DD | 0 | 0 | não/não | <do painel de uso, ou —> | — |
 
 ## Resumo final
 <preenchido no /encerrar-projeto: totais, médias e observações>
@@ -191,7 +191,9 @@ Status: rascunho | aprovado (AAAA-MM-DD)
 |---|-------|--------|
 | 1 | <nome> | pendente |
 
-Status possíveis: pendente → planejada → em andamento → concluída → revisada
+Esta tabela é o único lugar do status de cada etapa.
+Status possíveis: pendente → planejada → em andamento → concluída → revisada.
+A sessão da etapa também pode fechar como `bloqueada` ou `decisão pendente`; depois do `/progresso`, a etapa volta a `planejada`.
 
 ## Etapa 1 — <nome>
 **Objetivo:** ...
@@ -214,7 +216,7 @@ Status possíveis: pendente → planejada → em andamento → concluída → re
 ```markdown
 # Etapa N — <nome>
 
-Status: planejada | em andamento | concluída | revisada
+O status desta etapa fica na tabela do roadmap.
 
 ## Respostas da sessão de perguntas
 - P: ... — R: ...
@@ -231,7 +233,12 @@ Status: planejada | em andamento | concluída | revisada
 ## Notas da execução
 - <desvios, problemas encontrados e como foram resolvidos>
 
-Status final: concluída (AAAA-MM-DD) | bloqueada (AAAA-MM-DD) — falta: ... | decisão pendente (AAAA-MM-DD) — ...
+## Fechamento
+<preenchido pela sessão da etapa ao fechar; substitui o anterior, se houver>
+- Data: AAAA-MM-DD
+- Se bloqueada: <o que falta e por quê>
+- Se decisão pendente: <a decisão e as opções>
+- Esta conversa foi compactada: sim | não
 
 ## Revisão
 <preenchido pelo gerente no /progresso: veredito, conversa com o usuário, correções pendentes>

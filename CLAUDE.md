@@ -20,7 +20,7 @@ ESTRUTURA FIXA. NÃO É ALTERÁVEL. Abra o Claude Code sempre no Root.
   /encerrar-projeto → no fim: métricas finais e padroes-observados.md
 
   Na sessão vinculada de cada etapa:
-  /etapa            → apresentação, perguntas, plano, execução, fechamento com status final
+  /etapa            → apresentação, perguntas, plano, execução, fechamento com o status no roadmap
 
 Travas da estrutura (além das regras abaixo):
   .claude/hooks/proteger-estrutura.sh  nega o Claude criar documentação ou arquivo sensível em Projeto/
@@ -31,7 +31,8 @@ Travas da estrutura (além das regras abaixo):
   .claude/settings.json                nega leitura e escrita em Projeto_Documento/sensivel/
   .claude/hooks/verificar-ambiente.sh  avisa ao abrir a sessão se a estrutura estiver fora do padrão
 
-Outros hooks: formatação após edição, build ao fim da resposta, bloqueio de comandos destrutivos
+Outros hooks: formatação após edição, build ao fim da resposta (só na sessão que editou código,
+nunca no gerente), bloqueio de comandos destrutivos
 e de segredos no código. Comandos de build, formatação e execução: .claude/comandos.conf (rodam
 dentro de Projeto/). Requisitos na máquina: git e jq.
 -->
@@ -72,14 +73,14 @@ Root/
 Toda sessão é uma das duas. Descubra qual é você antes de agir.
 
 **Gerente**: a sessão principal, aberta pelo usuário no Root. Roda `/iniciar-projeto`, `/iniciar-etapa`, `/progresso` e `/encerrar-projeto`.
-- Não escreve código nem altera `Projeto/`. Grava só em `Projeto_Documento/` e no kit.
+- Não escreve código nem altera `Projeto/` (única exceção: `.gitignore`, `.gitattributes` e configuração do git, no `/iniciar-projeto`). Grava só em `Projeto_Documento/` e no kit.
 - É o único que grava `Projeto_Documento/estado.md` e `Projeto_Documento/metricas.md`.
 - É descartável: não depende da própria memória. Toda decisão tomada com o usuário vira arquivo em `Projeto_Documento/decisoes/` (ou ajuste no roadmap) antes de abrir a próxima etapa, e `estado.md` é atualizado ao fim de cada `/progresso`. Um gerente novo continua o projeto lendo `estado.md`.
 - Leitura pesada (diff, build, muitos arquivos, pesquisa) vai para subagente, que devolve só a conclusão.
 
 **Sessão de etapa**: sessão vinculada aberta pelo gerente, com o nome `etapa-NN`. Roda `/etapa` para uma única etapa.
 - Não abre outras sessões, não começa outra etapa, não muda objetivo nem arquitetura e não grava `estado.md` nem `metricas.md`.
-- Termina sempre com o status final gravado no arquivo da etapa.
+- Termina sempre marcando no roadmap como a etapa fechou: `concluída`, `bloqueada` ou `decisão pendente`.
 
 # Projeto
 
@@ -89,10 +90,12 @@ Toda sessão é uma das duas. Descubra qual é você antes de agir.
 
 - O projeto avança por etapas definidas em `Projeto_Documento/roadmap.md`. Cada etapa é aberta pelo gerente com `/iniciar-etapa` e roda na sua própria sessão.
 - `Projeto_Documento/` é a fonte da verdade entre as sessões: o que não está escrito lá não existe para a próxima sessão.
+- O status de cada etapa fica só na tabela de `Projeto_Documento/roadmap.md`. Os outros documentos apontam para ela, não copiam o status.
 - Não implemente nada fora da etapa em andamento. Ideia ou pedido novo vai para a seção "Fora do escopo e ideias" do roadmap, e você pergunta antes de agir.
 - Depois de aprovado, `Projeto_Documento/objetivo.md` só muda com aprovação explícita do usuário, registrada em `Projeto_Documento/decisoes/`.
 - Decisão técnica relevante (biblioteca, padrão, formato de dados, infraestrutura) vira um arquivo em `Projeto_Documento/decisoes/`, no modelo de `.claude/modelos/documentos.md`.
 - Entre duas interpretações possíveis, pergunte. Não preencha lacunas com suposições.
+- Perguntas ao usuário: no máximo 4 por rodada, numeradas. Com poucas alternativas claras, use a ferramenta de múltipla escolha (AskUserQuestion); senão, pergunte em texto.
 - Antes de concordar com uma proposta, sua ou do usuário, aponte um caso concreto em que ela falha, a menor mudança que resolve o problema real e o custo de cada caminho.
 - **Testes automatizados são escritos pelo usuário.** Não crie nem altere arquivos de teste. Se existirem, você pode rodá-los como evidência.
 - Não diga que algo está pronto, funcionando ou corrigido sem ter rodado agora o comando que prova (build, execução, chamada real) e lido a saída. Cite a evidência.

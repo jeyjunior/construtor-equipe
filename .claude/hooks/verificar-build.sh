@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Hook Stop: ao fim de cada resposta do Claude, se houver código alterado e não commitado em
 # Projeto/, roda o BUILD de .claude/comandos.conf dentro de Projeto/.
+#  - Só na sessão que editou Projeto/ (marca gravada pelo formatar.sh). O gerente divide a pasta
+#    com a sessão de etapa e não escreve código: não compila nem recebe erro de build.
 #  - Build falhou: devolve os erros ao Claude (exit 2) para ele corrigir antes de encerrar.
 #  - Falhou de novo logo depois da correção: não barra outra vez, só avisa você.
 #  - Erro de ambiente (BUILD_IGNORAR, ex.: arquivo travado pelo programa rodando): só avisa você.
@@ -11,6 +13,9 @@ ENTRADA=$(cat)
 source "$(dirname "${BASH_SOURCE[0]}")/comum.sh"
 carregar_comandos || exit 0
 [ -n "${BUILD:-}" ] || exit 0   # sem comando de build: o projeto ainda está em planejamento
+SESSAO=$(sessao_da_entrada "$ENTRADA")
+# Sem id de sessão na entrada, compila como antes (melhor sobrar build do que faltar).
+[ -z "$SESSAO" ] || [ -f "$(marca_de_edicao "$SESSAO")" ] || exit 0
 cd "$RAIZ/$PASTA_PROJETO" 2>/dev/null || exit 0
 
 SEGUNDA=0

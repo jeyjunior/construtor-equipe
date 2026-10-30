@@ -26,9 +26,9 @@ Escreva uma hipótese só: "falha porque X". Teste com a menor mudança que isol
 
 1. Uma mudança, na causa confirmada.
 2. Repita a reprodução do passo 1 e mostre que o problema sumiu.
-3. Rode o `BUILD` de `.claude/comandos.conf`. Se o usuário tiver testes, rode-os. Não escreva testes novos.
+3. Rode o `BUILD` de `.claude/comandos.conf`. Se o usuário tiver testes, rode-os (as regras de testes estão no `CLAUDE.md`).
 4. Nada de "já que estou aqui": nenhuma melhoria fora da correção.
-5. Anotações da investigação, se valerem guardar, vão para `Projeto_Documento/` (por exemplo, nas notas da etapa), nunca para `Projeto/`.
+5. Anotações da investigação, se valerem guardar, vão nas notas da etapa, em `Projeto_Documento/`.
 
 ## Três tentativas
 

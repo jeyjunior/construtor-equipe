@@ -18,7 +18,7 @@ Esta sessão é o **gerente** do projeto (veja "Papéis" no `CLAUDE.md`). Você 
 - Se uma resposta contradizer algo já aprovado, aponte a contradição e pergunte qual vale. Atualize o documento afetado só depois da resposta.
 - Siga a regra de perguntas do `CLAUDE.md`, priorizando as que mudam o desenho do sistema.
 - Requisito com adjetivo ("rápido", "seguro", "escalável") precisa de número e unidade; sem isso, vira pergunta.
-- Como os testes são do usuário (`CLAUDE.md`), eles não entram no roadmap como entregável nem como critério que dependa do Claude escrevê-los.
+- Testes automatizados seguem a escolha da Fase 3. Com `não`, eles não entram no roadmap como entregável nem como critério de aceite.
 - Escreva os documentos em português, curtos e objetivos. Use os modelos de `.claude/modelos/documentos.md`.
 
 ## Antes de começar
@@ -42,7 +42,7 @@ Esta sessão é o **gerente** do projeto (veja "Papéis" no `CLAUDE.md`). Você 
    2. pontos de entrada e interfaces públicas, com o caminho do arquivo;
    3. dados: bancos, tabelas, arquivos que lê e grava;
    4. integrações externas;
-   5. como compila e roda (comandos que funcionam hoje);
+   5. como compila, roda e testa (comandos que funcionam hoje);
    6. riscos: acoplamento forte, falha silenciosa, partes sem dono claro;
    7. bons exemplos no próprio código, que valem como padrão a seguir.
 2. **Separação.** Liste o que em `Projeto/` é documentação (`.md` além do `README.md` da raiz, pasta `docs/`) ou sensível (`.env` com valores, chaves, certificados, senha em arquivo de configuração). Proponha mover a documentação para `Projeto_Documento/` e o sensível para `Projeto_Documento/sensivel/`, tirando do git com `git -C Projeto rm --cached`. Avise que o que já foi enviado ao GitHub continua no histórico: segredo que já subiu precisa ser trocado. Só mova com o ok.
@@ -77,13 +77,16 @@ Para cada escolha relevante, apresente 2 ou 3 opções com prós e contras e dig
 1. Grave `Projeto_Documento/arquitetura.md` no modelo, como `rascunho` até o fim da fase.
 2. Cada escolha relevante vira um arquivo em `Projeto_Documento/decisoes/NNN-titulo-curto.md` (modelo de decisão).
 3. Convenções de código: crie `.claude/rules/<stack>.md`, com `paths:` apontando para as extensões da stack dentro de `Projeto/`. Se houver modelo em `.claude/modelos/convencoes/` (ex.: `dotnet.md`, `banco-relacional.md`), parta dele e tire o que não se aplica; senão, escreva com o usuário. Acrescente as convenções que decorrem das decisões (ex.: como acessar o banco, como chamar APIs externas).
-4. Proponha os ajustes de ambiente da stack: padrões em `Projeto/.gitignore` (ex.: `bin/` e `obj/` em .NET), sem remover os de documentação e segredos que já estão lá; permissões em `.claude/settings.json` para os comandos de build e formatação; e confirmação (`ask`) para clientes de banco de dados.
-5. Mostre tudo, grave após o ok e mude `Projeto_Documento/arquitetura.md` para `aprovado (AAAA-MM-DD)`.
+4. **Testes automatizados.** Pergunte se o projeto terá testes. Se a Fase 0 achou testes em `Projeto/`, mostre-os antes de perguntar. A escolha vira um arquivo em `Projeto_Documento/decisoes/`.
+   - **Não:** o Claude não cria testes. Linha na seção Projeto: `**Testes:** não`.
+   - **Sim:** a cada etapa, ao fim do código, os testes são criados a partir dos critérios de aceite. Pergunte também a ferramenta de testes e quem os escreve: um subagente (padrão) ou a própria sessão da etapa. Registre nas convenções onde os testes ficam em `Projeto/`. Linha na seção Projeto: `**Testes:** por etapa, <ferramenta>, escritos por subagente` ou `escritos pela sessão da etapa`.
+5. Proponha os ajustes de ambiente da stack: padrões em `Projeto/.gitignore` (ex.: `bin/` e `obj/` em .NET), sem remover os de documentação e segredos que já estão lá; permissões em `.claude/settings.json` para os comandos de build, formatação e testes (se houver); e confirmação (`ask`) para clientes de banco de dados.
+6. Mostre tudo, grave após o ok e mude `Projeto_Documento/arquitetura.md` para `aprovado (AAAA-MM-DD)`.
 
 ## Fase 4 — Roadmap
 
-1. Proponha etapas pequenas, cada uma executável numa sessão de etapa sem precisar compactar o contexto, e com entrega verificável. A primeira costuma ser o esqueleto do projeto em `Projeto/` rodando, com o build funcionando e `.claude/comandos.conf` preenchido.
-2. Para cada etapa: objetivo, entregáveis, critérios de aceite **verificáveis** (um comando, um comportamento observável, uma chamada real) e o que fica fora dela.
+1. Proponha etapas pequenas, cada uma executável numa sessão de etapa sem precisar compactar o contexto, e com entrega verificável. A primeira costuma ser o esqueleto do projeto em `Projeto/` rodando, com o build funcionando e `.claude/comandos.conf` preenchido. Se o projeto tiver testes, ela também cria o projeto de testes e preenche o `TESTE`.
+2. Para cada etapa: objetivo, entregáveis, critérios de aceite **verificáveis** (um comando, um comportamento observável, uma chamada real) e o que fica fora dela. Se o projeto tiver testes, toda etapa com lógica a testar traz o critério "testes passam".
 3. Ajuste até o usuário aprovar. Grave `Projeto_Documento/roadmap.md` com `Status: aprovado (AAAA-MM-DD)` e todas as etapas como `pendente`.
 
 ## Fase 5 — Fechamento

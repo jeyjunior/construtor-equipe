@@ -23,7 +23,7 @@ Numa sessão única, a conversa cresce a cada etapa, o contexto é compactado e 
 | Grava `estado.md` e `metricas.md` | sim, é o único | nunca |
 | Memória | descartável: um gerente novo continua lendo `estado.md` | parte só dos documentos |
 
-Leituras pesadas (diff, build, conferência, análise de referências) vão para subagentes, que devolvem só a conclusão. Assim o contexto do gerente fica leve. Os subagentes são do tipo `general-purpose`, só leem e, como o kit não define modelo para eles, usam o padrão do app (em geral, o mesmo da sessão que os chamou).
+Leituras pesadas (diff, build, conferência, análise de referências) vão para subagentes, que devolvem só a conclusão. Assim o contexto do gerente fica leve. Os subagentes são do tipo `general-purpose` e só leem; a única exceção é o que escreve os testes, se você ligar essa opção. Como o kit não define modelo para eles, usam o padrão do app (em geral, o mesmo da sessão que os chamou).
 
 ## Como funciona
 
@@ -57,6 +57,7 @@ A ideia é separar o que é **produto** (`Projeto/`, público) do que é **proce
    - **Perguntas:** tudo o que ficou ambíguo é perguntado, e nada é suposto.
    - **Referências:** opcionais. Outros projetos, pastas ou links analisados com `/buscar-referencia`.
    - **Ambiente e tecnologias:** 2 ou 3 opções com prós e contras por escolha. A decisão é sua.
+   - **Testes automatizados:** você escolhe se o projeto terá testes. Se sim, eles são criados a cada etapa, por um subagente (padrão) ou pela própria sessão da etapa.
    - **Roadmap:** etapas pequenas, cada uma cabendo numa sessão, com critérios de aceite verificáveis.
 2. **`/iniciar-etapa`**: confere se a próxima etapa pode começar e abre a sessão vinculada `etapa-NN`, com contexto limpo e na mesma pasta, para carregar o kit.
 3. **`/progresso`** (depois de cada etapa): um subagente confere a entrega e o gerente revisa com você. O resultado é um destes:
@@ -70,7 +71,7 @@ A ideia é separar o que é **produto** (`Projeto/`, público) do que é **proce
 
 **Na sessão de cada etapa:**
 
-- **`/etapa`**: apresenta a etapa, faz as perguntas e mostra o plano. Executa depois do seu ok e fecha marcando o status no roadmap, com a evidência de cada critério de aceite.
+- **`/etapa`**: apresenta a etapa, faz as perguntas e mostra o plano. Executa depois do seu ok, cria os testes (se o projeto tiver) e fecha marcando o status no roadmap, com a evidência de cada critério de aceite.
 - **`depurar`** (automática): em caso de bug ou erro, o Claude é obrigado a achar a causa antes de mexer no código.
 
 ```
@@ -134,13 +135,13 @@ Também dá para baixar o ZIP pelo GitHub (**Code → Download ZIP**) e apagar o
 3. Rode `/iniciar-etapa`. Ele abre a sessão `etapa-01`, onde você responde às perguntas, aprova o plano e acompanha a execução.
 4. Quando a etapa terminar, volte ao gerente e rode `/progresso`.
 5. Repita os passos 3 e 4 até o fim do roadmap e rode `/encerrar-projeto`.
-6. Quando a etapa 1 criar o esqueleto do projeto, preencha `.claude/comandos.conf` (build, formatação, execução) para ligar o build e a formatação automáticos.
+6. Quando a etapa 1 criar o esqueleto do projeto, preencha `.claude/comandos.conf` (build, testes, formatação, execução) para ligar o build e a formatação automáticos.
 
 Se o contexto do gerente ficar pesado, feche e abra outro: ele continua lendo `Projeto_Documento/estado.md`.
 
 ## Personalização
 
-- **`.claude/comandos.conf`**: os comandos de build, formatação e execução da sua stack. Os exemplos são de .NET.
+- **`.claude/comandos.conf`**: os comandos de build, testes, formatação e execução da sua stack. Os exemplos são de .NET.
 - **`.claude/modelos/convencoes/`**: modelos de convenção de código (`dotnet.md`, `banco-relacional.md`). No `/iniciar-projeto`, o Claude parte deles para criar `.claude/rules/<stack>.md`.
 - **`.claude/modelos/documentos.md`**: os modelos de estado, objetivo, arquitetura, roadmap, etapa, decisão e métricas.
 - **`.claude/hooks/padroes-segredos.txt`**: as expressões regulares de segredo usadas pelo hook e pelo pre-commit.
@@ -150,6 +151,6 @@ Se o contexto do gerente ficar pesado, feche e abra outro: ele continua lendo `P
 
 - Não implementa nada fora da etapa em andamento. Uma ideia nova vai para "Fora do escopo e ideias" do roadmap.
 - Não diz que algo está pronto sem rodar o comando que prova e citar a evidência.
-- Não cria nem altera testes automatizados: eles são escritos por você.
+- Testes automatizados seguem a sua escolha no `/iniciar-projeto`: com "não", o Claude não os cria.
 - Não faz commit nem push sem você pedir.
 - Entre duas interpretações, pergunta.

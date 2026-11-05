@@ -33,7 +33,7 @@ Travas da estrutura (além das regras abaixo):
 
 Outros hooks: formatação após edição, build ao fim da resposta (só na sessão que editou código,
 nunca no gerente), bloqueio de comandos destrutivos
-e de segredos no código. Comandos de build, formatação e execução: .claude/comandos.conf (rodam
+e de segredos no código. Comandos de build, testes, formatação e execução: .claude/comandos.conf (rodam
 dentro de Projeto/). Requisitos na máquina: git e jq.
 -->
 
@@ -50,7 +50,7 @@ Root/
 ```
 
 **`Root/Projeto/` é onde o projeto é construído.**
-- Só código e o que é necessário para compilar e rodar.
+- Só código, testes automatizados (se o projeto tiver) e o que é necessário para compilar e rodar.
 - É o **único** repositório git: é versionado e sobe para o GitHub.
 - Nunca recebe documentação: nenhum `.md` além do `README.md` da raiz de `Projeto/`, nenhuma pasta `docs/`, nenhuma nota, plano ou relatório.
 - Nunca recebe nada sensível: nem chave, certificado, `segredo.json`, `.env` com valores reais, connection string com senha. Chaves de API e senhas de banco seguem o padrão `segredo.json` de `.claude/rules/segredos.md`.
@@ -97,7 +97,7 @@ Toda sessão é uma das duas. Descubra qual é você antes de agir.
 - Entre duas interpretações possíveis, pergunte. Não preencha lacunas com suposições.
 - Perguntas ao usuário: no máximo 4 por rodada, numeradas. Com poucas alternativas claras, use a ferramenta de múltipla escolha (AskUserQuestion); senão, pergunte em texto.
 - Antes de concordar com uma proposta, sua ou do usuário, aponte um caso concreto em que ela falha, a menor mudança que resolve o problema real e o custo de cada caminho.
-- **Testes automatizados são escritos pelo usuário.** Não crie nem altere arquivos de teste. Se existirem, você pode rodá-los como evidência.
+- **Testes automatizados seguem a linha "Testes" da seção Projeto.** Com `não`, não crie testes. Com `por etapa`, eles são criados no passo 4 do `/etapa`. Testes que já existam podem ser rodados como evidência. Mudar essa escolha é decisão do usuário, registrada em `Projeto_Documento/decisoes/`.
 - Não diga que algo está pronto, funcionando ou corrigido sem ter rodado agora o comando que prova (build, execução, chamada real) e lido a saída. Cite a evidência.
 - Uma etapa só está concluída quando cada critério de aceite foi verificado com evidência.
 - Bug, erro ou comportamento inesperado: siga a skill `depurar` antes de mudar o código.
@@ -111,4 +111,4 @@ Toda sessão é uma das duas. Descubra qual é você antes de agir.
 
 ## Comandos
 
-Ficam em `.claude/comandos.conf` (build, formatação, execução) e rodam dentro de `Projeto/`. Leia esse arquivo antes de compilar ou rodar o projeto.
+Ficam em `.claude/comandos.conf` (build, testes, formatação, execução) e rodam dentro de `Projeto/`. Leia esse arquivo antes de compilar ou rodar o projeto.

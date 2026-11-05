@@ -17,7 +17,7 @@ Você é o **gerente** (veja "Papéis" no `CLAUDE.md`). Não confie na memória 
 
 O trabalho pesado não passa pelo seu contexto. Dispare **um** subagente (tipo `general-purpose`, só leitura e comandos de verificação, sem editar nada) com esta tarefa:
 
-> Confira a entrega da etapa NN. Leia `Projeto_Documento/etapas/NN-*.md` e `.claude/comandos.conf`. Rode o `BUILD` dentro de `Projeto/`. Leia `git -C Projeto status` e `git -C Projeto diff` (e arquivos novos). Para cada critério de aceite, diga se a evidência registrada existe e se bate com o código; reexecute o que for barato. Confira se há documentação ou arquivo sensível em `Projeto/`. Aponte código fora do plano, duplicação e falha silenciosa. Não edite nada. Responda em no máximo 15 linhas: build (ok/falhou + trecho), critérios (ok/faltando, um por linha), fora do plano, riscos, decisões pendentes.
+> Confira a entrega da etapa NN. Leia `Projeto_Documento/etapas/NN-*.md` e `.claude/comandos.conf`. Rode o `BUILD` e, se estiver preenchido, o `TESTE` dentro de `Projeto/`. Leia `git -C Projeto status` e `git -C Projeto diff` (e arquivos novos). Para cada critério de aceite, diga se a evidência registrada existe e se bate com o código; reexecute o que for barato. Se a linha "Testes" do `CLAUDE.md` for `por etapa`, confira se o código novo tem testes ou se "Notas da execução" explica por que não tem. Confira se há documentação ou arquivo sensível em `Projeto/`. Aponte código fora do plano, duplicação e falha silenciosa. Não edite nada. Responda em no máximo 15 linhas: build (ok/falhou + trecho), testes (ok/falhou/não se aplica + trecho), critérios (ok/faltando, um por linha), fora do plano, riscos, decisões pendentes.
 
 ## 3. Revisão com o usuário
 

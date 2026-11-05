@@ -11,6 +11,7 @@ Entra no lugar da linha `(Esta seção é preenchida no final do /iniciar-projet
 **Resumo:** <uma linha>
 **Stack:** <ex.: .NET 10 Worker Service, PostgreSQL, Dapper>
 **Repositório:** <URL do GitHub de Projeto/, ou "ainda não publicado">
+**Testes:** <"não", ou "por etapa, <ferramenta>, escritos por subagente", ou "por etapa, <ferramenta>, escritos pela sessão da etapa">
 
 Estado atual: @Projeto_Documento/estado.md
 Objetivo e escopo: @Projeto_Documento/objetivo.md
@@ -203,6 +204,7 @@ A sessão da etapa também pode fechar como `bloqueada` ou `decisão pendente`; 
 
 **Critérios de aceite:**
 - [ ] build sem erros (`BUILD` de `.claude/comandos.conf`)
+- [ ] testes passam (`TESTE` de `.claude/comandos.conf`; só se o projeto tiver testes e a etapa tiver lógica a testar)
 - [ ] <comando, comportamento observável ou chamada real>
 
 **Fora desta etapa:** ...

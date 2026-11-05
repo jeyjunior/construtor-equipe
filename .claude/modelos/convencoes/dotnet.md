@@ -18,12 +18,13 @@ Ajustes de ambiente que acompanham este modelo:
   FORMATAR="dotnet format whitespace --folder --include {arquivo}"
   FORMATAR_EXTENSOES="cs"
   EXECUTAR="dotnet run --project <projeto executável>"
+  TESTE="dotnet test <Solution>.slnx -nologo -v q" (só se o projeto tiver testes)
 
 Projeto/.gitignore (acrescentar):  bin/  obj/  *.user  .vs/  TestResults/
 
 .claude/settings.json, em permissions.allow:
   "Bash(dotnet build *)", "Bash(dotnet format *)", "Bash(dotnet restore *)", "Bash(dotnet run *)"
-  e "Bash(dotnet test *)" se o usuário quiser que o Claude rode os testes dele.
+  e "Bash(dotnet test *)" se o projeto tiver testes.
 
 Etapa 1: criar Projeto/.editorconfig (o dotnet format segue ele) e Projeto/Directory.Build.props
 com <Nullable>enable</Nullable>; avaliar <TreatWarningsAsErrors>true</TreatWarningsAsErrors>.
@@ -39,7 +40,7 @@ com <Nullable>enable</Nullable>; avaliar <TreatWarningsAsErrors>true</TreatWarni
 - Configuração via `IOptions<T>` com classes tipadas e validação na inicialização. Não ler `IConfiguration` direto nas classes de negócio.
 - Logs com `ILogger<T>` e mensagens estruturadas (`"Processou {Quantidade} itens"`), nunca com interpolação de string.
 - Nenhum segredo no código nem em `appsettings*.json`: chaves de API e senhas de banco seguem o padrão `segredo.json` de `.claude/rules/segredos.md` (lido com `AddJsonFile` pelo caminho de `SEGREDO_JSON`, com `IOptions<T>` validado na inicialização).
-- Lógica de negócio em classes que não dependem de banco nem de rede, para que o usuário consiga testá-las.
+- Lógica de negócio em classes que não dependem de banco nem de rede, para que possam ser testadas.
 
 ## Workers (se o projeto tiver)
 - Cada worker herda de `BackgroundService` e mantém `ExecuteAsync` enxuto, delegando o trabalho a serviços.

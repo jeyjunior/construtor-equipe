@@ -49,6 +49,12 @@ Valem as regras do `CLAUDE.md` (estrutura de pastas, papéis e "Como trabalhamos
 2. Rode o `BUILD` ao longo do trabalho, não só no final. Erro ou comportamento inesperado: siga a skill `depurar`, sem tentativas no escuro.
 3. Registre em "Notas da execução" qualquer desvio, problema ou escolha feita no caminho.
 4. Leitura ou pesquisa ampla (muitos arquivos, documentação externa): use um subagente e traga só a conclusão, para manter esta sessão leve.
+5. **Testes**, só se a linha "Testes" do `CLAUDE.md` for `por etapa`. Com o checklist pronto:
+   1. Escritos por subagente: dispare **um** (tipo `general-purpose`) com a tarefa abaixo. Escritos pela sessão da etapa: faça você mesmo, com as mesmas regras.
+
+      > Escreva os testes da etapa NN. Leia os critérios de aceite em `Projeto_Documento/roadmap.md`, `Projeto_Documento/etapas/NN-*.md`, as convenções em `.claude/rules/` e `.claude/comandos.conf`. Veja o código da etapa com `git -C Projeto diff` e os arquivos novos. Teste o que os critérios pedem e as regras de negócio, sem banco nem rede reais. Crie ou altere só arquivos de teste, nunca o código do sistema. Se o código parecer errado ou não der para testá-lo sem mudá-lo, não corrija: relate. Rode o `TESTE` dentro de `Projeto/`. Responda em no máximo 10 linhas: testes criados, resultado, falhas e o que não foi possível testar.
+   2. Teste falhou: siga a skill `depurar` e corrija o código. Só altere um teste se ele entendeu o critério errado, e registre o motivo em "Notas da execução".
+   3. Etapa sem lógica a testar: registre o motivo em "Notas da execução" e siga.
 
 ## 5. Fechamento
 
@@ -57,7 +63,7 @@ Valem as regras do `CLAUDE.md` (estrutura de pastas, papéis e "Como trabalhamos
    - duplicação: algo que já existia no projeto e foi reescrito;
    - falha silenciosa: erro capturado sem log, `|| true` ou valor padrão escondendo falha real.
 2. Confira `git -C Projeto status`: nenhum arquivo de documentação (`.md` além do `README.md`, pasta `docs/`) e nenhum arquivo sensível (`.env`, `segredo.json`, chave, certificado). Se houver, mova para `Projeto_Documento/` antes de seguir.
-3. Verifique cada critério de aceite agora (build, execução, chamada real, testes do usuário se existirem) e registre a evidência: comando executado e trecho da saída. Critério sem evidência fresca não passou.
+3. Verifique cada critério de aceite agora (build, execução, chamada real e o `TESTE`, se estiver preenchido) e registre a evidência: comando executado e trecho da saída. Critério sem evidência fresca não passou.
 4. Se comandos ou convenções mudaram, atualize `.claude/comandos.conf` ou o arquivo de convenções em `.claude/rules/` e mostre a alteração.
 5. Preencha a seção "Fechamento" do arquivo da etapa (substitua a anterior, se houver) e marque no roadmap um destes status:
    - `concluída`: todos os critérios de aceite têm evidência;

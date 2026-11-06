@@ -1,12 +1,12 @@
 ---
 name: iniciar-projeto
-description: Conduz o início de um projeto em fases (estrutura fixa Projeto/ e Projeto_Documento/, mapeamento do código existente, objetivo, perguntas de esclarecimento, referências, ambiente e tecnologias, roadmap) e registra tudo em Projeto_Documento/. Não escreve código.
+description: Conduz o início de um projeto em fases (estrutura fixa Projeto/ e Projeto_Documento/, mapeamento do código existente, objetivo, perguntas de esclarecimento, referências, ambiente e tecnologias, roadmap do ciclo 1) e registra tudo em Projeto_Documento/. Não escreve código.
 disable-model-invocation: true
 ---
 
 # Iniciar projeto
 
-Esta sessão é o **gerente** do projeto (veja "Papéis" no `CLAUDE.md`). Você vai conduzir o usuário pelas fases abaixo, **uma de cada vez**. Regras que valem do começo ao fim:
+Esta sessão é o **gerente** do ciclo 1 (veja "Papéis" no `CLAUDE.md`). O `/iniciar-projeto` roda uma vez e abre esse ciclo; os seguintes abrem com `/novo-ciclo`. Você vai conduzir o usuário pelas fases abaixo, **uma de cada vez**. Regras que valem do começo ao fim:
 
 - **Pesquisa pesada vai para subagentes** (comparar tecnologias, bancos, bibliotecas, serviços; ler código existente grande). O subagente pesquisa e devolve 2 ou 3 opções com prós, contras, custo e uma recomendação, em no máximo uma página. **Ele não decide**: a decisão é do usuário, com você. Pesquisas independentes podem rodar em paralelo.
 
@@ -23,16 +23,16 @@ Esta sessão é o **gerente** do projeto (veja "Papéis" no `CLAUDE.md`). Você 
 
 ## Antes de começar
 
-1. **Estrutura fixa.** O Root da sessão segue exatamente a estrutura da seção "Estrutura de pastas" do `CLAUDE.md`: `Root/Projeto/` (onde o projeto é construído) e `Root/Projeto_Documento/` (onde fica a documentação), além do kit. Ela não é alterável e não se discute neste fluxo. Crie o que faltar (`Projeto/`, `Projeto_Documento/etapas/`, `Projeto_Documento/decisoes/`, `Projeto_Documento/sensivel/`). Se houver algo solto no Root, mostre o que é e para onde vai (código para `Projeto/`, documentação para `Projeto_Documento/`) e só mova com o ok. Se a sessão foi aberta dentro de `Projeto/`, pare e peça ao usuário que abra no Root.
-2. **Git.** Se o Root ou `Projeto_Documento/` estiver dentro de um repositório git, pare e avise: a documentação acabaria versionada. Se `Projeto/` não for repositório, pergunte se pode rodar `git -C Projeto init`. Depois, com o ok, ligue a trava de commit: `git -C Projeto config core.hooksPath ../.claude/git-hooks` (ela recusa commit com documentação, arquivo sensível ou segredo).
+1. **Estrutura fixa.** O Root da sessão segue exatamente a estrutura da seção "Estrutura de pastas" do `CLAUDE.md`: `Root/Projeto/` (onde o projeto é construído) e `Root/Projeto_Documento/` (onde fica a documentação), além do kit. Ela não é alterável e não se discute neste fluxo. Crie o que faltar (`Projeto/`, `Projeto_Documento/ciclos/`, `Projeto_Documento/decisoes/`, `Projeto_Documento/sensivel/`). Se houver algo solto no Root, mostre o que é e para onde vai (código para `Projeto/`, documentação para `Projeto_Documento/`) e só mova com o ok. Se a sessão foi aberta dentro de `Projeto/`, pare e peça ao usuário que abra no Root.
+2. **Git.** Se o Root ou `Projeto_Documento/` estiver dentro de um repositório git, pare e avise: a documentação acabaria versionada. Se `Projeto/` não for repositório, pergunte se pode rodar `git -C Projeto init -b main`. Se já for, confira o nome da branch principal e grave em `BRANCH_PRINCIPAL` de `.claude/comandos.conf`, com o ok. Depois, com o ok, ligue a trava de commit: `git -C Projeto config core.hooksPath ../.claude/git-hooks` (ela recusa commit com documentação, arquivo sensível ou segredo, e commit direto na principal).
 3. **Retomada.** Veja o que já existe em `Projeto_Documento/`, retome da primeira fase não concluída e diga ao usuário de onde está retomando:
    - `Projeto_Documento/objetivo.md` ausente ou `rascunho` → Fase 1;
    - `Projeto_Documento/objetivo.md` com `requisitos pendentes` → Fase 2;
    - `Projeto_Documento/referencias.md` ausente ou sem status final (`aprovado` ou `sem referências`) → Fase 2.5;
    - `Projeto_Documento/arquitetura.md` ausente ou `rascunho` → Fase 3;
-   - `Projeto_Documento/roadmap.md` ausente ou `rascunho` → Fase 4;
+   - `Projeto_Documento/ciclos/01-*/roadmap.md` ausente ou `rascunho` → Fase 4;
    - os três aprovados, mas o `CLAUDE.md` ainda com a linha `(Esta seção é preenchida no final do /iniciar-projeto.)` ou sem `Projeto_Documento/estado.md` → Fase 5;
-   - tudo pronto → o projeto já foi iniciado: indique `/iniciar-etapa` ou `/progresso` conforme `estado.md`.
+   - tudo pronto → o projeto já foi iniciado: indique `/iniciar-etapa`, `/progresso` ou `/novo-ciclo` conforme `estado.md`.
 4. Se é o começo (nada em `Projeto_Documento/`) e já existe código, faça a Fase 0 antes da Fase 1. Código fora de `Projeto/` (por exemplo, um repositório solto no Root) precisa ir para `Projeto/` antes: mostre o que mover e só mova com o ok.
 
 ## Fase 0 — Mapeamento (só em projeto que já tem código)
@@ -85,13 +85,30 @@ Para cada escolha relevante, apresente 2 ou 3 opções com prós e contras e dig
 
 ## Fase 4 — Roadmap
 
+Tudo o que vai para o ciclo 1 fica em `Projeto_Documento/ciclos/01-nome/`, em que `nome` é curto e vem do objetivo do ciclo (ex.: `01-versao-inicial`).
+
 1. Proponha etapas pequenas, cada uma executável numa sessão de etapa sem precisar compactar o contexto, e com entrega verificável. A primeira costuma ser o esqueleto do projeto em `Projeto/` rodando, com o build funcionando e `.claude/comandos.conf` preenchido. Se o projeto tiver testes, ela também cria o projeto de testes e preenche o `TESTE`.
 2. Para cada etapa: objetivo, entregáveis, critérios de aceite **verificáveis** (um comando, um comportamento observável, uma chamada real) e o que fica fora dela. Se o projeto tiver testes, toda etapa com lógica a testar traz o critério "testes passam".
-3. Ajuste até o usuário aprovar. Grave `Projeto_Documento/roadmap.md` com `Status: aprovado (AAAA-MM-DD)` e todas as etapas como `pendente`.
+3. Defina com o usuário o objetivo do ciclo e o critério de pronto, verificável, e grave em `ciclo.md`, com `Status: rascunho`.
+4. Ajuste até o usuário aprovar. Grave `roadmap.md` na pasta do ciclo com `Status: aprovado (AAAA-MM-DD)` e todas as etapas como `pendente`.
 
 ## Fase 5 — Fechamento
 
 1. No `CLAUDE.md`, troque só a linha `(Esta seção é preenchida no final do /iniciar-projeto.)` pelo bloco "Seção Projeto do CLAUDE.md" de `.claude/modelos/documentos.md`, preenchido. Ele importa o estado, o objetivo e a arquitetura para que sejam carregados em toda sessão (gerente e etapas); o roadmap fica fora, lido pelas skills. Não mexa no resto do `CLAUDE.md`: as subseções "Como trabalhamos", "Como escrever código" e "Comandos" guardam as regras de todas as sessões.
-2. Crie `Projeto_Documento/estado.md` (próximo passo: etapa 1) e `Projeto_Documento/metricas.md` vazio, nos modelos.
-3. Mostre o `CLAUDE.md` final ao usuário.
-4. Encerre dizendo que o próximo passo é `/iniciar-etapa`, que abre a etapa 1 numa sessão vinculada. Não comece a etapa 1.
+2. Crie `Projeto_Documento/ideias.md` e `metricas.md` na pasta do ciclo 1, nos modelos. O que ficou fora do escopo do ciclo vai para `ideias.md`.
+3. Abra a branch do ciclo, com o ok do usuário. Se houver algo não commitado em código já existente, mostre e resolva com ele antes.
+   1. Repositório sem nenhum commit: faça o commit inicial na principal, só com `.gitignore` e `.gitattributes`. A trava libera este único commit.
+      ```bash
+      git -C Projeto add .gitignore .gitattributes
+      ```
+      ```bash
+      git -C Projeto commit -m "Adicao: arquivos iniciais do repositório"
+      ```
+   2. Crie a branch:
+      ```bash
+      git -C Projeto switch -c ciclo-01
+      ```
+   3. Em `ciclo.md`, grave a branch, o commit inicial (`git -C Projeto rev-parse HEAD`) e `Status: aprovado (AAAA-MM-DD)`.
+4. Crie `Projeto_Documento/estado.md` (`ciclo 1 em andamento`, próximo passo: etapa 1), no modelo.
+5. Mostre o `CLAUDE.md` final ao usuário.
+6. Encerre dizendo que o próximo passo é `/iniciar-etapa`, que abre a etapa 1 numa sessão vinculada. Não comece a etapa 1.

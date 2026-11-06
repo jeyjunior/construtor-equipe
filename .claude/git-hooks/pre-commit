@@ -3,6 +3,7 @@
 #  - documentação (.md e afins, pastas docs/), exceto o README.md da raiz;
 #  - arquivo sensível (.env com valores, chaves, certificados, pasta sensivel/);
 #  - segredo no conteúdo (padrões de .claude/hooks/padroes-segredos.txt).
+# Também recusa commit direto na branch principal: ela só recebe merge.
 # Vale para commits do Claude e de qualquer pessoa, por qualquer ferramenta.
 # Ligado por: git -C Projeto config core.hooksPath ../.claude/git-hooks
 # As regras ficam em .claude/hooks/comum.sh, as mesmas do hook de edição do Claude.
@@ -10,6 +11,23 @@
 KIT_HOOKS="$(cd "$(dirname "$0")/../hooks" && pwd)"
 # shellcheck source=../hooks/comum.sh
 source "$KIT_HOOKS/comum.sh"
+
+# Aqui o diretório atual é Projeto/, então carregar_comandos não acharia o arquivo pelo Root.
+# shellcheck disable=SC1090
+[ -f "$KIT_HOOKS/../comandos.conf" ] && source <(tr -d '\r' < "$KIT_HOOKS/../comandos.conf")
+BRANCH_PRINCIPAL="${BRANCH_PRINCIPAL:-main}"
+
+# Liberados: o primeiro commit do repositório (a principal ainda não existe) e a conclusão de um
+# merge que teve conflito (o merge sem conflito nem passa por este hook).
+if [ "$(git symbolic-ref --short -q HEAD)" = "$BRANCH_PRINCIPAL" ] \
+  && git rev-parse -q --verify HEAD >/dev/null \
+  && ! git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+  {
+    echo "Commit recusado pela regra do projeto: $BRANCH_PRINCIPAL só recebe merge, no fim do ciclo."
+    echo "Trabalhe na branch do ciclo ou da etapa (ex.: ciclo-02-etapa-01)."
+  } >&2
+  exit 1
+fi
 
 DOCS=()
 SENSIVEIS=()

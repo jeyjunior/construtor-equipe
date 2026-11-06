@@ -16,7 +16,7 @@ Entra no lugar da linha `(Esta seção é preenchida no final do /iniciar-projet
 Estado atual: @Projeto_Documento/estado.md
 Objetivo e escopo: @Projeto_Documento/objetivo.md
 Arquitetura: @Projeto_Documento/arquitetura.md
-Roadmap e etapas: `Projeto_Documento/roadmap.md` e `Projeto_Documento/etapas/` (lidos pelas skills, não carregados em toda sessão)
+Ciclos, roadmaps e etapas: `Projeto_Documento/ciclos/` (lidos pelas skills, não carregados em toda sessão)
 ```
 
 ## Projeto_Documento/estado.md
@@ -26,15 +26,21 @@ Painel do projeto. Só o gerente grava. Máximo de meia página: é por ele que 
 ```markdown
 # Estado
 
-Atualizado: AAAA-MM-DD · Status: em andamento | projeto encerrado (AAAA-MM-DD)
+Atualizado: AAAA-MM-DD · Status: ciclo N em andamento | sem ciclo aberto
 
 ## Agora
-- Etapa atual: N — <nome> (o status fica na tabela do roadmap)
-- Sessão da etapa: etapa-NN (ou "nenhuma aberta")
-- Próximo passo: <ex.: /progresso da etapa N | /iniciar-etapa N+1>
+- Ciclo atual: N — <objetivo em uma linha> — `Projeto_Documento/ciclos/NN-nome` (ou "nenhum")
+- Etapa atual: E — <nome> (o status fica na tabela do roadmap do ciclo)
+- Correção em andamento: CC — <nome> (ou "nenhuma")
+- Sessão aberta: ciclo-NN-etapa-EE ou ciclo-NN-correcao-CC (ou "nenhuma aberta")
+- Próximo passo: <ex.: /progresso da etapa E | /iniciar-etapa E+1 | /encerrar-ciclo | /novo-ciclo num gerente novo>
+
+## Último ciclo fechado
+- Ciclo: N — encerrado | cancelado (ou "nenhum")
+- Último commit da principal: <hash>
 
 ## Decisões pendentes
-- <decisão> — <opções> — bloqueia a etapa N
+- <decisão> — <opções> — bloqueia a etapa E
 
 ## Decisões tomadas (índice)
 - 001 — <título em uma linha>
@@ -43,7 +49,47 @@ Atualizado: AAAA-MM-DD · Status: em andamento | projeto encerrado (AAAA-MM-DD)
 - <risco ou combinado com o usuário que ainda não virou decisão>
 ```
 
-## Projeto_Documento/metricas.md
+## Projeto_Documento/ideias.md
+
+O que pode virar ciclo. Qualquer sessão acrescenta; só o `/novo-ciclo` e o `/iniciar-projeto` decidem o que entra num ciclo.
+
+```markdown
+# Ideias
+
+- <ideia ou bug> — <origem e data> — avaliar | virou ciclo N | descartada
+```
+
+## Projeto_Documento/ciclos/NN-nome/ciclo.md
+
+Criado pelo `/novo-ciclo` (ou pelo `/iniciar-projeto`, no ciclo 1). Só o gerente grava.
+
+```markdown
+# Ciclo N — <nome>
+
+Status: rascunho | aprovado (AAAA-MM-DD) | encerrado (AAAA-MM-DD) | cancelado (AAAA-MM-DD)
+
+## Objetivo
+<o que este ciclo entrega, em uma ou duas frases>
+
+## Critério de pronto
+- <comando, comportamento observável ou chamada real>
+
+## Respostas
+- P: ... — R: ...
+
+## Mudanças nos documentos
+- <documento> — antes: <texto> — depois: <texto> — decisão NNN (ou "nenhuma")
+
+## Git
+- Branch: ciclo-NN
+- Commit inicial: <hash>
+- Commit final: <hash, preenchido no /encerrar-ciclo>
+
+## Cancelamento
+<só se cancelado: motivo e o que o usuário decidiu sobre o que ficou fora do git>
+```
+
+## Projeto_Documento/ciclos/NN-nome/metricas.md
 
 Uma linha por etapa, atualizada a cada `/progresso` dela. Só o gerente grava.
 
@@ -54,8 +100,8 @@ Uma linha por etapa, atualizada a cada `/progresso` dela. Só o gerente grava.
 |-------|--------|----------|---------------------|-----------------------|---------------------------|--------------------------------|------------------------|
 | 1 | AAAA-MM-DD | AAAA-MM-DD | 0 | 0 | não/não | <do painel de uso, ou —> | — |
 
-## Resumo final
-<preenchido no /encerrar-projeto: totais, médias e observações>
+## Resumo do ciclo
+<preenchido no /encerrar-ciclo: totais, médias e observações; no /cancelar-ciclo: uma linha com o cancelamento>
 ```
 
 ## Projeto_Documento/referencias.md
@@ -85,12 +131,12 @@ Status: sem referências (AAAA-MM-DD) | aprovado (AAAA-MM-DD)
 - <decisão ou etapa em que esta referência entra>
 ```
 
-## Projeto_Documento/padroes-observados.md
+## Projeto_Documento/ciclos/NN-nome/padroes-observados.md
 
-Gerado no `/encerrar-projeto`. Formato fixo em todo projeto, para comparar entre projetos.
+Gerado no `/encerrar-ciclo`. Formato fixo em todo ciclo e projeto, para comparar depois. Num ciclo sem repetições, a seção "Padrões" traz só `Nada se repetiu neste ciclo`.
 
 ```markdown
-# Padrões observados — <nome do projeto>
+# Padrões observados — <nome do projeto>, ciclo N
 
 Data: AAAA-MM-DD · Stack: <stack> · Etapas: N · Duração: <início> a <fim>
 
@@ -181,10 +227,12 @@ Padrão `segredo.json` (`.claude/rules/segredos.md`).
 - ...
 ```
 
-## Projeto_Documento/roadmap.md
+## Projeto_Documento/ciclos/NN-nome/roadmap.md
+
+A numeração das etapas recomeça em 1 em cada ciclo.
 
 ```markdown
-# Roadmap
+# Roadmap — ciclo N
 
 Status: rascunho | aprovado (AAAA-MM-DD)
 
@@ -195,6 +243,13 @@ Status: rascunho | aprovado (AAAA-MM-DD)
 Esta tabela é o único lugar do status de cada etapa.
 Status possíveis: pendente → planejada → em andamento → concluída → revisada.
 A sessão da etapa também pode fechar como `bloqueada` ou `decisão pendente`; depois do `/progresso`, a etapa volta a `planejada`.
+
+## Correções
+
+Bugs antigos que atrapalham mesmo sem o ciclo (caso 3 da skill `depurar`). Status possíveis: pendente → em andamento → concluída → revisada, ou `decisão pendente` se o bug não se confirmar na principal.
+
+| # | Correção | Etapa que encontrou | Status |
+|---|----------|---------------------|--------|
 
 ## Etapa 1 — <nome>
 **Objetivo:** ...
@@ -208,17 +263,14 @@ A sessão da etapa também pode fechar como `bloqueada` ou `decisão pendente`; 
 - [ ] <comando, comportamento observável ou chamada real>
 
 **Fora desta etapa:** ...
-
-## Fora do escopo e ideias
-- <ideia> — <origem e data> — avaliar | virou etapa N | descartada
 ```
 
-## Projeto_Documento/etapas/NN-nome.md
+## Projeto_Documento/ciclos/NN-nome/etapas/EE-nome.md
 
 ```markdown
-# Etapa N — <nome>
+# Ciclo N, etapa E — <nome>
 
-O status desta etapa fica na tabela do roadmap.
+O status desta etapa fica na tabela do roadmap do ciclo.
 
 ## Respostas da sessão de perguntas
 - P: ... — R: ...
@@ -235,10 +287,16 @@ O status desta etapa fica na tabela do roadmap.
 ## Notas da execução
 - <desvios, problemas encontrados e como foram resolvidos>
 
+## Alterações fora do git
+- <banco, servidor ou serviço: o que mudou e como desfazer> (ou "nenhuma")
+
+## Correções de bug antigo
+- <caso 2 da skill depurar: causa, correção e por que só atrapalha por causa do ciclo> (ou "nenhuma")
+
 ## Fechamento
 <preenchido pela sessão da etapa ao fechar; substitui o anterior, se houver>
 - Data: AAAA-MM-DD
-- Se bloqueada: <o que falta e por quê>
+- Se bloqueada: <o que falta e por quê; em bug antigo: "Bug antigo (caso 3)", causa, passos para reproduzir e evidência>
 - Se decisão pendente: <a decisão e as opções>
 - Esta conversa foi compactada: sim | não
 
@@ -246,12 +304,43 @@ O status desta etapa fica na tabela do roadmap.
 <preenchido pelo gerente no /progresso: veredito, conversa com o usuário, correções pendentes>
 ```
 
+## Projeto_Documento/ciclos/NN-nome/correcoes/CC-nome.md
+
+Criado pelo gerente no `/progresso`, quando um bug antigo atrapalha mesmo sem o ciclo.
+
+```markdown
+# Ciclo N, correção CC — <nome>
+
+O status desta correção fica na tabela "Correções" do roadmap do ciclo.
+
+## Bug
+- Etapa que encontrou: E
+- Causa: ...
+- Passos para reproduzir: ...
+
+## Notas da execução
+- ...
+
+## Alterações fora do git
+- <banco, servidor ou serviço: o que mudou e como desfazer> (ou "nenhuma")
+
+## Fechamento
+- Data: AAAA-MM-DD
+- Evidência: <reprodução antes e depois, build e testes, com trecho da saída>
+- Se não se confirmou: <evidência de que o bug não causa problema na principal>
+
+## Revisão
+<preenchido pelo gerente no /progresso>
+```
+
 ## Projeto_Documento/decisoes/NNN-titulo-curto.md
+
+A numeração é única no projeto, sem recomeçar por ciclo.
 
 ```markdown
 # NNN — <título>
 
-Data: AAAA-MM-DD · Status: aceita | substituída por NNN
+Data: AAAA-MM-DD · Ciclo: N · Status: aceita | substituída por NNN | cancelada
 
 ## Contexto
 <o problema, em 2 ou 3 frases>

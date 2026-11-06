@@ -38,7 +38,7 @@ Dispare **um subagente por referência** (tipo `general-purpose`, só leitura). 
 
 > Analise a referência em `<caminho ou link>`. Contexto do usuário: `<contexto>`. Projeto novo: `<objetivo em 2 linhas>`.
 > **Nunca abra** `sensivel/`, `segredo.json`, `.env*`, chaves ou certificados, nem copie valores que pareçam segredo.
-> Se existirem, leia primeiro `Projeto_Documento/padroes-observados.md`, `arquitetura.md` e `decisoes/` da referência: são a experiência registrada do projeto. Depois, o código.
+> Se existirem, leia primeiro `Projeto_Documento/ciclos/*/padroes-observados.md` (ou `Projeto_Documento/padroes-observados.md`, em projeto antigo), `arquitetura.md` e `decisoes/` da referência: são a experiência registrada do projeto. Depois, o código.
 > Responda cada pergunta com o caminho do arquivo que comprova: `<perguntas>`.
 > Separe o que vale **reaproveitar** do que vale **evitar** (problemas, gambiarras, padrões que o próprio projeto registrou como ruins).
 > Não decida nada pelo projeto novo. Não edite nada. Máximo de uma página, no formato da seção "referencias.md" de `.claude/modelos/documentos.md`. Trechos de código só curtos, quando a estrutura não der para descrever em texto.

@@ -22,7 +22,19 @@ Ache no próprio projeto um caso parecido que funciona e liste as diferenças en
 
 Escreva uma hipótese só: "falha porque X". Teste com a menor mudança que isola uma variável. Hipótese derrubada: volte ao passo 1 com o que aprendeu. Não empilhe mudanças especulativas.
 
-## 4. Correção
+## 4. Classificar (só na sessão de etapa)
+
+Com a causa confirmada e antes de corrigir, veja se o trecho da causa foi alterado neste ciclo, comparando com `BRANCH_PRINCIPAL` de `.claude/comandos.conf`: `git -C Projeto diff <principal>...HEAD -- <arquivo>` e `git -C Projeto diff -- <arquivo>`.
+
+| Situação | O que fazer | Como chega à principal |
+|---|---|---|
+| **Caso 1:** a causa está em código alterado neste ciclo, mesmo que numa etapa anterior | Corrija aqui, sem parar, e anote em "Notas da execução" | No fim do ciclo |
+| **Caso 2:** a causa é antiga, mas sem este ciclo o bug não causa problema real | Pare, mostre a causa e a evidência e espere o ok do usuário. Pequena: corrija na branch da etapa e anote em "Correções de bug antigo". Grande (muda entregáveis ou não cabe na etapa): feche com `decisão pendente` | No fim do ciclo |
+| **Caso 3:** a causa é antiga e o bug causa problema real mesmo sem este ciclo | Pare, mostre a causa e a evidência. O usuário escolhe: corrigir agora (feche a etapa como `bloqueada`, no passo 5 do `/etapa`, sem corrigir aqui) ou anotar em `Projeto_Documento/ideias.md` e seguir | Logo depois da correção, numa sessão própria aberta pelo `/progresso` |
+
+Nos casos 2 e 3, o usuário confirma a classificação: você mostra a evidência, ele decide.
+
+## 5. Correção
 
 1. Uma mudança, na causa confirmada.
 2. Repita a reprodução do passo 1 e mostre que o problema sumiu.

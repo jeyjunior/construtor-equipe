@@ -2,7 +2,9 @@
 
 Kit para o [Claude Code](https://claude.com/claude-code) que conduz um projeto de software com **um gerente e uma sessão separada para cada etapa**.
 
-Uma sessão gerente planeja o projeto com você, abre cada etapa numa sessão vinculada, confere a entrega e mantém o estado do projeto em arquivos. Cada etapa começa com contexto limpo, a partir dos documentos e não de uma conversa longa. Hooks e regras impedem que documentação ou segredos vazem para o repositório.
+Uma sessão gerente planeja o trabalho com você, abre cada etapa numa sessão vinculada, confere a entrega e mantém o estado do projeto em arquivos. Cada etapa começa com contexto limpo, a partir dos documentos e não de uma conversa longa. Hooks e regras impedem que documentação ou segredos vazem para o repositório.
+
+O projeto avança por **ciclos** e nunca é encerrado. Cada novo recurso, melhoria ou correção é um ciclo, com objetivo, etapas e branch próprios, e só entra na `main` quando o ciclo fecha.
 
 > Projeto pequeno, ou prefere tudo numa sessão só? Veja o **[Construtor Solo](https://github.com/jeyjunior/construtor-solo)**.
 
@@ -14,14 +16,14 @@ Uma sessão gerente planeja o projeto com você, abre cada etapa numa sessão vi
 
 Numa sessão única, a conversa cresce a cada etapa, o contexto é compactado e detalhes se perdem. Aqui cada papel tem um limite claro:
 
-| | Gerente | Sessão de etapa (`etapa-NN`) |
+| | Gerente | Sessão de etapa (`ciclo-NN-etapa-EE`) |
 |---|---|---|
 | Onde roda | a sessão principal, aberta por você no Root | uma sessão vinculada, aberta pelo gerente |
 | Modelo | o que você escolher no app (use Opus) | Opus 5.5, esforço `medium`, contexto limpo |
-| O que faz | planeja, abre etapas, confere, registra o estado | executa **uma** etapa: perguntas, plano, código, evidências |
+| O que faz | planeja, abre etapas, confere, faz os merges, registra o estado | executa **uma** etapa: perguntas, plano, código, evidências, commit |
 | Escreve código | nunca | sim, só em `Projeto/` |
-| Grava `estado.md` e `metricas.md` | sim, é o único | nunca |
-| Memória | descartável: um gerente novo continua lendo `estado.md` | parte só dos documentos |
+| Grava `estado.md`, `ciclo.md` e `metricas.md` | sim, é o único | nunca |
+| Memória | descartável: um gerente novo continua lendo `estado.md`, e cada ciclo começa com um gerente novo | parte só dos documentos |
 
 Leituras pesadas (diff, build, conferência, análise de referências) vão para subagentes, que devolvem só a conclusão. Assim o contexto do gerente fica leve. Os subagentes são do tipo `general-purpose` e só leem; a única exceção é o que escreve os testes, se você ligar essa opção. Como o kit não define modelo para eles, usam o padrão do app (em geral, o mesmo da sessão que os chamou).
 
@@ -37,11 +39,16 @@ meu-projeto/                ← o "Root": abra o Claude Code sempre aqui
 └── Projeto_Documento/      a documentação. Nunca entra em git nem vai para lugar nenhum
     ├── estado.md           onde o projeto está e qual é o próximo passo
     ├── objetivo.md, referencias.md, arquitetura.md
-    ├── roadmap.md          as etapas e o status de cada uma (o único lugar do status)
-    ├── metricas.md         uma linha por etapa: correções, bloqueios, compactações, custo
-    ├── padroes-observados.md   gerado no fim do projeto
-    ├── etapas/             um arquivo por etapa (plano, execução, fechamento, revisão)
-    ├── decisoes/           uma decisão técnica por arquivo
+    ├── ideias.md           o que pode virar ciclo
+    ├── decisoes/           uma decisão técnica por arquivo, com numeração única no projeto
+    ├── ciclos/
+    │   └── 02-nome/
+    │       ├── ciclo.md    objetivo, critério de pronto, mudanças nos documentos, branch e commits
+    │       ├── roadmap.md  as etapas e correções, com o status de cada uma (o único lugar do status)
+    │       ├── metricas.md uma linha por etapa: correções, bloqueios, compactações, custo
+    │       ├── padroes-observados.md   gerado no fim do ciclo
+    │       ├── etapas/     um arquivo por etapa (plano, execução, fechamento, revisão)
+    │       └── correcoes/  um arquivo por bug antigo corrigido a partir da main
     └── sensivel/           segredo.json, chaves e certificados (o Claude não lê nem grava)
 ```
 
@@ -58,28 +65,56 @@ A ideia é separar o que é **produto** (`Projeto/`, público) do que é **proce
    - **Referências:** opcionais. Outros projetos, pastas ou links analisados com `/buscar-referencia`.
    - **Ambiente e tecnologias:** 2 ou 3 opções com prós e contras por escolha. A decisão é sua.
    - **Testes automatizados:** você escolhe se o projeto terá testes. Se sim, eles são criados a cada etapa, por um subagente (padrão) ou pela própria sessão da etapa.
-   - **Roadmap:** etapas pequenas, cada uma cabendo numa sessão, com critérios de aceite verificáveis.
-2. **`/iniciar-etapa`**: confere se a próxima etapa pode começar e abre a sessão vinculada `etapa-NN`, com contexto limpo e na mesma pasta, para carregar o kit.
+   - **Roadmap do ciclo 1:** etapas pequenas, cada uma cabendo numa sessão, com critérios de aceite verificáveis.
+2. **`/iniciar-etapa`**: confere se a próxima etapa pode começar e abre a sessão vinculada `ciclo-NN-etapa-EE`, com contexto limpo e na mesma pasta, para carregar o kit.
 3. **`/progresso`** (depois de cada etapa): um subagente confere a entrega e o gerente revisa com você. O resultado é um destes:
-   - **Aprovada:** a etapa fica marcada como revisada.
+   - **Aprovada:** a etapa entra na branch do ciclo, e essa branch é enviada ao GitHub.
    - **Correção:** os itens voltam para a sessão da etapa.
    - **Bloqueada ou decisão pendente:** o que falta é resolvido com você e a etapa volta para a sessão dela, com o plano ajustado.
    - **Problema maior:** vira uma etapa nova.
 
    No fim, `metricas.md` e `estado.md` são atualizados.
-4. **`/encerrar-projeto`** (no fim): fecha as métricas e grava `padroes-observados.md`, com o que funcionou, o que travou e o que repetir ou evitar no próximo projeto.
+4. **`/encerrar-ciclo`** (no fim do ciclo): confere o ciclo inteiro, grava `padroes-observados.md` e, com o seu ok, leva o ciclo para a `main`. O projeto fica sem ciclo aberto.
+5. **`/novo-ciclo`** (quando houver trabalho novo, num gerente novo): compara documentos e código, define o objetivo, tira as dúvidas, vê o impacto nos documentos, cria as etapas e abre a branch do ciclo. Daí em diante, volta ao passo 2.
+6. **`/cancelar-ciclo`** (a qualquer momento, esteja o ciclo funcionando ou não): nada entra na `main`, as branches ficam guardadas e você decide o que fazer com o que foi alterado fora do git.
 
-**Na sessão de cada etapa:**
+Um ciclo só começa depois que o anterior fecha. Todo trabalho é um ciclo, simples ou complexo, com a estrutura inteira.
 
-- **`/etapa`**: apresenta a etapa, faz as perguntas e mostra o plano. Executa depois do seu ok, cria os testes (se o projeto tiver) e fecha marcando o status no roadmap, com a evidência de cada critério de aceite.
+**Nas sessões vinculadas:**
+
+- **`/etapa`**: apresenta a etapa, faz as perguntas e mostra o plano. Executa depois do seu ok, cria os testes (se o projeto tiver) e fecha com o commit e o status no roadmap do ciclo, com a evidência de cada critério de aceite.
+- **`/correcao`**: corrige um bug antigo a partir da `main`, numa sessão aberta pelo `/progresso`.
 - **`depurar`** (automática): em caso de bug ou erro, o Claude é obrigado a achar a causa antes de mexer no código.
 
 ```
-você ──► gerente: /iniciar-projeto ──► /iniciar-etapa ──► etapa-01: /etapa ──┐
-               ▲                                                             │
-               └──────────── /progresso ◄──── fechamento ◄───────────────────┘
-                     (aprova → /iniciar-etapa da próxima │ correção → volta para etapa-01)
+você ──► gerente: /iniciar-projeto ou /novo-ciclo ──► /iniciar-etapa ──► ciclo-02-etapa-01: /etapa ──┐
+               ▲                                                                                     │
+               └──────────────────────── /progresso ◄──── fechamento ◄───────────────────────────────┘
+                     (aprova → merge no ciclo e /iniciar-etapa da próxima │ correção → volta para a etapa)
+                     (todas revisadas → /encerrar-ciclo → merge na main → gerente novo → /novo-ciclo)
 ```
+
+### Branches
+
+```
+main ──────────────────────────────────────────────► merge no /encerrar-ciclo
+  └─ ciclo-02 ──────┬───────────────────┬───────────┘
+                    └ ciclo-02-etapa-01 └ ciclo-02-etapa-02
+```
+
+- A sessão da etapa faz o commit no fechamento, na branch dela.
+- O gerente faz o merge na branch do ciclo e o push quando o `/progresso` aprova.
+- A `main` só recebe o merge do ciclo, com o seu ok. A trava de commit recusa commit direto nela.
+
+### Bugs encontrados durante um ciclo
+
+| Situação | Onde corrige | Como chega à `main` |
+|---|---|---|
+| A causa está em código alterado neste ciclo | Na sessão atual, sem parar | No fim do ciclo |
+| A causa é antiga, mas só atrapalha por causa do ciclo | Na branch da etapa atual, com o seu ok | No fim do ciclo |
+| A causa é antiga e atrapalha mesmo sem o ciclo | Numa sessão de correção, a partir da `main`, com o seu ok | Logo depois da correção, e daí segue para a branch do ciclo |
+
+O último caso é a única exceção à regra de a `main` só receber merge no fim do ciclo.
 
 ### Segredos: padrão `segredo.json`
 
@@ -90,7 +125,7 @@ Todas as chaves de API e senhas de banco ficam num único `Projeto_Documento/sen
 | Trava | O que faz |
 |---|---|
 | `hooks/proteger-estrutura.sh` | Nega ao Claude criar documentação ou arquivo sensível em `Projeto/` e criar qualquer coisa solta no Root. |
-| `git-hooks/pre-commit` | Recusa o commit (de qualquer pessoa) que tenha documentação, arquivo sensível ou segredo. |
+| `git-hooks/pre-commit` | Recusa o commit (de qualquer pessoa) que tenha documentação, arquivo sensível ou segredo, e o commit direto na branch principal. |
 | `hooks/bloquear-segredos.sh` | Nega edições que escrevem chaves, tokens ou senhas literais no código. |
 | `hooks/bloquear-comandos.sh` | Bloqueia comandos destrutivos. |
 | `hooks/verificar-ambiente.sh` | Ao abrir a sessão, avisa se a estrutura está fora do padrão ou se falta alguma ferramenta. |
@@ -132,25 +167,26 @@ Também dá para baixar o ZIP pelo GitHub (**Code → Download ZIP**) e apagar o
    ```bash
    git -C Projeto config core.hooksPath ../.claude/git-hooks
    ```
-3. Rode `/iniciar-etapa`. Ele abre a sessão `etapa-01`, onde você responde às perguntas, aprova o plano e acompanha a execução.
+3. Rode `/iniciar-etapa`. Ele abre a sessão `ciclo-01-etapa-01`, onde você responde às perguntas, aprova o plano e acompanha a execução.
 4. Quando a etapa terminar, volte ao gerente e rode `/progresso`.
-5. Repita os passos 3 e 4 até o fim do roadmap e rode `/encerrar-projeto`.
+5. Repita os passos 3 e 4 até o fim do roadmap do ciclo e rode `/encerrar-ciclo`.
 6. Quando a etapa 1 criar o esqueleto do projeto, preencha `.claude/comandos.conf` (build, testes, formatação, execução) para ligar o build e a formatação automáticos.
+7. Para implementar algo novo, depois de qualquer tempo, abra uma sessão nova no Root, rode `/novo-ciclo` e volte ao passo 3.
 
-Se o contexto do gerente ficar pesado, feche e abra outro: ele continua lendo `Projeto_Documento/estado.md`.
+Se o contexto do gerente ficar pesado no meio de um ciclo, feche e abra outro: ele continua lendo `Projeto_Documento/estado.md`.
 
 ## Personalização
 
-- **`.claude/comandos.conf`**: os comandos de build, testes, formatação e execução da sua stack. Os exemplos são de .NET.
+- **`.claude/comandos.conf`**: a branch principal e os comandos de build, testes, formatação e execução da sua stack. Os exemplos são de .NET.
 - **`.claude/modelos/convencoes/`**: modelos de convenção de código (`dotnet.md`, `banco-relacional.md`). No `/iniciar-projeto`, o Claude parte deles para criar `.claude/rules/<stack>.md`.
-- **`.claude/modelos/documentos.md`**: os modelos de estado, objetivo, arquitetura, roadmap, etapa, decisão e métricas.
+- **`.claude/modelos/documentos.md`**: os modelos de estado, objetivo, arquitetura, ideias, ciclo, roadmap, etapa, correção, decisão e métricas.
 - **`.claude/hooks/padroes-segredos.txt`**: as expressões regulares de segredo usadas pelo hook e pelo pre-commit.
 - **Modelo das sessões de etapa**: definido em `.claude/skills/iniciar-etapa/SKILL.md`.
 
 ## Regras que o Claude segue
 
-- Não implementa nada fora da etapa em andamento. Uma ideia nova vai para "Fora do escopo e ideias" do roadmap.
+- Não implementa nada fora da etapa em andamento. Uma ideia nova vai para `ideias.md`.
 - Não diz que algo está pronto sem rodar o comando que prova e citar a evidência.
 - Testes automatizados seguem a sua escolha no `/iniciar-projeto`: com "não", o Claude não os cria.
-- Não faz commit nem push sem você pedir.
+- Commit, merge e push só nos pontos fixos do fluxo. O merge na `main` sempre pede o seu ok, e fora desses pontos não faz nada sem você pedir.
 - Entre duas interpretações, pergunta.

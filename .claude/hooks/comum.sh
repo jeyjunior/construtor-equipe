@@ -20,7 +20,7 @@ RE_DOC='(^|/)(docs|documentacao)/|\.(md|markdown|mdx|adoc|rst)$'
 # Única exceção: o README.md da raiz de Projeto/ (a página do repositório no GitHub).
 RE_DOC_PERMITIDO='^readme\.md$'
 # Sensível: .env com valores, chaves, certificados, cofres de chave, segredos locais.
-RE_SENSIVEL='(^|/)sensivel/|(^|/)\.env$|(^|/)\.env\.|\.(pem|pfx|p12|key|cer|crt|jks|keystore)$|(^|/)id_(rsa|ed25519|ecdsa|dsa)|(^|/)secrets\.json$|(^|/)segredo\.json$'
+RE_SENSIVEL='(^|/)sensivel/|(^|/)\.env$|(^|/)\.env\.|\.(pem|pfx|p12|key|cer|crt|jks|keystore)$|(^|/)id_(rsa|ed25519|ecdsa|dsa)|(^|/)secrets\.json$|(^|/)segredos?\.json$'
 # Exceção: o .env.example, que só tem nomes de variáveis e valores de exemplo.
 RE_SENSIVEL_PERMITIDO='(^|/)\.env\.example$'
 

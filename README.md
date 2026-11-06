@@ -6,6 +6,8 @@ Uma sessão gerente planeja o trabalho com você, abre cada etapa numa sessão v
 
 O projeto avança por **ciclos** e nunca é encerrado. Cada novo recurso, melhoria ou correção é um ciclo, com objetivo, etapas e branch próprios, e só entra na `main` quando o ciclo fecha.
 
+Já tem um projeto, com ou sem kit? Veja [Trazer um projeto que já existe](#trazer-um-projeto-que-já-existe).
+
 > Projeto pequeno, ou prefere tudo numa sessão só? Veja o **[Construtor Solo](https://github.com/jeyjunior/construtor-solo)**.
 
 > **Experimental:** esta edição ainda não foi validada de ponta a ponta num projeto real. Feedback e issues são bem-vindos.
@@ -25,7 +27,7 @@ Numa sessão única, a conversa cresce a cada etapa, o contexto é compactado e 
 | Grava `estado.md`, `ciclo.md` e `metricas.md` | sim, é o único | nunca |
 | Memória | descartável: um gerente novo continua lendo `estado.md`, e cada ciclo começa com um gerente novo | parte só dos documentos |
 
-Leituras pesadas (diff, build, conferência, análise de referências) vão para subagentes, que devolvem só a conclusão. Assim o contexto do gerente fica leve. Os subagentes são do tipo `general-purpose` e só leem; a única exceção é o que escreve os testes, se você ligar essa opção. Como o kit não define modelo para eles, usam o padrão do app (em geral, o mesmo da sessão que os chamou).
+Leituras pesadas (diff, build, conferência, análise de referências) vão para subagentes, que devolvem só a conclusão. Assim o contexto do gerente fica leve. Os subagentes são do tipo `general-purpose` e só leem; as exceções são o que escreve os testes, se você ligar essa opção, e os que gravam análises e rascunhos em `Projeto_Documento/` no `/converter`. Como o kit não define modelo para eles, usam o padrão do app (em geral, o mesmo da sessão que os chamou).
 
 ## Como funciona
 
@@ -49,7 +51,9 @@ meu-projeto/                ← o "Root": abra o Claude Code sempre aqui
     │       ├── padroes-observados.md   gerado no fim do ciclo
     │       ├── etapas/     um arquivo por etapa (plano, execução, fechamento, revisão)
     │       └── correcoes/  um arquivo por bug antigo corrigido a partir da main
+    ├── origem/             só depois de uma conversão: documentos e regras antigas, sem alteração
     └── sensivel/           segredo.json, chaves e certificados (o Claude não lê nem grava)
+conversor/                  entrada do /converter. Nunca vai para o GitHub.
 ```
 
 A ideia é separar o que é **produto** (`Projeto/`, público) do que é **processo** (`Projeto_Documento/`, privado). Os documentos são a fonte da verdade entre as sessões: o que não está escrito lá não existe para a próxima sessão.
@@ -128,7 +132,8 @@ Todas as chaves de API e senhas de banco ficam num único `Projeto_Documento/sen
 | `git-hooks/pre-commit` | Recusa o commit (de qualquer pessoa) que tenha documentação, arquivo sensível ou segredo, e o commit direto na branch principal. |
 | `hooks/bloquear-segredos.sh` | Nega edições que escrevem chaves, tokens ou senhas literais no código. |
 | `hooks/bloquear-comandos.sh` | Bloqueia comandos destrutivos. |
-| `hooks/verificar-ambiente.sh` | Ao abrir a sessão, avisa se a estrutura está fora do padrão ou se falta alguma ferramenta. |
+| `hooks/verificar-ambiente.sh` | Ao abrir a sessão, avisa se a estrutura está fora do padrão, se falta alguma ferramenta ou se há um projeto em `conversor/`. |
+| `conversor/.gitignore` | Impede que o projeto colocado no conversor vá para o GitHub. |
 | `hooks/formatar.sh` e `verificar-build.sh` | Formatam o arquivo depois de cada edição e compilam ao fim de cada resposta, se configurados. Só compila a sessão que editou código: o gerente nunca compila. |
 | `settings.json` | Nega leitura de `sensivel/`, `.env` e `segredo.json` e pede confirmação para `git push`, `git init` e `reset --hard`. |
 | `Projeto/.gitignore` | Ignora `.md` (menos o `README.md`), `docs/`, `.env` e chaves. |
@@ -158,9 +163,31 @@ Também dá para baixar o ZIP pelo GitHub (**Code → Download ZIP**) e apagar o
 
 > Por que apagar o `.git` e o `README.md`? O kit trata o Root como área protegida: nada solto e nenhum git ali. Se ficarem, o `verificar-ambiente.sh` avisa ao abrir a sessão.
 
-**Tem um projeto existente?** Coloque o código (incluindo o `.git` dele) dentro de `Projeto/`. O `/iniciar-projeto` faz o mapeamento e propõe mover para `Projeto_Documento/` o que for documentação ou sensível.
+## Trazer um projeto que já existe
+
+Serve para qualquer projeto com um único repositório, ou sem git: com uma versão antiga deste kit, sem kit ou sem documentação. Também é assim que você atualiza um projeto quando o kit evoluir: uma cópia nova do kit e a mesma conversão.
+
+1. Faça uma cópia nova do kit.
+2. Copie a pasta inteira do projeto, com o `.git`, para `conversor/`. O original fica intacto. Um projeto por vez, numa pasta própria.
+3. Abra uma sessão no Root. O gerente vê o material e pergunta se pode analisar. Com o seu sim, roda o `/converter`:
+
+| Passo | Quem faz | O que acontece |
+|---|---|---|
+| 1. Preparar | script | Para se houver código sem commit ou sem push. Renomeia as instruções antigas para não serem carregadas. |
+| 2. Inventário | subagente | Mostra o que há e o que será copiado. Você escolhe a branch principal. |
+| 3. Trazer e guardar | script | O código e o `.git` vão para `Projeto/`. Documentos e regras antigas vão para `Projeto_Documento/origem/`, sem alteração. Chaves não vêm. |
+| 4. Entender | subagentes | Leem o código e os documentos que existirem. |
+| 5. Documentação nova | subagente e você | Objetivo, arquitetura, comandos e pendências, com a sua aprovação. |
+| 6. Regras novas | subagente e você | Nenhuma decisão antiga vale até você aprovar, uma por uma. |
+| 7. Fora da pasta | subagente e você | Lista servidor, banco e variáveis. Você copia as chaves para `sensivel/`. |
+| 8. Conferir | subagente novo | Confere commit, build e amostras dos documentos contra o código. |
+| 9. Fechar | gerente | Com o seu ok, faz o merge do ciclo 1. O projeto fica sem ciclo aberto, pronto para o `/novo-ciclo`. |
+
+Limites: um repositório por conversão; submódulos não são copiados; nada é alterado no servidor nem no banco. Depois, guarde a pasta original e não trabalhe mais nela, porque as duas apontam para o mesmo GitHub.
 
 ## Uso
+
+Estes passos são para um projeto novo. Se você converteu um projeto, ele já está sem ciclo aberto: comece pelo passo 7.
 
 1. No app Claude desktop, abra uma sessão Code na pasta `meu-projeto/` (o Root). Essa é o gerente. Use o modelo Opus: o app só deixa a sessão de etapa usar um modelo igual ou mais barato que o do gerente.
 2. Rode `/iniciar-projeto` e responda às fases. Ele pergunta se pode criar o git em `Projeto/` e ligar a trava de commit:

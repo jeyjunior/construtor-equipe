@@ -50,7 +50,7 @@ for item in "$RAIZ"/* "$RAIZ"/.[!.]* "$RAIZ"/..?*; do
   [ -e "$item" ] || continue
   nome=$(basename "$item")
   case "$nome" in
-    "$PASTA_PROJETO"|"$PASTA_DOCUMENTO"|.claude|CLAUDE.md|CLAUDE.local.md) ;;
+    "$PASTA_PROJETO"|"$PASTA_DOCUMENTO"|.claude|CLAUDE.md|CLAUDE.local.md|conversor) ;;
     .git) ;;   # já avisado acima como GRAVE
     .vs|.vscode|.idea|desktop.ini|Desktop.ini|Thumbs.db|.DS_Store) ;;
     *) FORA+=("$nome") ;;
@@ -58,6 +58,15 @@ for item in "$RAIZ"/* "$RAIZ"/.[!.]* "$RAIZ"/..?*; do
 done
 if [ ${#FORA[@]} -gt 0 ]; then
   AVISOS+=("Fora da estrutura no Root: ${FORA[*]}. No Root só ficam $PASTA_PROJETO/ (código), $PASTA_DOCUMENTO/ (documentação) e o kit (CLAUDE.md, .claude/). Mova código para $PASTA_PROJETO/ e documentação para $PASTA_DOCUMENTO/.")
+fi
+
+# Lista só o primeiro nível: ler dentro de conversor/ carregaria as regras do projeto antigo.
+if [ -n "$(ls -A "$RAIZ/conversor" 2>/dev/null | grep -vx '.gitignore')" ]; then
+  if [ -f "$RAIZ/$PASTA_DOCUMENTO/estado.md" ]; then
+    AVISOS+=("Há material em conversor/, mas este projeto já foi iniciado. Se a conversão terminou, o usuário pode esvaziar a pasta; para converter outro projeto, use uma cópia nova do kit.")
+  else
+    AVISOS+=("Há um projeto em conversor/. Se esta é a sessão principal, a primeira coisa a fazer é perguntar: quer analisar e trazer esse projeto para cá? Com um sim, rode a skill converter. Sessão de etapa ignora este aviso.")
+  fi
 fi
 
 [ ${#AVISOS[@]} -gt 0 ] || exit 0

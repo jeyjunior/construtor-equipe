@@ -21,5 +21,6 @@ id_rsa*
 id_ed25519*
 secrets.json
 segredo.json
+segredos.json
 
 # Padrões da stack: o /iniciar-projeto propõe na Fase 3 (ex.: bin/ e obj/ em .NET).

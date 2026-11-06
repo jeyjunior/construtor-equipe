@@ -89,6 +89,25 @@ Status: rascunho | aprovado (AAAA-MM-DD) | encerrado (AAAA-MM-DD) | cancelado (A
 <só se cancelado: motivo e o que o usuário decidiu sobre o que ficou fora do git>
 ```
 
+No ciclo criado pelo `/converter`, troque "Respostas" e "Mudanças nos documentos" por:
+
+```markdown
+## Conversão
+- Origem: <pasta dentro de conversor/>, <remoto, ou "sem git">, commit <hash, ou "nenhum">
+- [ ] 1. Preparar
+- [ ] 2. Inventário
+- [ ] 3. Trazer o código e guardar o antigo
+- [ ] 4. Entender o projeto
+- [ ] 5. Documentação nova
+- [ ] 6. Regras novas (<N> de <total> revisadas)
+- [ ] 7. Fora da pasta
+- [ ] 8. Conferir
+- [ ] 9. Fechar
+
+## Respostas
+- P: ... — R: ...
+```
+
 ## Projeto_Documento/ciclos/NN-nome/metricas.md
 
 Uma linha por etapa, atualizada a cada `/progresso` dela. Só o gerente grava.

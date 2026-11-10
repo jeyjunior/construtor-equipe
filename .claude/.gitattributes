@@ -1,0 +1,5 @@
+# Hooks e scripts do kit rodam em bash: precisam de LF mesmo quando o repositório é clonado no Windows.
+*.sh text eol=lf
+git-hooks/* text eol=lf
+comandos.conf text eol=lf
+hooks/padroes-segredos.txt text eol=lf

@@ -1,0 +1,4 @@
+* text=auto
+
+# Scripts precisam de quebra de linha LF, inclusive no Windows.
+*.sh text eol=lf

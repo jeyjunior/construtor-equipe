@@ -1,0 +1,27 @@
+# Este repositório leva só código. O quadro e os documentos ficam em ../privado, fora do git.
+# O único .md permitido é o README.md da raiz.
+*.md
+*.markdown
+!/README.md
+docs/
+
+# Segredos e chaves ficam em ../privado/parametros, nunca aqui.
+.env
+.env.*
+!.env.example
+*.pem
+*.pfx
+*.p12
+*.key
+*.cer
+*.crt
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+secrets.json
+parametro.json
+segredo.json
+segredos.json
+
+# Padrões da stack: o /iniciar propõe quando a tecnologia é decidida (ex.: bin/ e obj/ em .NET).

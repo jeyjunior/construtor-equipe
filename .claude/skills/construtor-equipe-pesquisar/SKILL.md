@@ -1,6 +1,6 @@
 ---
-name: pesquisar
-description: Pesquisa por subagentes, com fonte e data em cada afirmação, para responder o que não se sabe (é possível, quanto custa, quais os limites, que tecnologia serve) ou para analisar outro projeto como referência. Grava em privado/docs/pesquisas/. Usada no briefing do /iniciar, numa etapa do tipo pesquisa ou sozinha.
+name: construtor-equipe-pesquisar
+description: Pesquisa por subagentes, com fonte e data em cada afirmação, para responder o que não se sabe (é possível, quanto custa, quais os limites, que tecnologia serve) ou para analisar outro projeto como referência. Grava em privado/docs/pesquisas/. Usada no briefing do /construtor-equipe-iniciar, numa etapa do tipo pesquisa ou sozinha.
 disable-model-invocation: true
 argument-hint: "[pergunta, caminho ou link, opcional]"
 ---

@@ -4,7 +4,7 @@ O quadro e os documentos ficam em `privado/`, fora de qualquer git: não vão pa
 
 ## .claude/rules/projeto.md
 
-Criado pelo `/iniciar` (ou pela conversão). É carregado em toda sessão. Fica no kit, não em `projeto/`.
+Criado pelo `/construtor-equipe-iniciar` (ou pela conversão). É carregado em toda sessão. Fica no kit, não em `projeto/`.
 
 ```markdown
 # Projeto
@@ -28,7 +28,7 @@ O estado do projeto. Só o gerente edita (e a sessão de ciclo curto, depois do 
 ## Situação
 - Ciclo: N — <objetivo em uma linha> — `privado/docs/ciclos/NN-nome/` (ou "nenhum aberto")
 - Sessão aberta: ciclo-NN-etapa-EE | curto-NNN | nenhuma
-- Próximo passo: <ex.: /progresso da etapa 2 | /iniciar-etapa | /encerrar-ciclo | /iniciar num gerente novo>
+- Próximo passo: <ex.: /construtor-equipe-progresso da etapa 2 | /construtor-equipe-iniciar-etapa | /construtor-equipe-encerrar-ciclo | /construtor-equipe-iniciar num gerente novo>
 - Decisões pendentes: <decisão — bloqueia a etapa E> (ou "nenhuma")
 
 ## Backlog
@@ -127,7 +127,7 @@ Padrão `parametro.json` (`.claude/rules/parametros.md`).
 
 ## privado/docs/pesquisas/NNN-tema.md
 
-Gravado pelo `/pesquisar` ou por uma etapa de `pesquisa`. Numeração única no projeto. Nunca contém segredos.
+Gravado pelo `/construtor-equipe-pesquisar` ou por uma etapa de `pesquisa`. Numeração única no projeto. Nunca contém segredos.
 
 ```markdown
 # NNN — <tema>
@@ -179,7 +179,7 @@ Data: AAAA-MM-DD · Ciclo: N · Status: aceita | substituída por NNN
 
 ## privado/docs/ciclos/NN-nome/ciclo.md
 
-Criado pelo `/iniciar`. Só o gerente edita.
+Criado pelo `/construtor-equipe-iniciar`. Só o gerente edita.
 
 ```markdown
 # Ciclo N — <nome>
@@ -213,10 +213,10 @@ Status: rascunho | aprovado (AAAA-MM-DD) | encerrado (AAAA-MM-DD) | cancelado (A
 ## Git
 - Branch: ciclo-NN
 - Commit inicial: <hash>
-- Commit final: <hash, no /encerrar-ciclo>
+- Commit final: <hash, no /construtor-equipe-encerrar-ciclo>
 
 ## Lições
-<no /encerrar-ciclo: o que se repetiu, o que funcionou, o que atrapalhou; cada item com o que fazer a respeito (regra, convenção, nada)>
+<no /construtor-equipe-encerrar-ciclo: o que se repetiu, o que funcionou, o que atrapalhou; cada item com o que fazer a respeito (regra, convenção, nada)>
 
 ## Cancelamento
 <só se cancelado: motivo e o que o usuário decidiu sobre o que ficou fora do git>
@@ -277,5 +277,5 @@ Status: planejada | em andamento | concluída | bloqueada | decisão pendente | 
 - Se decisão pendente: <a decisão e as opções>
 
 ## Revisão
-<do gerente, no /progresso: veredito, conversa com o usuário, correções pendentes>
+<do gerente, no /construtor-equipe-progresso: veredito, conversa com o usuário, correções pendentes>
 ```

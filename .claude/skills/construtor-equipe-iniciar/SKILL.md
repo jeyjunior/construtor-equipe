@@ -1,5 +1,5 @@
 ---
-name: iniciar
+name: construtor-equipe-iniciar
 description: Entrada única do gerente. Descobre onde o projeto está (conversão, projeto novo, ciclo em andamento, sem ciclo aberto) e segue pelo caminho certo. Para projeto ou ciclo novo, conduz o briefing, a pesquisa, as decisões necessárias e as etapas, e abre o ciclo. Não escreve código.
 disable-model-invocation: true
 argument-hint: "[o que você quer fazer, opcional]"
@@ -21,18 +21,18 @@ Esta sessão é o **gerente** (veja "Papéis" no `CLAUDE.md`). Você descobre on
 
 Siga o primeiro caso que valer:
 
-1. **Há um projeto em `conversor/`** (liste só o primeiro nível) **e não existe `privado/QUADRO.md`:** pergunte se o usuário quer trazer esse projeto. Com o sim, siga `.claude/skills/converter/SKILL.md` e não continue aqui.
+1. **Há um projeto em `conversor/`** (liste só o primeiro nível) **e não existe `privado/QUADRO.md`:** pergunte se o usuário quer trazer esse projeto. Com o sim, siga `.claude/skills/construtor-equipe-converter/SKILL.md` e não continue aqui.
 2. **Não existe `privado/QUADRO.md`:** projeto novo. Crie as pastas que faltarem (`projeto/`, `privado/docs/`, `privado/parametros/`) e vá ao passo 2. Se já houver `privado/docs/objetivo.md` em `rascunho`, retome de onde parou e diga isso.
 3. **O quadro mostra um ciclo aberto:**
    - `<ciclo>/ciclo.md` em `rascunho`: retome o briefing do primeiro passo ainda não registrado e diga de onde está retomando;
-   - senão: mostre a "Situação" do quadro e indique o próximo passo (`/iniciar-etapa`, `/progresso` ou `/encerrar-ciclo`). Não abra outro ciclo. Pedido novo vai para o Backlog.
+   - senão: mostre a "Situação" do quadro e indique o próximo passo (`/construtor-equipe-iniciar-etapa`, `/construtor-equipe-progresso` ou `/construtor-equipe-encerrar-ciclo`). Não abra outro ciclo. Pedido novo vai para o Backlog.
 4. **O quadro mostra "nenhum aberto":**
    1. Se esta conversa já fez outro trabalho antes (por exemplo, encerrou um ciclo), peça ao usuário uma sessão nova no Root: cada ciclo tem o seu gerente.
    2. Rode `git -C projeto status`. Algo não commitado: mostre e pare.
    3. Rode `git -C projeto log --first-parent --oneline -15 <principal>`. Se houver commits que não vieram do kit (fora de `Merge:` e `Docs:`), dispare um subagente, só leitura, para comparar `privado/docs/objetivo.md` e `privado/docs/arquitetura.md` com o código e devolver em até 10 linhas o que os documentos dizem e o código não faz, e o contrário. Corrija os documentos com o ok.
    4. Mostre o Backlog e as "Lições" do `ciclo.md` do último ciclo. Pergunte o que será feito (`$ARGUMENTS` pode já trazer).
    5. Classifique com o usuário:
-      - **Ciclo curto:** cabe numa sessão, não pede decisão de projeto nem pesquisa e não altera nada fora do git. Siga `.claude/skills/ciclo-curto/SKILL.md` nesta sessão.
+      - **Ciclo curto:** cabe numa sessão, não pede decisão de projeto nem pesquisa e não altera nada fora do git. Siga `.claude/skills/construtor-equipe-ciclo-curto/SKILL.md` nesta sessão.
       - **Ciclo:** todo o resto. Vá ao passo 2.
 
 ## 2. Briefing
@@ -53,7 +53,7 @@ Feche o passo com a lista **"O que não sabemos"**: cada incógnita que muda o d
 
 ## 3. Pesquisa
 
-Para as incógnitas da lista, siga `.claude/skills/pesquisar/SKILL.md` (subagentes em paralelo, com fonte e data). O resultado fica em `privado/docs/pesquisas/`. Sem incógnitas, diga isso e siga.
+Para as incógnitas da lista, siga `.claude/skills/construtor-equipe-pesquisar/SKILL.md` (subagentes em paralelo, com fonte e data). O resultado fica em `privado/docs/pesquisas/`. Sem incógnitas, diga isso e siga.
 
 Mostre, para cada incógnita: a resposta, as opções com custo e limites, a recomendação e **o que a pesquisa não confirma**.
 
@@ -74,7 +74,7 @@ Com o que foi decidido, e com o ok:
 
 ## 5. Etapas
 
-Proponha as etapas do ciclo, cada uma com um **tipo** (`pesquisa`, `prova`, `ambiente`, `código`, `deploy`, `resultados`; veja a tabela em `.claude/skills/etapa/SKILL.md`):
+Proponha as etapas do ciclo, cada uma com um **tipo** (`pesquisa`, `prova`, `ambiente`, `código`, `deploy`, `resultados`; veja a tabela em `.claude/skills/construtor-equipe-etapa/SKILL.md`):
 
 - só as etapas de que este ciclo precisa. Uma correção pode ter uma única etapa de `código`;
 - cada etapa cabe numa sessão, sem compactar o contexto, e tem entrega verificável;
@@ -107,6 +107,6 @@ Ajuste até o usuário aprovar e grave em "Etapas" do `ciclo.md`.
    ```bash
    git -C projeto switch -c ciclo-NN
    ```
-3. Atualize o quadro (em projeto novo, crie `privado/QUADRO.md` no modelo): cada etapa ganha um número `#NNN` novo e entra em "A fazer"; o item do Backlog que originou o ciclo sai de lá e é citado no "Objetivo" do `ciclo.md`; preencha a "Situação" (próximo passo: `/iniciar-etapa`).
+3. Atualize o quadro (em projeto novo, crie `privado/QUADRO.md` no modelo): cada etapa ganha um número `#NNN` novo e entra em "A fazer"; o item do Backlog que originou o ciclo sai de lá e é citado no "Objetivo" do `ciclo.md`; preencha a "Situação" (próximo passo: `/construtor-equipe-iniciar-etapa`).
 4. Em `ciclo.md`, grave a tabela de etapas com os números, a branch, o commit inicial (`git -C projeto rev-parse HEAD`) e `Status: aprovado (AAAA-MM-DD)`.
-5. Encerre indicando `/iniciar-etapa`. Não comece a etapa.
+5. Encerre indicando `/construtor-equipe-iniciar-etapa`. Não comece a etapa.

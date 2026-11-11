@@ -1,5 +1,5 @@
 ---
-name: cancelar-ciclo
+name: construtor-equipe-cancelar-ciclo
 description: Roda no gerente, a qualquer momento, esteja o ciclo funcionando ou não. Cancela o ciclo atual sem levar código para a principal, guarda as branches, mostra o que ficou fora do git, marca as decisões do ciclo que deixam de valer e deixa o projeto sem ciclo aberto.
 disable-model-invocation: true
 argument-hint: "[motivo, opcional]"
@@ -39,8 +39,8 @@ Correção de ciclo curto que já entrou na principal durante o ciclo continua v
 
 Liste as decisões gravadas neste ciclo em `privado/docs/decisoes/` e, se o ciclo mudou `privado/docs/objetivo.md` ou `privado/docs/arquitetura.md`, o que mudou. Pergunte ao usuário, item por item, o que continua valendo. Em cada decisão que não vale mais, grave no topo `Cancelada com o ciclo NN (AAAA-MM-DD)`; no objetivo e na arquitetura, desfaça com o ok dele o que só existia por causa do ciclo.
 
-No quadro: as etapas do ciclo saem de "A fazer" e "Fazendo"; "Situação" com ciclo "nenhum aberto" e próximo passo "`/iniciar` num gerente novo"; se o usuário quiser retomar a ideia um dia, um item no Backlog dizendo que o ciclo N foi cancelado e que o trabalho está na branch `ciclo-NN`.
+No quadro: as etapas do ciclo saem de "A fazer" e "Fazendo"; "Situação" com ciclo "nenhum aberto" e próximo passo "`/construtor-equipe-iniciar` num gerente novo"; se o usuário quiser retomar a ideia um dia, um item no Backlog dizendo que o ciclo N foi cancelado e que o trabalho está na branch `ciclo-NN`.
 
 ## 5. Fechar
 
-Diga ao usuário para fechar esta sessão. O número deste ciclo não é reutilizado. Para retomar a ideia, ele abre um ciclo novo com `/iniciar`.
+Diga ao usuário para fechar esta sessão. O número deste ciclo não é reutilizado. Para retomar a ideia, ele abre um ciclo novo com `/construtor-equipe-iniciar`.

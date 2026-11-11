@@ -1,5 +1,5 @@
 ---
-name: depurar
+name: construtor-equipe-depurar
 description: Use ao encontrar bug, erro, build quebrado, exceção ou comportamento inesperado, ANTES de propor ou aplicar qualquer correção. Gatilhos - "não está funcionando", "deu erro", "quebrou", "por que isso falha", "bug", "não era pra dar isso", erro de build ou de execução. Exige achar a causa antes de mexer no código.
 ---
 
@@ -30,7 +30,7 @@ Com a causa confirmada e antes de corrigir, veja se o trecho da causa foi altera
 |---|---|---|
 | **Caso 1:** a causa está em código alterado neste ciclo, mesmo que numa etapa anterior | Corrija aqui, sem parar, e anote em "Notas da execução" | No fim do ciclo |
 | **Caso 2:** a causa é antiga, mas sem este ciclo o bug não causa problema real | Pare, mostre a causa e a evidência e espere o ok do usuário. Pequena: corrija na branch da etapa e anote em "Notas da execução". Grande (muda entregáveis ou não cabe na etapa): feche com `decisão pendente` | No fim do ciclo |
-| **Caso 3:** a causa é antiga e o bug causa problema real mesmo sem este ciclo | Pare, mostre a causa e a evidência. O usuário escolhe: corrigir agora (feche a etapa como `bloqueada`, no passo 5 do `/etapa`, sem corrigir aqui) ou anotar em "Para o backlog" do arquivo da etapa e seguir | Logo depois da correção, numa sessão de ciclo curto aberta pelo `/progresso` |
+| **Caso 3:** a causa é antiga e o bug causa problema real mesmo sem este ciclo | Pare, mostre a causa e a evidência. O usuário escolhe: corrigir agora (feche a etapa como `bloqueada`, no passo 5 do `/construtor-equipe-etapa`, sem corrigir aqui) ou anotar em "Para o backlog" do arquivo da etapa e seguir | Logo depois da correção, numa sessão de ciclo curto aberta pelo `/construtor-equipe-progresso` |
 
 Nos casos 2 e 3, o usuário confirma a classificação: você mostra a evidência, ele decide.
 

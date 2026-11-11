@@ -5,7 +5,7 @@ paths:
 
 <!--
 MODELO para projetos com banco relacional (PostgreSQL, SQL Server, MySQL), trazido do vault.
-Quando a tecnologia for decidida no /iniciar, copie para .claude/rules/banco.md, remova este comentário e
+Quando a tecnologia for decidida no /construtor-equipe-iniciar, copie para .claude/rules/banco.md, remova este comentário e
 ajuste `paths:` para onde o SQL vive no projeto (ex.: pasta de migrations, ou os arquivos
 de repositório quando o SQL fica dentro do código, como em Dapper).
 -->

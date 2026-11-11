@@ -2,7 +2,7 @@
 
 Kit para o [Claude Code](https://claude.com/claude-code) que conduz um projeto de software com **um gerente e uma sessão separada para cada etapa**, em volta de **um quadro** que diz o que há para fazer, o que está sendo feito, o que foi feito e o que já foi homologado.
 
-Você abre uma sessão, roda `/iniciar` e ela descobre onde o projeto está. Se for trabalho novo, o gerente faz um briefing curto, manda pesquisar o que ninguém sabe, decide com você só o necessário, divide o trabalho em etapas e abre cada uma numa sessão própria, com contexto limpo. Se for algo pequeno, resolve na mesma sessão, sem ciclo.
+Você abre uma sessão, roda `/construtor-equipe-iniciar` e ela descobre onde o projeto está. Se for trabalho novo, o gerente faz um briefing curto, manda pesquisar o que ninguém sabe, decide com você só o necessário, divide o trabalho em etapas e abre cada uma numa sessão própria, com contexto limpo. Se for algo pequeno, resolve na mesma sessão, sem ciclo.
 
 > **Experimental:** esta versão ainda não foi usada de ponta a ponta num projeto real. As travas e o conversor têm autoteste; o fluxo das skills, não.
 
@@ -50,17 +50,17 @@ Só o gerente edita o quadro. As versões antigas de "Homologado" vão para `pri
 
 **Ciclo** — uma implementação com começo, meio e fim, e um gerente só dela:
 
-1. **`/iniciar`**: briefing curto (o que, para quem, limite de custo, o que você já tem, o que fica de fora, o que entra: testes, deploy, resultados). Fecha com a lista do que não se sabe.
+1. **`/construtor-equipe-iniciar`**: briefing curto (o que, para quem, limite de custo, o que você já tem, o que fica de fora, o que entra: testes, deploy, resultados). Fecha com a lista do que não se sabe.
 2. **Pesquisa**: subagentes respondem essa lista com fonte e data. O que a pesquisa não confirma vira etapa de `prova`.
 3. **Decisões**: só o que a primeira etapa precisa. O resto fica anotado na etapa que vai precisar.
 4. **Etapas**: só as necessárias, cada uma com um tipo.
-5. **`/iniciar-etapa`**: abre a etapa numa sessão vinculada, com contexto limpo. Lá, o `/etapa` faz perguntas, mostra o plano, executa e fecha com evidência.
-6. **`/progresso`**: um subagente confere a entrega e você decide: aprovar, corrigir ou resolver uma pendência. Depois de pesquisa, prova ou resultados, o gerente pergunta se o plano muda.
-7. **`/encerrar-ciclo`**: confere o ciclo, registra as lições, atualiza a arquitetura e o README do projeto, leva para a principal com o seu ok e pergunta pela homologação. A sessão do gerente termina aqui.
+5. **`/construtor-equipe-iniciar-etapa`**: abre a etapa numa sessão vinculada, com contexto limpo. Lá, o `/construtor-equipe-etapa` faz perguntas, mostra o plano, executa e fecha com evidência.
+6. **`/construtor-equipe-progresso`**: um subagente confere a entrega e você decide: aprovar, corrigir ou resolver uma pendência. Depois de pesquisa, prova ou resultados, o gerente pergunta se o plano muda.
+7. **`/construtor-equipe-encerrar-ciclo`**: confere o ciclo, registra as lições, atualiza a arquitetura e o README do projeto, leva para a principal com o seu ok e pergunta pela homologação. A sessão do gerente termina aqui.
 
-**Ciclo curto** — algo que cabe numa sessão e não pede decisão de projeto: `/ciclo-curto` (ou `/iniciar`, que oferece esse caminho). Faz, prova, atualiza os documentos que a mudança afeta, leva para a principal com o seu ok e registra direto em "Feito".
+**Ciclo curto** — algo que cabe numa sessão e não pede decisão de projeto: `/construtor-equipe-ciclo-curto` (ou `/construtor-equipe-iniciar`, que oferece esse caminho). Faz, prova, atualiza os documentos que a mudança afeta, leva para a principal com o seu ok e registra direto em "Feito".
 
-**Consulta** — não é um caminho de trabalho: `/consultar`, numa sessão à parte, responde sobre a situação, o que foi feito e por quê, ou conversa sobre ideias, sem alterar nada e sem ocupar o gerente. Funciona com ciclo aberto. O que surgir dali você leva ao gerente.
+**Consulta** — não é um caminho de trabalho: `/construtor-equipe-consultar`, numa sessão à parte, responde sobre a situação, o que foi feito e por quê, ou conversa sobre ideias, sem alterar nada e sem ocupar o gerente. Funciona com ciclo aberto. O que surgir dali você leva ao gerente.
 
 ### Tipos de etapa
 
@@ -76,7 +76,7 @@ Só o gerente edita o quadro. As versões antigas de "Homologado" vão para `pri
 ### Papéis e branches
 
 ```
-main ────────────────┬───────────────────────────────► merge no /encerrar-ciclo
+main ────────────────┬───────────────────────────────► merge no /construtor-equipe-encerrar-ciclo
   │                  └ curto-014 ──┘
   └─ ciclo-02 ──────┬───────────────────┬───────────┘
                     └ ciclo-02-etapa-01 └ ciclo-02-etapa-02
@@ -123,11 +123,11 @@ O kit é uma **pasta modelo**: copie para um projeto novo e apague este `README.
 ## Uso
 
 1. No app Claude desktop, abra uma sessão Code no Root. Essa é o gerente.
-2. Rode `/iniciar` e responda ao briefing. Ele pergunta antes de criar o git em `projeto/` e de ligar a trava de commit.
-3. Rode `/iniciar-etapa`. Na sessão que abrir, responda às perguntas e aprove o plano.
-4. Quando a etapa terminar, volte ao gerente e rode `/progresso`.
-5. Repita 3 e 4 até o fim das etapas e rode `/encerrar-ciclo`.
-6. Para o próximo trabalho, abra uma sessão nova no Root e rode `/iniciar` de novo.
+2. Rode `/construtor-equipe-iniciar` e responda ao briefing. Ele pergunta antes de criar o git em `projeto/` e de ligar a trava de commit.
+3. Rode `/construtor-equipe-iniciar-etapa`. Na sessão que abrir, responda às perguntas e aprove o plano.
+4. Quando a etapa terminar, volte ao gerente e rode `/construtor-equipe-progresso`.
+5. Repita 3 e 4 até o fim das etapas e rode `/construtor-equipe-encerrar-ciclo`.
+6. Para o próximo trabalho, abra uma sessão nova no Root e rode `/construtor-equipe-iniciar` de novo.
 
 Se o contexto do gerente ficar pesado no meio de um ciclo, feche e abra outro: ele continua pelo quadro.
 
@@ -137,7 +137,7 @@ Serve para projeto sem kit, sem documentação ou sem git.
 
 1. Faça uma cópia nova do kit.
 2. Copie a pasta inteira do projeto, com o `.git`, para `conversor/`. O original fica intacto. Um projeto por vez, numa pasta própria.
-3. Abra uma sessão no Root e rode `/iniciar`. O gerente vê o material e pergunta se pode trazer.
+3. Abra uma sessão no Root e rode `/construtor-equipe-iniciar`. O gerente vê o material e pergunta se pode trazer.
 
 A conversão para se houver código sem commit ou sem push, renomeia as instruções antigas para não serem carregadas, traz o código com o histórico, guarda os documentos e o que é antigo em `privado/origem/` (em `projeto/` só fica código), monta os documentos e o quadro a partir do que o código faz e passa as regras antigas pela sua aprovação. Chaves não vêm: você copia para `privado/parametros/`. Nada é alterado no servidor nem no banco.
 
@@ -150,7 +150,7 @@ Troque `CLAUDE.md` e as pastas `.claude/skills/`, `.claude/hooks/`, `.claude/git
 ## Personalização
 
 - **`.claude/comandos.conf`**: a branch principal, os comandos de build, testes, formatação e execução, e o modelo das sessões de etapa.
-- **`.claude/rules/`**: os dados do projeto (`projeto.md`, criado pelo `/iniciar`), as convenções de código e o padrão de parâmetros.
+- **`.claude/rules/`**: os dados do projeto (`projeto.md`, criado pelo `/construtor-equipe-iniciar`), as convenções de código e o padrão de parâmetros.
 - **`.claude/modelos/`**: os modelos dos documentos e de convenções por tecnologia.
 - **`.claude/hooks/padroes-segredos.txt`**: as expressões regulares de segredo.
 

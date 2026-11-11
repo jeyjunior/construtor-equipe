@@ -1,6 +1,6 @@
 ---
-name: etapa
-description: Roda na sessão vinculada aberta pelo /iniciar-etapa. Conduz uma única etapa do ciclo em ordem fixa (apresentação, perguntas e plano, execução conforme o tipo da etapa, fechamento com evidência e commit), registrando tudo no arquivo da etapa.
+name: construtor-equipe-etapa
+description: Roda na sessão vinculada aberta pelo /construtor-equipe-iniciar-etapa. Conduz uma única etapa do ciclo em ordem fixa (apresentação, perguntas e plano, execução conforme o tipo da etapa, fechamento com evidência e commit), registrando tudo no arquivo da etapa.
 disable-model-invocation: true
 argument-hint: "[número da etapa]"
 ---
@@ -25,7 +25,7 @@ O tipo está no título da etapa em `ciclo.md`. Ele define o que a etapa entrega
 
 | Tipo | O que entrega | Evidência que fecha |
 |---|---|---|
-| `pesquisa` | `privado/docs/pesquisas/NNN-tema.md`, pelo fluxo de `.claude/skills/pesquisar/SKILL.md` | Cada resposta com fonte e data; cada pergunta da etapa respondida ou marcada como não confirmada |
+| `pesquisa` | `privado/docs/pesquisas/NNN-tema.md`, pelo fluxo de `.claude/skills/construtor-equipe-pesquisar/SKILL.md` | Cada resposta com fonte e data; cada pergunta da etapa respondida ou marcada como não confirmada |
 | `prova` | O menor código que responde "isto funciona?", em `projeto/provas/EE-nome/`, e o veredito: funciona, não funciona ou funciona com limites (quais) | O comando executado e a saída; o custo ou limite que apareceu |
 | `ambiente` | Ferramentas, contas e acessos prontos; esqueleto do projeto compilando; `.claude/comandos.conf` preenchido | Cada comando de verificação e a saída |
 | `código` | O código do plano e, se o projeto tiver testes, os testes | `BUILD`, `TESTE` e cada critério de aceite verificado |
@@ -37,7 +37,7 @@ Código de `prova` é descartável: não vira base do sistema sem passar por uma
 ## 1. Situar
 
 1. Leia `privado/QUADRO.md`, `<ciclo>/ciclo.md` (a seção desta etapa e "Decidir depois") e `.claude/comandos.conf`. Leia as decisões e pesquisas que a etapa cita. A etapa é a de `$ARGUMENTS` ou a que está em "Fazendo".
-2. Se a etapa não está em "Fazendo" no quadro, diga que o gerente ainda não a liberou (`/iniciar-etapa`) e pare.
+2. Se a etapa não está em "Fazendo" no quadro, diga que o gerente ainda não a liberou (`/construtor-equipe-iniciar-etapa`) e pare.
 3. Se a branch `ciclo-NN-etapa-EE` já existe, vá para ela e traga o que entrou no ciclo. Se der conflito, resolva aqui e faça o commit.
    ```bash
    git -C projeto switch ciclo-NN-etapa-EE
@@ -51,7 +51,7 @@ Código de `prova` é descartável: não vira base do sistema sem passar por uma
    - `planejada`: se a "Revisão" trouxer mudanças, ajuste o plano a elas; depois retome no passo 3.3;
    - `em andamento` com correções pendentes na "Revisão": faça só as correções e vá ao passo 5;
    - `em andamento`: continue no passo 4, a partir do primeiro item não marcado;
-   - `concluída`, `bloqueada` ou `decisão pendente`: a etapa já fechou. Diga ao usuário para rodar `/progresso` no gerente e pare;
+   - `concluída`, `bloqueada` ou `decisão pendente`: a etapa já fechou. Diga ao usuário para rodar `/construtor-equipe-progresso` no gerente e pare;
    - `revisada`: a etapa já foi aprovada. Pare.
 
 ## 2. Apresentação
@@ -73,7 +73,7 @@ Código de `prova` é descartável: não vira base do sistema sem passar por uma
 ## 4. Execução
 
 1. Siga o checklist, marcando cada item ao terminar.
-2. Em etapa com código, rode o `BUILD` ao longo do trabalho. Erro ou comportamento inesperado: siga a skill `depurar`, que define o que fazer conforme a origem do bug (casos 1, 2 e 3).
+2. Em etapa com código, rode o `BUILD` ao longo do trabalho. Erro ou comportamento inesperado: siga a skill `construtor-equipe-depurar`, que define o que fazer conforme a origem do bug (casos 1, 2 e 3).
 3. Registre em "Notas da execução" qualquer desvio, problema ou escolha feita no caminho.
 4. **Fora do git** (servidor, banco, nuvem, serviço externo): antes de cada ação que altera algo, diga o que vai fazer e como desfazer, e espere o ok. Registre em "Alterações fora do git". Um cancelamento só desfaz o que está no git.
 5. Ideia, pendência ou bug que não cabe aqui vai para "Para o backlog".
@@ -82,7 +82,7 @@ Código de `prova` é descartável: não vira base do sistema sem passar por uma
    1. Escritos por subagente: dispare **um** (tipo `general-purpose`) com a tarefa abaixo. Escritos pela sessão da etapa: faça você mesmo, com as mesmas regras.
 
       > Escreva os testes da etapa EE do ciclo NN. Leia os critérios de aceite em `<ciclo>/ciclo.md`, `<etapa>`, as convenções em `.claude/rules/` e `.claude/comandos.conf`. Veja o código da etapa com `git -C projeto diff ciclo-NN` e os arquivos novos. Teste o que os critérios pedem e as regras de negócio, sem banco nem rede reais. Crie ou altere só arquivos de teste, nunca o código do sistema. Se o código parecer errado ou não der para testá-lo sem mudá-lo, não corrija: relate. Rode o `TESTE` dentro de `projeto/`. Responda em no máximo 10 linhas: testes criados, resultado, falhas e o que não foi possível testar.
-   2. Teste falhou: siga a skill `depurar` e corrija o código. Só altere um teste se ele entendeu o critério errado, e registre o motivo.
+   2. Teste falhou: siga a skill `construtor-equipe-depurar` e corrija o código. Só altere um teste se ele entendeu o critério errado, e registre o motivo.
    3. Etapa sem lógica a testar: registre o motivo e siga.
 
 ## 5. Fechamento
@@ -98,4 +98,4 @@ Código de `prova` é descartável: não vira base do sistema sem passar por uma
    - `bloqueada`: falta algo que não depende de você. Escreva o que falta e por quê;
    - `decisão pendente`: precisa de uma decisão do gerente. Escreva a decisão e as opções.
 6. Faça o commit do que mudou em `projeto/`, na branch `ciclo-NN-etapa-EE`, e mostre a mensagem (`<Tipo>: <descrição>`, com `Adicao`, `Correcao`, `Refatoracao` ou `Docs`; se a etapa não está `concluída`, `Andamento`). Se a trava recusar o commit, corrija o que ela apontar. Etapa que não mexeu em `projeto/` (uma `pesquisa`, por exemplo) fecha sem commit: diga isso.
-7. Comece a última resposta pelo status (ex.: `Etapa 03: concluída`), com um resumo curto do que foi feito. Termine dizendo ao usuário para voltar ao gerente e rodar `/progresso`. Não comece outra etapa, não faça merge nem push.
+7. Comece a última resposta pelo status (ex.: `Etapa 03: concluída`), com um resumo curto do que foi feito. Termine dizendo ao usuário para voltar ao gerente e rodar `/construtor-equipe-progresso`. Não comece outra etapa, não faça merge nem push.

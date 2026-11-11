@@ -1,5 +1,5 @@
 ---
-name: ciclo-curto
+name: construtor-equipe-ciclo-curto
 description: Trabalho pequeno, sem ciclo, numa sessão só - uma correção, um ajuste, uma mudança que cabe numa sessão e não pede decisão de projeto. Faz na branch curto-NNN a partir da principal, prova que funciona, atualiza a arquitetura e o README se a mudança os afeta, leva para a principal com o ok do usuário e registra no quadro, direto em "Feito". Também corrige bug antigo quando aberta pelo gerente durante um ciclo.
 disable-model-invocation: true
 argument-hint: "[o que fazer]"
@@ -16,13 +16,13 @@ Você é a **sessão de ciclo curto** (veja "Papéis" no `CLAUDE.md`). Há dois 
 
 ## 1. Situar
 
-1. Leia `privado/QUADRO.md` e `.claude/comandos.conf`. Sem quadro, o projeto ainda não começou: indique `/iniciar` e pare.
+1. Leia `privado/QUADRO.md` e `.claude/comandos.conf`. Sem quadro, o projeto ainda não começou: indique `/construtor-equipe-iniciar` e pare.
 2. Sem ciclo aberto: se a "Situação" aponta outra sessão aberta, pare e avise. Rode `git -C projeto status`: limpo e na principal; senão, mostre e pare.
-3. **Cabe aqui?** Se o trabalho pede decisão de projeto, pesquisa, alteração fora do git ou mais de uma sessão, não é ciclo curto. Diga isso, ofereça registrar no Backlog e indique `/iniciar`.
+3. **Cabe aqui?** Se o trabalho pede decisão de projeto, pesquisa, alteração fora do git ou mais de uma sessão, não é ciclo curto. Diga isso, ofereça registrar no Backlog e indique `/construtor-equipe-iniciar`.
 
 ## 2. Entender
 
-- **Bug:** siga a skill `depurar` até a causa confirmada, sem a parte de classificar, reproduzindo na principal. No modo aberto pelo gerente, se o bug não aparecer na principal, não corrija: diga "não se confirmou", com a evidência, mande o usuário voltar ao gerente e pare.
+- **Bug:** siga a skill `construtor-equipe-depurar` até a causa confirmada, sem a parte de classificar, reproduzindo na principal. No modo aberto pelo gerente, se o bug não aparecer na principal, não corrija: diga "não se confirmou", com a evidência, mande o usuário voltar ao gerente e pare.
 - **Ajuste ou mudança:** leia o que for preciso e diga, em até 5 linhas, o que vai mudar, em quais arquivos e como vai provar que funcionou.
 
 Espere o ok do usuário.
@@ -55,6 +55,6 @@ git -C projeto merge --no-ff curto-NNN -m "Merge: ciclo curto NNN — <o que foi
 ## 5. Registrar
 
 - **Sem ciclo aberto:** na principal, acrescente em "Feito" do quadro a linha `#NNN [curto] <o que foi feito e por quê> — AAAA-MM-DD — commit <hash curto>`; se veio do Backlog, tire de lá. Envie com `git -C projeto push origin <principal>` (pede confirmação; sem remoto, diga isso).
-- **Aberta pelo gerente:** não edite o quadro e não faça push. Diga ao usuário para voltar ao gerente e rodar `/progresso`.
+- **Aberta pelo gerente:** não edite o quadro e não faça push. Diga ao usuário para voltar ao gerente e rodar `/construtor-equipe-progresso`.
 
 Comece a última resposta pelo resultado (ex.: `Ciclo curto 014: feito`).

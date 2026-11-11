@@ -1,5 +1,5 @@
 ---
-name: consultar
+name: construtor-equipe-consultar
 description: Consulta ao projeto sem alterar nada - situação, o que foi feito, por que algo foi decidido, como uma parte funciona, ou conversa sobre ideias. Roda numa sessão própria, aberta pelo usuário no Root, com ou sem ciclo aberto, sem ocupar o gerente. Só lê.
 disable-model-invocation: true
 argument-hint: "[a pergunta, opcional]"
@@ -22,7 +22,7 @@ Você é a **sessão de consulta** (veja "Papéis" no `CLAUDE.md`). Responde per
 
 ## 1. Situar
 
-1. Sem `privado/QUADRO.md`, o projeto ainda não começou: diga isso, indique `/iniciar` e pare.
+1. Sem `privado/QUADRO.md`, o projeto ainda não começou: diga isso, indique `/construtor-equipe-iniciar` e pare.
 2. Leia o quadro. Ele fica fora do git, então é o mesmo em qualquer branch.
 3. Leia os outros documentos em `privado/docs/`. O arquivo da etapa em andamento pode estar pela metade: avise que é texto em andamento.
 
@@ -39,6 +39,6 @@ Leitura pesada (muitos arquivos, diff grande, histórico longo) vai para um suba
 
 Esta sessão não registra nem executa. Entregue ao usuário o texto pronto para levar:
 
-- **Ideia, pedido ou bug:** uma linha para o Backlog (`<o quê> — consulta, AAAA-MM-DD`). Com ciclo aberto, o usuário leva ao gerente; sem ciclo, ao próximo `/iniciar`.
-- **Algo para fazer agora:** diga se parece ciclo curto ou ciclo, pelos critérios do `CLAUDE.md`, e indique uma sessão nova no Root com `/ciclo-curto` ou `/iniciar`. Com ciclo aberto, quem decide é o gerente daquele ciclo.
+- **Ideia, pedido ou bug:** uma linha para o Backlog (`<o quê> — consulta, AAAA-MM-DD`). Com ciclo aberto, o usuário leva ao gerente; sem ciclo, ao próximo `/construtor-equipe-iniciar`.
+- **Algo para fazer agora:** diga se parece ciclo curto ou ciclo, pelos critérios do `CLAUDE.md`, e indique uma sessão nova no Root com `/construtor-equipe-ciclo-curto` ou `/construtor-equipe-iniciar`. Com ciclo aberto, quem decide é o gerente daquele ciclo.
 - **Decisão tomada na conversa:** não vale até ser gravada. Resuma em até 5 linhas para o usuário levar ao gerente, que grava em `privado/docs/decisoes/`.

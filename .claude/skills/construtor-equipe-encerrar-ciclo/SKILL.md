@@ -1,18 +1,18 @@
 ---
-name: encerrar-ciclo
+name: construtor-equipe-encerrar-ciclo
 description: Roda no gerente quando todas as etapas do ciclo estão em "Feito". Confere o ciclo inteiro, registra as lições, atualiza a arquitetura e o README, leva a branch do ciclo para a principal com o ok do usuário, pergunta pela homologação e deixa o projeto sem ciclo aberto.
 disable-model-invocation: true
 ---
 
 # Encerrar ciclo
 
-Você é o **gerente** (veja "Papéis" no `CLAUDE.md`). O projeto não termina: ele fica sem ciclo aberto até o próximo `/iniciar`.
+Você é o **gerente** (veja "Papéis" no `CLAUDE.md`). O projeto não termina: ele fica sem ciclo aberto até o próximo `/construtor-equipe-iniciar`.
 
 `NN` é o número do ciclo, `<ciclo>` é a pasta dele e `<principal>` é o `BRANCH_PRINCIPAL` de `.claude/comandos.conf`.
 
 ## 1. Conferir se pode fechar
 
-Leia `privado/QUADRO.md` e `<ciclo>/ciclo.md`. Se alguma etapa do ciclo não está em "Feito", ou há sessão aberta, liste e pare. Se o usuário quiser desistir do ciclo, indique `/cancelar-ciclo`. Rode `git -C projeto status`: limpo e na branch `ciclo-NN`.
+Leia `privado/QUADRO.md` e `<ciclo>/ciclo.md`. Se alguma etapa do ciclo não está em "Feito", ou há sessão aberta, liste e pare. Se o usuário quiser desistir do ciclo, indique `/construtor-equipe-cancelar-ciclo`. Rode `git -C projeto status`: limpo e na branch `ciclo-NN`.
 
 ## 2. Conferir o ciclo, os documentos e levantar as lições (três subagentes, em paralelo)
 
@@ -30,7 +30,7 @@ Se a conferência falhar, mostre e pare. O que faltar vira etapa nova neste cicl
 
 1. Mostre o rascunho das lições e pergunte o que ele percebeu que o subagente não pegou.
 2. Para cada lição, defina com ele o que fazer: regra ou convenção (`.claude/rules/`), ajuste no kit, ou nada. Com o ok, aplique.
-3. Grave em "Lições" do `ciclo.md`. O próximo `/iniciar` lê essa seção.
+3. Grave em "Lições" do `ciclo.md`. O próximo `/construtor-equipe-iniciar` lê essa seção.
 
 ## 4. Documentar
 
@@ -60,13 +60,13 @@ Conflito: rode `git -C projeto merge --abort`, conte ao usuário o que conflitou
 Com o merge feito, rode o `BUILD` em `projeto/`. Depois:
 
 1. Em `ciclo.md`, grave `Status: encerrado (AAAA-MM-DD)` e o commit final (`git -C projeto rev-parse HEAD`).
-2. No quadro, a "Situação" fica com ciclo "nenhum aberto", sem sessão, e próximo passo "`/iniciar` num gerente novo".
+2. No quadro, a "Situação" fica com ciclo "nenhum aberto", sem sessão, e próximo passo "`/construtor-equipe-iniciar` num gerente novo".
 3. Envie com `git -C projeto push origin <principal>` (pede confirmação; sem remoto, diga isso e siga).
 
 ## 6. Homologação
 
-Pergunte se o que está em "Feito" já foi publicado ou validado, e com qual versão. Se sim, siga agora `.claude/skills/homologar/SKILL.md`. Se não, os itens ficam em "Feito" e o usuário roda `/homologar` quando acontecer.
+Pergunte se o que está em "Feito" já foi publicado ou validado, e com qual versão. Se sim, siga agora `.claude/skills/construtor-equipe-homologar/SKILL.md`. Se não, os itens ficam em "Feito" e o usuário roda `/construtor-equipe-homologar` quando acontecer.
 
 ## 7. Fechar
 
-Diga ao usuário para fechar esta sessão: o próximo trabalho começa numa sessão nova, aberta por ele no Root, com `/iniciar`.
+Diga ao usuário para fechar esta sessão: o próximo trabalho começa numa sessão nova, aberta por ele no Root, com `/construtor-equipe-iniciar`.

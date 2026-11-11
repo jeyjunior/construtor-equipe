@@ -1,5 +1,5 @@
 ---
-name: converter
+name: construtor-equipe-converter
 description: Roda num gerente novo, numa cópia nova do kit, quando há um projeto em conversor/. Traz o código com o git para projeto/, guarda as instruções e os documentos antigos em privado/origem/, entende o projeto, monta os documentos e o quadro, define com o usuário as regras que valem e deixa o projeto sem ciclo aberto. Use quando o usuário pedir para converter ou aceitar analisar o que está em conversor/.
 argument-hint: "[pasta dentro de conversor/, opcional]"
 ---
@@ -154,9 +154,9 @@ Se algo falhar, mostre e resolva antes de seguir. Um projeto que já não compil
    git -C projeto merge --no-ff ciclo-01 -m "Merge: ciclo 01 — conversão para o Construtor Equipe"
    ```
    Se der conflito, rode `git -C projeto merge --abort` e pare.
-2. Grave em `ciclo.md` o `Status: encerrado (AAAA-MM-DD)` e o commit final, e deixe a "Situação" do quadro com ciclo "nenhum aberto" e próximo passo "`/iniciar` num gerente novo".
+2. Grave em `ciclo.md` o `Status: encerrado (AAAA-MM-DD)` e o commit final, e deixe a "Situação" do quadro com ciclo "nenhum aberto" e próximo passo "`/construtor-equipe-iniciar` num gerente novo".
 3. Se houver remoto, envie com `git -C projeto push origin <principal>` (o kit pede confirmação).
 4. Diga ao usuário para:
    - esvaziar `conversor/`, depois de conferir o resultado;
    - guardar a pasta original do projeto e não trabalhar mais nela, porque as duas apontam para o mesmo GitHub;
-   - fechar esta sessão e abrir uma nova no Root para rodar `/iniciar`.
+   - fechar esta sessão e abrir uma nova no Root para rodar `/construtor-equipe-iniciar`.

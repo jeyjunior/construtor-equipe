@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Parte mecânica da skill converter: prepara o projeto em conversor/, mostra o plano e copia.
+# Parte mecânica da skill construtor-equipe-converter: prepara o projeto em conversor/, mostra o plano e copia.
 # O original fica em conversor/ sem alteração de conteúdo: só CLAUDE.md e .claude são renomeados.
 #
 #   converter.sh preparar [pasta]   confere pendências e renomeia as instruções antigas

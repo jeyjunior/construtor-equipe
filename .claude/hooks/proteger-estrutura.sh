@@ -31,7 +31,7 @@ if NO_PROJETO=$(dentro_do_projeto "$REL"); then
   PRINCIPAL="${BRANCH_PRINCIPAL:-main}"
   if [[ $BRANCH == "$PRINCIPAL" || $BRANCH =~ $RE_BRANCH_CICLO ]]; then
     if ! eh_doc_do_projeto "$NO_PROJETO" && ! merge_em_andamento; then
-      negar_ferramenta "Código só muda em branch de etapa (ciclo-NN-etapa-EE) ou de ciclo curto (curto-NNN). A branch atual é $BRANCH, que só recebe merges e, direto, o README.md e a configuração do git. Gerente não escreve código: abra a etapa com /iniciar-etapa ou use /ciclo-curto."
+      negar_ferramenta "Código só muda em branch de etapa (ciclo-NN-etapa-EE) ou de ciclo curto (curto-NNN). A branch atual é $BRANCH, que só recebe merges e, direto, o README.md e a configuração do git. Gerente não escreve código: abra a etapa com /construtor-equipe-iniciar-etapa ou use /construtor-equipe-ciclo-curto."
     fi
   fi
   exit 0
@@ -44,7 +44,7 @@ if NO_PRIVADO=$(dentro_de "$PASTA_PRIVADO" "$REL"); then
   if eh_quadro "$NO_PRIVADO"; then
     BRANCH=$(branch_do_projeto)
     if [[ $BRANCH =~ $RE_BRANCH_TRABALHO ]]; then
-      negar_ferramenta "O QUADRO.md só muda com $PASTA_PROJETO/ na branch do ciclo ou na principal, pelo gerente (a branch atual é $BRANCH). Sessão de etapa: registre no arquivo da etapa; o gerente leva para o quadro no /progresso. Sessão de ciclo curto: atualize o quadro depois do merge na principal."
+      negar_ferramenta "O QUADRO.md só muda com $PASTA_PROJETO/ na branch do ciclo ou na principal, pelo gerente (a branch atual é $BRANCH). Sessão de etapa: registre no arquivo da etapa; o gerente leva para o quadro no /construtor-equipe-progresso. Sessão de ciclo curto: atualize o quadro depois do merge na principal."
     fi
   fi
   exit 0

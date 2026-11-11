@@ -5,7 +5,7 @@ paths:
 ---
 
 <!--
-MODELO para projetos .NET. Quando a tecnologia for decidida no /iniciar, copie para .claude/rules/dotnet.md,
+MODELO para projetos .NET. Quando a tecnologia for decidida no /construtor-equipe-iniciar, copie para .claude/rules/dotnet.md,
 remova este comentário, tire o que não se aplica (ex.: a seção Workers num projeto web) e
 acrescente as convenções que decorrem das decisões do projeto.
 
@@ -47,4 +47,4 @@ com <Nullable>enable</Nullable>; avaliar <TreatWarningsAsErrors>true</TreatWarni
 - Exceção dentro do laço do worker é registrada no log e não derruba o processo, a menos que seja irrecuperável.
 - O worker respeita o `stoppingToken` para encerrar de forma limpa.
 
-<!-- O /iniciar acrescenta abaixo as convenções que decorrem das decisões do projeto (acesso a dados, APIs externas etc.). -->
+<!-- O /construtor-equipe-iniciar acrescenta abaixo as convenções que decorrem das decisões do projeto (acesso a dados, APIs externas etc.). -->

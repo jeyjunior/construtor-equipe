@@ -1,5 +1,5 @@
 ---
-name: homologar
+name: construtor-equipe-homologar
 description: Roda no gerente, sem ciclo aberto. Leva os itens de "Feito" para "Homologado" no quadro, agrupados pela versão que o usuário informar, e cria a tag da versão com o ok dele.
 disable-model-invocation: true
 argument-hint: "[versão, opcional]"
@@ -13,7 +13,7 @@ argument-hint: "[versão, opcional]"
 
 ## 1. Situar
 
-1. Leia `privado/QUADRO.md`. Com ciclo aberto, diga que a homologação é registrada depois do `/encerrar-ciclo` e pare. Com "Feito" vazio, diga isso e pare.
+1. Leia `privado/QUADRO.md`. Com ciclo aberto, diga que a homologação é registrada depois do `/construtor-equipe-encerrar-ciclo` e pare. Com "Feito" vazio, diga isso e pare.
 2. Rode `git -C projeto status`: limpo e na branch principal. Se não estiver, mostre e pare.
 
 ## 2. Perguntar

@@ -16,8 +16,8 @@ if ! command -v jq >/dev/null 2>&1; then
   AVISOS+=("Falta jq: os bloqueios de comandos destrutivos e de segredos funcionam em modo menos preciso. No Windows: winget install jqlang.jq e reabra o Claude Code.")
 fi
 
-[ -d "$RAIZ/$PASTA_PROJETO" ] || AVISOS+=("Estrutura incompleta: falta a pasta $PASTA_PROJETO/ no Root (rode /iniciar).")
-[ -d "$RAIZ/$PASTA_PRIVADO" ] || AVISOS+=("Estrutura incompleta: falta a pasta $PASTA_PRIVADO/ no Root (rode /iniciar).")
+[ -d "$RAIZ/$PASTA_PROJETO" ] || AVISOS+=("Estrutura incompleta: falta a pasta $PASTA_PROJETO/ no Root (rode /construtor-equipe-iniciar).")
+[ -d "$RAIZ/$PASTA_PRIVADO" ] || AVISOS+=("Estrutura incompleta: falta a pasta $PASTA_PRIVADO/ no Root (rode /construtor-equipe-iniciar).")
 
 if ! command -v git >/dev/null 2>&1; then
   AVISOS+=("Falta git: o build roda ao fim de toda resposta e as travas de branch e de commit não funcionam.")
@@ -65,7 +65,7 @@ if [ -n "$(ls -A "$RAIZ/conversor" 2>/dev/null | grep -vx '.gitignore')" ]; then
   if [ -f "$RAIZ/$PASTA_PRIVADO/QUADRO.md" ]; then
     AVISOS+=("Há material em conversor/, mas este projeto já tem quadro. Se a conversão terminou, o usuário pode esvaziar a pasta; para converter outro projeto, use uma cópia nova do kit.")
   else
-    AVISOS+=("Há um projeto em conversor/. Se esta é a sessão principal, a primeira coisa a fazer é perguntar: quer analisar e trazer esse projeto para cá? Com um sim, rode a skill converter. Sessão de etapa ignora este aviso.")
+    AVISOS+=("Há um projeto em conversor/. Se esta é a sessão principal, a primeira coisa a fazer é perguntar: quer analisar e trazer esse projeto para cá? Com um sim, rode a skill construtor-equipe-converter. Sessão de etapa ignora este aviso.")
   fi
 fi
 

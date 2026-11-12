@@ -24,7 +24,7 @@ Os documentos ficam fora do git: você edita, não faz commit. No git, você só
 
 ## 2. Conferência (subagente)
 
-O trabalho pesado não passa pelo seu contexto. Dispare **um** subagente (tipo `general-purpose`, só leitura e comandos de verificação) com esta tarefa:
+O trabalho pesado não passa pelo seu contexto. Dispare **um** subagente (tipo `general-purpose`, só leitura e comandos de verificação), seguindo `.claude/skills/construtor-equipe-subagente/SKILL.md` (na secundária, libere o `BUILD` e o `TESTE`), com esta tarefa:
 
 > Confira a entrega da etapa EE do ciclo NN, do tipo `<tipo>`. Leia `<etapa>`, a seção da etapa em `<ciclo>/ciclo.md`, `.claude/comandos.conf` e a linha do tipo na tabela "Tipos de etapa" de `.claude/skills/construtor-equipe-etapa/SKILL.md`. Confirme que `git -C projeto status` está limpo e na branch `ciclo-NN-etapa-EE`. Leia `git -C projeto diff ciclo-NN...ciclo-NN-etapa-EE`.
 > Para cada critério de aceite, diga se a evidência registrada existe e se é do jeito que o tipo pede; reexecute o que for barato e seguro. Em etapa com código, rode o `BUILD` e, se estiver preenchido, o `TESTE`, dentro de `projeto/`; se a linha "Testes" de `.claude/rules/projeto.md` for `por etapa`, confira se o código novo tem testes ou se as notas explicam por que não tem. Em `pesquisa`, abra 3 fontes e confira se dizem o que o texto diz. Em `deploy` e `resultados`, confira se cada alteração fora do git tem o jeito de desfazer registrado; não execute nada no destino.

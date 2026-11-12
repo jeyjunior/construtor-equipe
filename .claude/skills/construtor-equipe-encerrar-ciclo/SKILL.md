@@ -16,7 +16,7 @@ Leia `privado/QUADRO.md` e `<ciclo>/ciclo.md`. Se alguma etapa do ciclo não est
 
 ## 2. Conferir o ciclo, os documentos e levantar as lições (três subagentes, em paralelo)
 
-Os três são do tipo `general-purpose` e não editam nada.
+Os três são do tipo `general-purpose`, não editam nada e seguem `.claude/skills/construtor-equipe-subagente/SKILL.md`, cada um com a sua nota (na secundária, a conferência recebe o `BUILD` e o `TESTE`).
 
 > **Conferência.** Confira o ciclo NN inteiro, na branch `ciclo-NN`. Leia `<ciclo>/ciclo.md` e `.claude/comandos.conf`. Confirme que `git -C projeto status` está limpo. Rode o `BUILD` e, se estiver preenchido, o `TESTE`, dentro de `projeto/`. Verifique o critério de pronto do ciclo com um comando ou comportamento observável; o que depender do usuário, aponte. Rode `git -C projeto diff <principal>...ciclo-NN --stat` e diga se há arquivo sensível. Responda em no máximo 15 linhas: build, testes, critério de pronto (ok ou faltando, com evidência), riscos.
 
@@ -30,7 +30,8 @@ Se a conferência falhar, mostre e pare. O que faltar vira etapa nova neste cicl
 
 1. Mostre o rascunho das lições e pergunte o que ele percebeu que o subagente não pegou.
 2. Para cada lição, defina com ele o que fazer: regra ou convenção (`.claude/rules/`), ajuste no kit, ou nada. Com o ok, aplique.
-3. Grave em "Lições" do `ciclo.md`. O próximo `/construtor-equipe-iniciar` lê essa seção.
+3. Leia as linhas deste ciclo em `privado/docs/subagentes.md`. Se algum tipo de tarefa subiu de nível ou foi descartado mais de uma vez, proponha o ajuste: `SUBAGENTES_MODELOS` ou `SUBAGENTES_ESFORCO_MAX` em `.claude/comandos.conf`, ou a tabela de nota da skill `construtor-equipe-subagente`. Com o ok, aplique.
+4. Grave em "Lições" do `ciclo.md`. O próximo `/construtor-equipe-iniciar` lê essa seção.
 
 ## 4. Documentar
 

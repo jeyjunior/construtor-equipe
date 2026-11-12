@@ -27,7 +27,7 @@ Se as perguntas ainda não foram confirmadas pelo usuário, mostre e espere o ok
 
 ## 3. Subagentes
 
-Dispare **um subagente por tema** (tipo `general-purpose`, só leitura), em paralelo quando forem independentes:
+Dispare **um subagente por tema** (tipo `general-purpose`, só leitura), em paralelo quando forem independentes, seguindo `.claude/skills/construtor-equipe-subagente/SKILL.md` (nota, modelo, esforço e conta):
 
 > Pesquise: `<perguntas>`. Projeto: `<objetivo em 2 linhas>`. Limites: `<custo e o que o usuário já tem>`.
 > Use fontes oficiais (documentação e página de preços do próprio serviço) antes de blogs e fóruns. Toda afirmação traz o link e a data da consulta. Preço, plano gratuito e limite de uso: copie o número como está na fonte, com a data, porque mudam.

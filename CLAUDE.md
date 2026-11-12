@@ -18,6 +18,8 @@ Para atualizar o kit, troque este arquivo e as pastas skills/, hooks/, git-hooks
   Em qualquer sessão aberta no Root, com ou sem ciclo aberto:
   /construtor-equipe-consultar       → perguntas e conversa sobre o projeto, só leitura, sem ocupar o gerente
 
+  Não é comando: construtor-equipe-subagente → regra de todo subagente (nota, modelo, esforço e conta)
+
   Nas sessões vinculadas:
   /construtor-equipe-etapa           → perguntas, plano, execução e fechamento de uma etapa
   /construtor-equipe-ciclo-curto     → correção de bug antigo a partir da principal, aberta pelo /construtor-equipe-progresso
@@ -31,7 +33,7 @@ Root/                       abra o Claude Code sempre aqui
 ├── projeto/                só código e README.md. Único repositório git; é o que vai para o GitHub
 ├── privado/                fora de qualquer git
 │   ├── QUADRO.md           o quadro: backlog, a fazer, fazendo, feito, homologado
-│   ├── docs/               objetivo.md, arquitetura.md, decisoes/, pesquisas/, ciclos/NN-nome/
+│   ├── docs/               objetivo.md, arquitetura.md, subagentes.md, decisoes/, pesquisas/, ciclos/NN-nome/
 │   ├── parametros/         parametro.json, chaves, certificados (você não lê nem grava)
 │   └── origem/             só depois de uma conversão: instruções e documentos antigos
 └── conversor/              entrada da conversão: um projeto a trazer para o kit
@@ -88,6 +90,7 @@ Os hooks aplicam isto pela branch atual de `projeto/`: na principal e na branch 
 - Não diga que algo está pronto, funcionando ou corrigido sem ter rodado agora o comando que prova e lido a saída. Cite a evidência. Uma etapa só está concluída quando cada critério de aceite tem evidência.
 - **Fora do git** (servidor, banco, nuvem, serviço externo, conta): cada ação que altera algo pede o ok do usuário antes, e é registrada em "Alterações fora do git" com o jeito de desfazer.
 - Bug, erro ou comportamento inesperado: siga a skill `construtor-equipe-depurar` antes de mudar o código.
+- **Todo subagente**, em qualquer sessão, segue `.claude/skills/construtor-equipe-subagente/SKILL.md`: nota da tarefa, modelo e esforço, conta (principal no app ou secundária na CLI), MCP que ela precisa e registro em `privado/docs/subagentes.md`.
 
 ## Como escrever código
 

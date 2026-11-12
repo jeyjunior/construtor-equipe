@@ -19,7 +19,7 @@ Esta sessão é o **gerente** (veja "Papéis" no `CLAUDE.md`). Você descobre on
 
 ## 1. Descobrir onde o projeto está
 
-Siga o primeiro caso que valer:
+Uma vez por sessão, antes de tudo, siga "Configuração" de `.claude/skills/construtor-equipe-subagente/SKILL.md`: conta dos subagentes, modelos liberados e esforço máximo. Depois, siga o primeiro caso que valer:
 
 1. **Há um projeto em `conversor/`** (liste só o primeiro nível) **e não existe `privado/QUADRO.md`:** pergunte se o usuário quer trazer esse projeto. Com o sim, siga `.claude/skills/construtor-equipe-converter/SKILL.md` e não continue aqui.
 2. **Não existe `privado/QUADRO.md`:** projeto novo. Crie as pastas que faltarem (`projeto/`, `privado/docs/`, `privado/parametros/`) e vá ao passo 2. Se já houver `privado/docs/objetivo.md` em `rascunho`, retome de onde parou e diga isso.
@@ -29,7 +29,7 @@ Siga o primeiro caso que valer:
 4. **O quadro mostra "nenhum aberto":**
    1. Se esta conversa já fez outro trabalho antes (por exemplo, encerrou um ciclo), peça ao usuário uma sessão nova no Root: cada ciclo tem o seu gerente.
    2. Rode `git -C projeto status`. Algo não commitado: mostre e pare.
-   3. Rode `git -C projeto log --first-parent --oneline -15 <principal>`. Se houver commits que não vieram do kit (fora de `Merge:` e `Docs:`), dispare um subagente, só leitura, para comparar `privado/docs/objetivo.md` e `privado/docs/arquitetura.md` com o código e devolver em até 10 linhas o que os documentos dizem e o código não faz, e o contrário. Corrija os documentos com o ok.
+   3. Rode `git -C projeto log --first-parent --oneline -15 <principal>`. Se houver commits que não vieram do kit (fora de `Merge:` e `Docs:`), dispare um subagente (veja `.claude/skills/construtor-equipe-subagente/SKILL.md`), só leitura, para comparar `privado/docs/objetivo.md` e `privado/docs/arquitetura.md` com o código e devolver em até 10 linhas o que os documentos dizem e o código não faz, e o contrário. Corrija os documentos com o ok.
    4. Mostre o Backlog e as "Lições" do `ciclo.md` do último ciclo. Pergunte o que será feito (`$ARGUMENTS` pode já trazer).
    5. Classifique com o usuário:
       - **Ciclo curto:** cabe numa sessão, não pede decisão de projeto nem pesquisa e não altera nada fora do git. Siga `.claude/skills/construtor-equipe-ciclo-curto/SKILL.md` nesta sessão.

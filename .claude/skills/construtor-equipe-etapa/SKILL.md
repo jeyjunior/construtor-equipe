@@ -77,9 +77,9 @@ Código de `prova` é descartável: não vira base do sistema sem passar por uma
 3. Registre em "Notas da execução" qualquer desvio, problema ou escolha feita no caminho.
 4. **Fora do git** (servidor, banco, nuvem, serviço externo): antes de cada ação que altera algo, diga o que vai fazer e como desfazer, e espere o ok. Registre em "Alterações fora do git". Um cancelamento só desfaz o que está no git.
 5. Ideia, pendência ou bug que não cabe aqui vai para "Para o backlog".
-6. Leitura ou pesquisa ampla: use um subagente e traga só a conclusão.
+6. Leitura ou pesquisa ampla: use um subagente, seguindo `.claude/skills/construtor-equipe-subagente/SKILL.md`, e traga só a conclusão.
 7. **Testes**, só em etapa de `código` e se a linha "Testes" de `.claude/rules/projeto.md` for `por etapa`. Com o checklist pronto:
-   1. Escritos por subagente: dispare **um** (tipo `general-purpose`) com a tarefa abaixo. Escritos pela sessão da etapa: faça você mesmo, com as mesmas regras.
+   1. Escritos por subagente: dispare **um** (tipo `general-purpose`, seguindo `.claude/skills/construtor-equipe-subagente/SKILL.md`; na secundária, com `Write`, `Edit` e o `TESTE`) com a tarefa abaixo. Escritos pela sessão da etapa: faça você mesmo, com as mesmas regras.
 
       > Escreva os testes da etapa EE do ciclo NN. Leia os critérios de aceite em `<ciclo>/ciclo.md`, `<etapa>`, as convenções em `.claude/rules/` e `.claude/comandos.conf`. Veja o código da etapa com `git -C projeto diff ciclo-NN` e os arquivos novos. Teste o que os critérios pedem e as regras de negócio, sem banco nem rede reais. Crie ou altere só arquivos de teste, nunca o código do sistema. Se o código parecer errado ou não der para testá-lo sem mudá-lo, não corrija: relate. Rode o `TESTE` dentro de `projeto/`. Responda em no máximo 10 linhas: testes criados, resultado, falhas e o que não foi possível testar.
    2. Teste falhou: siga a skill `construtor-equipe-depurar` e corrija o código. Só altere um teste se ele entendeu o critério errado, e registre o motivo.

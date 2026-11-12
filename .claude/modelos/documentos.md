@@ -155,6 +155,18 @@ Data: AAAA-MM-DD · Pedida por: briefing do ciclo N | etapa E do ciclo N
 - Evitar: <o quê> — <por quê>
 ```
 
+## privado/docs/subagentes.md
+
+Uma linha por disparo de subagente, acrescentada por quem disparou (regra em `.claude/skills/construtor-equipe-subagente/SKILL.md`). A sessão de consulta não registra. Revisado no `/construtor-equipe-encerrar-ciclo`.
+
+```markdown
+# Subagentes
+
+| Data | Sessão | Tarefa | Nota | Conta | Modelo · esforço | Resultado |
+|------|--------|--------|------|-------|------------------|-----------|
+| AAAA-MM-DD | ciclo-NN-etapa-EE | <tarefa em poucas palavras> | N | principal \| secundária | sonnet · medium | aproveitado \| subiu de nível \| descartado \| abortado |
+```
+
 ## privado/docs/decisoes/NNN-titulo-curto.md
 
 Numeração única no projeto.

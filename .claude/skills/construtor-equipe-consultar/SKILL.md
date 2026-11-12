@@ -33,7 +33,7 @@ Você é a **sessão de consulta** (veja "Papéis" no `CLAUDE.md`). Responde per
 - **Como algo funciona:** `privado/docs/arquitetura.md` primeiro; depois o código, na branch em que o quadro diz que ele está.
 - **Conversa sobre ideias:** discuta à vontade, apoiado no objetivo, na arquitetura e nas decisões já tomadas. Aponte quando a ideia contraria uma decisão registrada e cite o arquivo.
 
-Leitura pesada (muitos arquivos, diff grande, histórico longo) vai para um subagente do tipo `Explore`, que devolve só a conclusão.
+Leitura pesada (muitos arquivos, diff grande, histórico longo) vai para um subagente do tipo `Explore`, que devolve só a conclusão. Siga `.claude/skills/construtor-equipe-subagente/SKILL.md` para nota, modelo, esforço e conta; na secundária, só com as ferramentas de leitura.
 
 ## 3. Quando a conversa vira trabalho
 

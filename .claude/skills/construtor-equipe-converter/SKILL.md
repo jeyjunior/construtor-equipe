@@ -10,7 +10,7 @@ Esta sessão é o **gerente** da conversão (veja "Papéis" no `CLAUDE.md`). Ser
 
 **Quem faz o quê:**
 - **Você** conversa com o usuário, decide com ele e grava o estado. Não leia o código nem a documentação antiga.
-- **Subagentes** (tipo `general-purpose`) leem e redigem. Eles não falam com o usuário: toda dúvida volta para você numa lista. Cada um devolve no máximo uma página, com o arquivo de origem de cada afirmação, e grava o resultado completo em `privado/origem/analise/`.
+- **Subagentes** (tipo `general-purpose`, seguindo `.claude/skills/construtor-equipe-subagente/SKILL.md`; na secundária, com `Write` e `Edit` quando gravam) leem e redigem. Eles não falam com o usuário: toda dúvida volta para você numa lista. Cada um devolve no máximo uma página, com o arquivo de origem de cada afirmação, e grava o resultado completo em `privado/origem/analise/`.
 - **`.claude/bin/converter.sh`** faz as cópias. Não copie nem mova arquivos do projeto à mão, exceto onde este fluxo manda.
 
 **Regras:**

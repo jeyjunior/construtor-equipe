@@ -21,6 +21,7 @@ meu-projeto/                ← o "Root": abra o Claude Code sempre aqui
 │   ├── QUADRO.md           backlog, a fazer, fazendo, feito, homologado
 │   ├── docs/
 │   │   ├── objetivo.md, arquitetura.md
+│   │   ├── subagentes.md   registro de cada subagente: nota, conta, modelo, resultado
 │   │   ├── decisoes/       uma decisão por arquivo
 │   │   ├── pesquisas/      uma pesquisa por arquivo, com fonte e data
 │   │   └── ciclos/NN-nome/ ciclo.md (briefing, etapas, lições) e etapas/
@@ -92,6 +93,76 @@ main ────────────────┬────────
 
 A regra é aplicada pela branch atual de `projeto/`: na principal e na branch do ciclo não se edita código (só o `README.md`); nas branches de etapa e de ciclo curto não se edita o quadro.
 
+### Subagentes e conta secundária
+
+Leitura pesada (pesquisa, conferência, diff, conversão, testes) vai para **subagentes**, que devolvem só a conclusão. Todo subagente, em qualquer sessão, segue a mesma regra (`.claude/skills/construtor-equipe-subagente/SKILL.md`): a tarefa ganha uma nota, a nota define o modelo e o esforço, e o gerente decide onde ela roda. Se você tem uma **segunda conta do Claude Code** na CLI, os subagentes podem rodar nela e poupar a conta principal, inclusive os que usam MCP (Trello, Notion e outros).
+
+```mermaid
+flowchart TD
+    A[Tarefa para subagente] --> B["Pontuar a tarefa<br/>nota → modelo e esforço"]
+    B --> C{"Secundária disponível?<br/>escolhida e logada"}
+    C -- não --> P["Principal<br/>subagente do app"]
+    C -- sim --> D{"Precisa de MCP?<br/>Trello, Notion, outros"}
+    D -- não --> S["Secundária<br/>CLI, conta 2"]
+    D -- sim --> E{MCP conectado na CLI?}
+    E -- sim --> S
+    E -- não --> F[Pergunta ao usuário]
+    F -- habilitar na CLI e conferir de novo --> E
+    F -- principal --> P
+    F -- abortar --> X[Aborta]
+    P --> R{Resultado fraco?}
+    S --> R
+    R -- "sim, abaixo do teto" --> U["Sobe um nível<br/>modelo ou esforço"]
+    U --> C
+    R -- não --> G[Usa e registra]
+    classDef conta fill:#E1F5EE,stroke:#0F6E56,color:#085041
+    classDef usuario fill:#FAECE7,stroke:#993C1D,color:#712B13
+    class P,S conta
+    class F usuario
+```
+
+**Nota da tarefa.** Antes de cada disparo, de 0 a 2 em cada critério:
+
+| Critério | 0 | 1 | 2 |
+|---|---|---|---|
+| Raciocínio | buscar ou listar | comparar ou resumir | decidir, projetar, achar causa |
+| Volume | poucas fontes ou arquivos | dezenas | o projeto inteiro |
+| Custo do erro | fácil de notar e refazer | atrapalha a próxima etapa | vira decisão, código ou dado errado |
+| Rigor com dados | não se aplica | citar fonte | analisar sem inventar nem enviesar |
+
+| Soma | Nível | Modelo · esforço inicial | Exemplos |
+|---|---|---|---|
+| 0–1 | Simples | haiku · low | buscar um dado pontual, listar cartões, ler um arquivo |
+| 2–3 | Padrão | sonnet · medium | pesquisa com várias fontes, consulta, conferência de build e testes |
+| 4–5 | Análise | sonnet · high | comparar opções, analisar dados, lições do ciclo |
+| 6–8 | Crítico | opus · high | escrever testes, conversão, conferência final do ciclo |
+
+- A nota vale igual na conta principal e na secundária, sempre dentro dos modelos liberados e do esforço máximo que você definir. O `fable` só entra por subida de nível ou a seu pedido.
+- Antes de cada disparo, o gerente diz numa linha onde e com quê (`pesquisa de preços → secundária, sonnet/medium (nota 2)`). Você pode trocar.
+- Resultado fraco (sem a fonte pedida, fora do pedido, contraditório) roda de novo um nível acima, até o teto.
+- Cada disparo vira uma linha em `privado/docs/subagentes.md`. No `/construtor-equipe-encerrar-ciclo`, o gerente revisa esse registro e propõe ajustes na tabela.
+
+**MCP na secundária.** A CLI não pede confirmação no meio. Por isso só as ferramentas de leitura do MCP são liberadas; uma ação que altera algo fora do projeto (mover um cartão, editar uma página) só entra com o seu ok antes do disparo.
+
+**Preparar a conta secundária, uma vez por máquina** (PowerShell):
+
+```powershell
+$env:CLAUDE_CONFIG_DIR = "$HOME\.claude-secundaria"
+claude
+```
+
+Faça login com a conta secundária e saia com `/exit`. Para usar outra pasta, defina a variável de ambiente `CONSTRUTOR_CONTA_CLI` com o caminho dela. Os MCP dela são conectados nela mesma: no claude.ai da conta secundária ou com `claude mcp add` nesse terminal.
+
+**Configuração**, em `.claude/comandos.conf` (o gerente pergunta e grava na primeira sessão):
+
+| Campo | Valores | Vazio |
+|---|---|---|
+| `SUBAGENTES_CONTA` | `principal` ou `secundaria` | pergunta a cada sessão |
+| `SUBAGENTES_MODELOS` | `haiku sonnet opus fable`, os que você liberar | `haiku sonnet opus` |
+| `SUBAGENTES_ESFORCO_MAX` | `low`, `medium`, `high`, `xhigh` ou `max` | `high` |
+
+A cada chamada, `.claude/bin/secundaria.sh` entrega à secundária as suas regras globais (`~/.claude/CLAUDE.md` e os hooks de `~/.claude/settings.json`), o `CLAUDE.md` e as rules do projeto, as permissões e as travas do kit. Nada é gravado na pasta da secundária. Para ver o que vai: `bash .claude/bin/secundaria.sh regras` e `bash .claude/bin/secundaria.sh instrucoes`. As sessões de etapa e de ciclo curto continuam na conta principal: quem abre sessões é o app.
+
 ### Travas
 
 | Trava | O que faz |
@@ -114,7 +185,8 @@ Limites conhecidos: o bloqueio de segredos olha edições e commits, não arquiv
 - **App Claude desktop, aba Code**: as etapas rodam em sessões vinculadas, que só existem no app.
 - `git`
 - `bash`: no Windows, o Git Bash que vem com o Git for Windows
-- [`jq`](https://jqlang.org): recomendado. Sem ele, os bloqueios funcionam em modo menos preciso e o kit avisa.
+- [`jq`](https://jqlang.org): recomendado. Sem ele, os bloqueios funcionam em modo menos preciso e o kit avisa. A conta secundária exige jq.
+- Opcional: uma segunda conta do Claude Code logada na CLI, para os subagentes (veja "Subagentes e conta secundária").
 
 ## Instalação
 
@@ -149,7 +221,7 @@ Troque `CLAUDE.md` e as pastas `.claude/skills/`, `.claude/hooks/`, `.claude/git
 
 ## Personalização
 
-- **`.claude/comandos.conf`**: a branch principal, os comandos de build, testes, formatação e execução, e o modelo das sessões de etapa.
+- **`.claude/comandos.conf`**: a branch principal, os comandos de build, testes, formatação e execução, o modelo das sessões de etapa e a conta, os modelos e o esforço máximo dos subagentes.
 - **`.claude/rules/`**: os dados do projeto (`projeto.md`, criado pelo `/construtor-equipe-iniciar`), as convenções de código e o padrão de parâmetros.
 - **`.claude/modelos/`**: os modelos dos documentos e de convenções por tecnologia.
 - **`.claude/hooks/padroes-segredos.txt`**: as expressões regulares de segredo.

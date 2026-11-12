@@ -7,7 +7,9 @@
       "Bash(git -C projeto log *)",
       "Bash(git status *)",
       "Bash(git diff *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(bash .claude/bin/secundaria.sh status)",
+      "Bash(bash .claude/bin/secundaria.sh mcp)"
     ],
     "ask": [
       "Edit(/privado/docs/objetivo.md)",

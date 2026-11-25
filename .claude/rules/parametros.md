@@ -9,13 +9,13 @@ Toda chave de API e senha de banco do projeto fica num único arquivo JSON chama
     "ApiSecret": ""
   },
   "Banco": {
-    "Senha": ""
+    "ConnectionString": ""
   }
 }
 ```
 
 - Um objeto por empresa ou serviço externo, com o nome dela (ex.: `GatewayPagamento`, `ServicoEmail`). `ApiKey` e `ApiSecret` são os nomes padrão; outras propriedades do mesmo serviço entram no mesmo objeto (ex.: `Passphrase`).
-- `Banco` guarda a senha do banco; outras informações de conexão sensíveis entram no mesmo objeto.
+- `Banco` guarda a conexão com o banco: `ConnectionString` é a string de conexão completa, com usuário e senha. Projeto que monta a conexão por partes guarda só a senha (`Senha`) e deixa servidor, porta e nome do banco na configuração normal. Mais de um banco: um objeto por banco (ex.: `BancoRelatorios`).
 - Só entra o que é segredo. Configuração comum (URLs, nomes de banco, intervalos) fica na configuração normal do projeto.
 
 **Onde fica:**

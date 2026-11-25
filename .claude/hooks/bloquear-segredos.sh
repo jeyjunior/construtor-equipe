@@ -3,25 +3,29 @@
 #  1. o destino é um local de sistema ou de persistência do Windows (Startup, System32, hosts,
 #     perfil do PowerShell), seja qual for o conteúdo;
 #  2. o conteúdo novo casa com um padrão de segredo de padroes-segredos.txt.
-# Com jq, examina só o conteúdo novo. Sem jq, examina a entrada inteira do hook, o que inclui o
-# texto antigo de uma edição (menos preciso, mas não fica desligado).
+# Examina só o conteúdo novo. Sem jq, numa edição múltipla, examina a entrada inteira do hook, o
+# que inclui o texto antigo (menos preciso, mas não fica desligado).
 
 ENTRADA=$(cat)
 # shellcheck source=comum.sh
-source "$(dirname "${BASH_SOURCE[0]}")/comum.sh"
+source "${BASH_SOURCE[0]%/*}/comum.sh"
 
 ARQ=$(caminho_da_entrada "$ENTRADA")
 [ -n "$ARQ" ] || exit 0
 SEM_JQ=""
 if command -v jq >/dev/null 2>&1; then
-  CONTEUDO=$(printf '%s' "$ENTRADA" | jq -r '.tool_input | (.new_string // .content // ((.edits // []) | map(.new_string // "") | join("\n")))')
+  CONTEUDO=$(jq -r '.tool_input | (.new_string // .content // ((.edits // []) | map(.new_string // "") | join("\n")))' <<< "$ENTRADA")
 else
-  CONTEUDO=${ENTRADA//\\\"/\"}   # no JSON cru, as aspas do conteúdo chegam como \"
-  SEM_JQ=" (Sem jq, a checagem também olha o texto antigo da edição; instale o jq para ela olhar só o novo.)"
+  CONTEUDO=$(campo_da_entrada "$ENTRADA" new_string)
+  [ -n "$CONTEUDO" ] || CONTEUDO=$(campo_da_entrada "$ENTRADA" content)
+  if [ -z "$CONTEUDO" ]; then
+    CONTEUDO=${ENTRADA//\\\"/\"}   # no JSON cru, as aspas do conteúdo chegam como \"
+    SEM_JQ=" (Sem jq, a checagem também olha o texto antigo da edição; instale o jq para ela olhar só o novo.)"
+  fi
 fi
 
 # 1. Locais de sistema do Windows.
-ARQ_N=$(minusculas "${ARQ//\\//}")
+de_git_bash "${ARQ//\\//}"; ARQ_N=$REPLY
 SISTEMA=(
   '^[a-z]:/windows/'
   '/system32/'
@@ -32,14 +36,14 @@ SISTEMA=(
   '/programdata/microsoft/windows/start menu/'
 )
 for s in "${SISTEMA[@]}"; do
-  if [[ "$ARQ_N" =~ $s ]]; then
+  if casa_sem_caixa "$ARQ_N" "$s"; then
     negar_ferramenta "Escrita em local de sistema do Windows bloqueada pelo kit ($ARQ). Se for intencional, o usuário faz à mão."
   fi
 done
 
 # 2. Segredos no conteúdo.
 [ -n "$CONTEUDO" ] || exit 0
-PADROES="$(dirname "${BASH_SOURCE[0]}")/padroes-segredos.txt"
+PADROES="${BASH_SOURCE[0]%/*}/padroes-segredos.txt"
 [ -f "$PADROES" ] || exit 0
 REL=$(relativo_a_raiz "$ARQ")
 [[ "$REL" == ".claude/hooks/padroes-segredos.txt" ]] && exit 0
@@ -60,7 +64,7 @@ while IFS= read -r linha || [ -n "$linha" ]; do
 done < "$PADROES"
 [ -n "$JUNTO" ] || exit 0
 
-if printf '%s' "$CONTEUDO" | grep -qE -- "$JUNTO"; then
+if grep -qE -- "$JUNTO" <<< "$CONTEUDO"; then
   negar_ferramenta "O conteúdo para $REL parece conter um segredo (padrão de .claude/hooks/padroes-segredos.txt). Use o padrão parametro.json de .claude/rules/parametros.md: o valor real fica em $PASTA_PRIVADO/parametros/parametro.json, guardado pelo usuário.$SEM_JQ"
 fi
 exit 0

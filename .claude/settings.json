@@ -8,8 +8,21 @@
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
-      "Bash(bash .claude/bin/secundaria.sh status)",
-      "Bash(bash .claude/bin/secundaria.sh mcp)"
+      "Bash(bash .claude/bin/subagente-cli.sh status)",
+      "Bash(bash .claude/bin/subagente-cli.sh mcp)",
+      "Bash(git -C projeto show *)",
+      "Bash(git -C projeto ls-files *)",
+      "Bash(git -C projeto rev-parse *)",
+      "Bash(git -C projeto branch *)",
+      "Bash(git -C projeto switch *)",
+      "Bash(git -C projeto add *)",
+      "Bash(git -C projeto commit *)",
+      "Bash(git -C projeto merge --no-ff ciclo-*-etapa-*)",
+      "Bash(git -C projeto remote -v)",
+      "Bash(git -C projeto config --get *)",
+      "PowerShell(git -C projeto status *)",
+      "PowerShell(git -C projeto diff *)",
+      "PowerShell(git -C projeto log *)"
     ],
     "ask": [
       "Edit(/privado/docs/objetivo.md)",
@@ -20,7 +33,19 @@
       "Bash(git reset --hard*)",
       "Bash(git -C * reset --hard*)",
       "Bash(git remote add*)",
-      "Bash(git -C * remote add*)"
+      "Bash(git -C * remote add*)",
+      "PowerShell(git init*)",
+      "PowerShell(git -C * init*)",
+      "PowerShell(git push*)",
+      "PowerShell(git -C * push*)",
+      "PowerShell(git reset --hard*)",
+      "PowerShell(git -C * reset --hard*)",
+      "PowerShell(git remote add*)",
+      "PowerShell(git -C * remote add*)",
+      "Bash(git -C * clean*)",
+      "Bash(git clean*)",
+      "PowerShell(git -C * clean*)",
+      "PowerShell(git clean*)"
     ],
     "deny": [
       "Read(/privado/parametros/**)",
@@ -42,10 +67,15 @@
       "Read(/conversor/**/*.keystore)",
       "Read(/conversor/**/id_rsa*)",
       "Read(/conversor/**/id_ed25519*)",
+      "Read(/conversor/**/*.connection)",
       "Bash(git push --force*)",
       "Bash(git push -f*)",
       "Bash(git -C * push --force*)",
-      "Bash(git -C * push -f*)"
+      "Bash(git -C * push -f*)",
+      "PowerShell(git push --force*)",
+      "PowerShell(git push -f*)",
+      "PowerShell(git -C * push --force*)",
+      "PowerShell(git -C * push -f*)"
     ]
   },
   "hooks": {

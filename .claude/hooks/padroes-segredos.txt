@@ -6,7 +6,15 @@
 # Linhas vazias e começadas por # são ignoradas. Origem: vault (portado do gitleaks).
 
 # Senha, token ou chave com valor literal entre aspas (8+ caracteres), com = ou : (código, JSON, YAML)
-([Aa][Pp][Ii][_-]?[Kk][Ee][Yy]|[Pp]ass(word|wd)|PASS(WORD|WD)|[Ss]enha|SENHA|[Tt]oken|TOKEN|[Ss]ecret|SECRET|[Ss]egredo|SEGREDO)["']?\s*[:=]\s*["'][^"']{8,}["']|||(\.md$|\.example$|\.sample$)
+# "chave" sozinha não entra: em português também é chave de dicionário ou de cache.
+([Aa][Pp][Ii][_-]?[Kk][Ee][Yy]|[Pp]ass(word|wd)|PASS(WORD|WD)|[Ss]enha|SENHA|[Tt]oken|TOKEN|[Ss]ecret|SECRET|[Ss]egredo|SEGREDO|[Cc]have_?([Aa]pi|API|[Ss]ecreta|[Pp]rivada|[Aa]cesso)|CHAVE_(API|SECRETA|PRIVADA|ACESSO)|([Aa]ccess|[Pp]rivate|[Ss]igning|[Cc]lient|[Ee]ncryption|[Hh]mac|[Mm]aster)[_-]?[Kk]ey|(ACCESS|PRIVATE|SIGNING|CLIENT|ENCRYPTION|HMAC|MASTER)_KEY)["']?\s*[:=]\s*["'][^"']{8,}["']|||(\.md$|\.example$|\.sample$)
+
+# O mesmo em arquivo de configuração sem aspas (YAML, .env, .ini): "password: Valor123". Em código,
+# "nome: Tipo" é anotação de tipo, por isso as extensões de código ficam de fora.
+(^|\s)([Pp]ass(word|wd)|PASS(WORD|WD)|[Ss]enha|SENHA|[Tt]oken|TOKEN|[Ss]ecret|SECRET|[Aa][Pp][Ii][_-]?[Kk][Ee][Yy])\s*[:=]\s*[^[:space:]"'#{$<&*|>!%@`-][^[:space:]#]{7,}\s*$|||(\.md$|\.example$|\.sample$|\.(cs|csproj|ts|tsx|js|jsx|mjs|cjs|py|java|go|rs|rb|php|kt|swift|c|cpp|h|sql|sh|ps1)$)
+
+# JWT (cabeçalho e corpo em base64url começam com eyJ)
+eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|||(\.md$)
 
 # Senha em connection string (Password=... ou Pwd=..., sem espaço antes do =)
 ([Pp]assword|PASSWORD|[Pp]wd|PWD)=[^;"'[:space:]{$]{4,}|||(\.md$|\.example$|\.sample$)

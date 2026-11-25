@@ -8,7 +8,7 @@
 
 ENTRADA=$(cat)
 # shellcheck source=comum.sh
-source "$(dirname "${BASH_SOURCE[0]}")/comum.sh"
+source "${BASH_SOURCE[0]%/*}/comum.sh"
 
 ARQ=$(caminho_da_entrada "$ENTRADA")
 [ -n "$ARQ" ] || exit 0

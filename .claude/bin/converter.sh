@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Parte mecânica da skill construtor-equipe-converter: prepara o projeto em conversor/, mostra o plano e copia.
+# Parte mecânica da skill construtor-converter: prepara o projeto em conversor/, mostra o plano e copia.
 # O original fica em conversor/ sem alteração de conteúdo: só CLAUDE.md e .claude são renomeados.
 #
 #   converter.sh preparar [pasta]   confere pendências e renomeia as instruções antigas
-#   converter.sh plano   [pasta] [--raiz REL] [--incluir REL]... [--excluir REL]...
-#   converter.sh copiar  [pasta] [--raiz REL] [--incluir REL]... [--excluir REL]...
+#   converter.sh plano   [pasta] [--raiz REL] [--incluir REL]... [--excluir REL]... [--principal BRANCH]
+#   converter.sh copiar  [pasta] [--raiz REL] [--incluir REL]... [--excluir REL]... [--principal BRANCH]
 #
+# --principal  branch principal (padrão: a do origin/HEAD, senão main, senão master, senão a atual).
+#              O copiar grava em BRANCH_PRINCIPAL de .claude/comandos.conf, para as travas valerem já.
 # --raiz     pasta do código, só em projeto sem git (padrão: projeto/ ou Projeto/, se existir; senão, a raiz)
 # --incluir  item ignorado pelo git que deve vir para projeto/ (relativo à pasta do código)
 # --excluir  item que não deve ser guardado em privado/origem/ (relativo à pasta do projeto)
@@ -156,10 +158,43 @@ conferir_incluidos() {
   done
 }
 
+tem_branch() { git -C "$R" show-ref -q --verify "refs/heads/$1"; }
+
+# Define PRINCIPAL: --principal, ou a branch padrão do remoto, ou main/master, ou a atual.
+achar_principal() {
+  local b
+  if [ -n "$ARG_PRINCIPAL" ]; then
+    PRINCIPAL=$ARG_PRINCIPAL
+    [[ $PRINCIPAL =~ ^[A-Za-z0-9._/-]+$ ]] || parar "--principal: nome de branch inválido."
+    [ "$MODO" = sem-git ] || tem_branch "$PRINCIPAL" || parar "--principal: a branch $PRINCIPAL não existe no repositório."
+    return
+  fi
+  PRINCIPAL=main
+  [ "$MODO" = git ] || return 0
+  b=$(git -C "$R" symbolic-ref --short -q refs/remotes/origin/HEAD 2>/dev/null)
+  b=${b#origin/}
+  if [ -n "$b" ] && tem_branch "$b"; then PRINCIPAL=$b; return; fi
+  for b in main master; do tem_branch "$b" && { PRINCIPAL=$b; return; }; done
+  b=$(git -C "$R" symbolic-ref --short -q HEAD)
+  [ -z "$b" ] || PRINCIPAL=$b
+}
+
+gravar_principal() {
+  local conf="$RAIZ/.claude/comandos.conf"
+  [ -f "$conf" ] || parar "não achei .claude/comandos.conf para gravar BRANCH_PRINCIPAL."
+  if grep -q '^BRANCH_PRINCIPAL=' "$conf"; then
+    sed -i "s|^BRANCH_PRINCIPAL=.*|BRANCH_PRINCIPAL=\"$PRINCIPAL\"|" "$conf"
+  else
+    printf 'BRANCH_PRINCIPAL="%s"\n' "$PRINCIPAL" >> "$conf"
+  fi
+  echo "BRANCH_PRINCIPAL gravada em .claude/comandos.conf: $PRINCIPAL"
+}
+
 mostrar_plano() {
   local i
   echo "Tipo: $MODO"
   echo "Pasta do código: $R"
+  echo "Branch principal: $PRINCIPAL (troque com --principal)"
   if [ "$MODO" = git ]; then
     echo "Branch atual: $(git -C "$R" symbolic-ref --short -q HEAD)"
     echo "Último commit: $(git -C "$R" log -1 --format='%h %ad %s' --date=short 2>/dev/null)"
@@ -232,6 +267,7 @@ copiar() {
   juntar_modelo "$tmp/gitattributes" "$P/.gitattributes"
   rm -rf "$tmp"
   git -C "$P" config core.hooksPath ../.claude/git-hooks
+  gravar_principal
   copiar_guarda
 
   # Autoconferência: em repositório, o commit tem de ser o mesmo da origem.
@@ -251,10 +287,11 @@ copiar() {
 }
 
 ACAO=${1:-}; [ $# -eq 0 ] || shift
-PASTA=""; ARG_RAIZ=""; ARG_INCLUIR=(); ARG_EXCLUIR=()
+PASTA=""; ARG_RAIZ=""; ARG_PRINCIPAL=""; ARG_INCLUIR=(); ARG_EXCLUIR=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --raiz) ARG_RAIZ=${2:?}; shift 2 ;;
+    --principal) ARG_PRINCIPAL=${2:?}; shift 2 ;;
     --incluir) ARG_INCLUIR+=("${2:?}"); shift 2 ;;
     --excluir) ARG_EXCLUIR+=("${2:?}"); shift 2 ;;
     --*) parar "opção desconhecida: $1" ;;
@@ -267,9 +304,9 @@ case "$ACAO" in
     achar_origem "$PASTA"; achar_repositorio; conferir_pendencias; preparar ;;
   plano)
     achar_origem "$PASTA"; achar_repositorio; conferir_pendencias; conferir_destino
-    conferir_incluidos; classificar_guarda; mostrar_plano ;;
+    conferir_incluidos; achar_principal; classificar_guarda; mostrar_plano ;;
   copiar)
     achar_origem "$PASTA"; achar_repositorio; conferir_pendencias; conferir_destino
-    conferir_incluidos; classificar_guarda; copiar ;;
-  *) parar "uso: converter.sh preparar|plano|copiar [pasta] [--raiz REL] [--incluir REL]... [--excluir REL]..." ;;
+    conferir_incluidos; achar_principal; classificar_guarda; copiar ;;
+  *) parar "uso: converter.sh preparar|plano|copiar [pasta] [--raiz REL] [--incluir REL]... [--excluir REL]... [--principal BRANCH]" ;;
 esac

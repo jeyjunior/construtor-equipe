@@ -4,7 +4,7 @@ O quadro e os documentos ficam em `privado/`, fora de qualquer git: não vão pa
 
 ## .claude/rules/projeto.md
 
-Criado pelo `/construtor-equipe-iniciar` (ou pela conversão). É carregado em toda sessão. Fica no kit, não em `projeto/`.
+Criado pelo `/construtor-iniciar` (ou pela conversão). É carregado em toda sessão. Fica no kit, não em `projeto/`.
 
 ```markdown
 # Projeto
@@ -14,13 +14,15 @@ Criado pelo `/construtor-equipe-iniciar` (ou pela conversão). É carregado em t
 **Stack:** <ex.: .NET 10 Worker Service, PostgreSQL> (ou "a decidir")
 **Repositório:** <URL do GitHub de projeto/, ou "ainda não publicado">
 **Testes:** <"a decidir", "não", ou "por etapa, <ferramenta>, escritos por subagente | pela sessão da etapa">
+**Commits:** <padrão das mensagens; vazio = "<Tipo>: <descrição>" do CLAUDE.md; ex.: "feat: / fix: / docs:, em inglês, como o histórico">
+**Versão:** <"não usa", ou: onde fica (ex.: <Version> em Directory.Build.props), notas (ex.: CHANGELOG.md, release_X.Y.Z.txt), empacotar e publicar (ex.: dotnet pack; dotnet nuget push), tag vX.Y.Z, branch release/X.Y.Z (sim | não)>
 
 Quadro: `privado/QUADRO.md` · Objetivo: `privado/docs/objetivo.md` · Arquitetura: `privado/docs/arquitetura.md`
 ```
 
 ## privado/QUADRO.md
 
-O estado do projeto. Só o gerente edita (e a sessão de ciclo curto, depois do merge na principal). Uma linha por item; o detalhe fica no arquivo apontado. O número `#NNN` é único no projeto e nunca é reutilizado.
+O estado do projeto. Só o gerente edita (e a sessão de ciclo curto, depois do merge na principal). Uma linha por item; o detalhe fica no arquivo apontado. O número `#NNN` é único no projeto e nunca é reutilizado: número novo é o maior que aparece no quadro, em `privado/docs/historico.md` e nos `ciclo.md`, mais 1 (`grep -hoE '#[0-9]{3,}' privado/QUADRO.md privado/docs/historico.md privado/docs/ciclos/*/ciclo.md 2>/dev/null | tr -d '#' | sort -n | tail -1`).
 
 ```markdown
 # Quadro
@@ -28,8 +30,8 @@ O estado do projeto. Só o gerente edita (e a sessão de ciclo curto, depois do 
 ## Situação
 - Ciclo: N — <objetivo em uma linha> — `privado/docs/ciclos/NN-nome/` (ou "nenhum aberto")
 - Sessão aberta: ciclo-NN-etapa-EE | curto-NNN | nenhuma
-- Próximo passo: <ex.: /construtor-equipe-progresso da etapa 2 | /construtor-equipe-iniciar-etapa | /construtor-equipe-encerrar-ciclo | /construtor-equipe-iniciar num gerente novo>
-- Decisões pendentes: <decisão — bloqueia a etapa E> (ou "nenhuma")
+- Próximo passo: <ex.: "segue" (/construtor-seguir) quando a etapa 2 fechar | reabrir a etapa 3 em AAAA-MM-DD | /construtor-encerrar-ciclo | /construtor-iniciar num gerente novo>
+- Decisões pendentes: <decisão ou pergunta que não bloqueou — padrão em uso — precisa até a etapa E> (ou "nenhuma")
 
 ## Backlog
 - #012 <ideia, pedido ou bug> — <origem, AAAA-MM-DD>
@@ -39,20 +41,22 @@ O estado do projeto. Só o gerente edita (e a sessão de ciclo curto, depois do 
 
 ## Fazendo
 - #006 [ambiente] Ciclo 2, etapa 2 — <nome> — sessão ciclo-02-etapa-02 — desde AAAA-MM-DD
+- #003 [resultados] Ciclo 2, etapa 1 — <nome> — aguardando até AAAA-MM-DD, sem sessão
 
 ## Feito
 - #005 [pesquisa] Ciclo 2, etapa 1 — <nome> — AAAA-MM-DD — `privado/docs/ciclos/02-nome/etapas/01-nome.md`
 - #004 [curto] <o que foi feito e por quê, em uma linha> — AAAA-MM-DD — commit <hash curto>
+- [ciclo] Ciclo 1 — <objetivo> — itens #001–#003 — encerrado AAAA-MM-DD — `privado/docs/ciclos/01-nome/ciclo.md`
 
 ## Homologado
-### v0.1.0 — AAAA-MM-DD
-- #001 [código] Ciclo 1, etapa 1 — <nome> — `privado/docs/ciclos/01-nome/etapas/01-nome.md`
+### v0.1.0 — AAAA-MM-DD — <onde foi publicado ou validado>
+- [ciclo] Ciclo 1 — <objetivo> — itens #001–#003 — `privado/docs/ciclos/01-nome/ciclo.md`
 ```
 
 Regras do quadro:
-- **Backlog:** o que pode virar trabalho. **A fazer:** as etapas do ciclo aberto que ainda não começaram. **Fazendo:** a etapa com sessão aberta. **Feito:** aprovado pelo usuário e já na branch do ciclo ou na principal. **Homologado:** publicado ou validado pelo usuário, agrupado por versão.
+- **Backlog:** o que pode virar trabalho. **A fazer:** as etapas do ciclo aberto que ainda não começaram. **Fazendo:** a etapa com sessão aberta, ou `aguardando` uma data, sem sessão. **Feito:** aprovado pelo usuário e já na branch do ciclo ou na principal. **Homologado:** publicado ou validado pelo usuário, agrupado por versão.
 - "Homologado" guarda as 3 versões mais recentes; as anteriores vão para `privado/docs/historico.md`, no mesmo formato.
-- O andamento fino de uma etapa (planejada, em andamento, concluída, bloqueada, decisão pendente) fica no arquivo dela, não no quadro.
+- O andamento fino de uma etapa (planejada, em andamento, aguardando, concluída, bloqueada, decisão pendente) fica no arquivo dela, não no quadro; só `aguardando` aparece também na linha de "Fazendo", com a data.
 
 ## privado/docs/objetivo.md
 
@@ -86,7 +90,7 @@ Status: rascunho | aprovado (AAAA-MM-DD)
 
 ## privado/docs/arquitetura.md
 
-Cresce aos poucos: cada seção é preenchida quando a decisão é tomada. Seção sem decisão fica `a decidir (etapa E)`.
+Cresce aos poucos: cada seção é preenchida quando a decisão é tomada. Seção sem decisão fica `a decidir (etapa E)`. Quem edita atualiza a data de "Atualizado".
 
 ```markdown
 # Arquitetura
@@ -127,7 +131,7 @@ Padrão `parametro.json` (`.claude/rules/parametros.md`).
 
 ## privado/docs/pesquisas/NNN-tema.md
 
-Gravado pelo `/construtor-equipe-pesquisar` ou por uma etapa de `pesquisa`. Numeração única no projeto. Nunca contém segredos.
+Gravado pelo fluxo de `.claude/modelos/pesquisa.md` (no planejamento ou numa etapa de `pesquisa`). Numeração única no projeto. Nunca contém segredos.
 
 ```markdown
 # NNN — <tema>
@@ -157,24 +161,24 @@ Data: AAAA-MM-DD · Pedida por: briefing do ciclo N | etapa E do ciclo N
 
 ## privado/docs/subagentes.md
 
-Uma linha por disparo de subagente, acrescentada por quem disparou (regra em `.claude/skills/construtor-equipe-subagente/SKILL.md`). A sessão de consulta não registra. Revisado no `/construtor-equipe-encerrar-ciclo`.
+Uma linha por disparo de subagente com nota 2 ou mais, subida de nível ou resultado fraco, acrescentada por quem disparou (regra em `.claude/skills/construtor-subagente/SKILL.md`). Sessão só de consulta não registra. Revisado no `/construtor-encerrar-ciclo`.
 
 ```markdown
 # Subagentes
 
-| Data | Sessão | Tarefa | Nota | Conta | Modelo · esforço | Resultado |
+| Data | Sessão | Tarefa | Nota | Via | Modelo · esforço | Resultado |
 |------|--------|--------|------|-------|------------------|-----------|
-| AAAA-MM-DD | ciclo-NN-etapa-EE | <tarefa em poucas palavras> | N | principal \| secundária | sonnet · medium | aproveitado \| subiu de nível \| descartado \| abortado |
+| AAAA-MM-DD | ciclo-NN-etapa-EE | <tarefa em poucas palavras> | N | app \| cli | sonnet · medium | aproveitado \| subiu de nível \| descartado \| abortado |
 ```
 
 ## privado/docs/decisoes/NNN-titulo-curto.md
 
-Numeração única no projeto.
+Numeração única no projeto. Quem grava uma decisão que substitui outra, no todo ou em parte, atualiza o `Status` da antiga.
 
 ```markdown
 # NNN — <título>
 
-Data: AAAA-MM-DD · Ciclo: N · Status: aceita | substituída por NNN
+Data: AAAA-MM-DD · Ciclo: N · Status: aceita | substituída por NNN | substituída em parte por NNN (<o quê>) | cancelada com o ciclo N (AAAA-MM-DD)
 
 ## Contexto
 <o problema, em 2 ou 3 frases>
@@ -191,7 +195,7 @@ Data: AAAA-MM-DD · Ciclo: N · Status: aceita | substituída por NNN
 
 ## privado/docs/ciclos/NN-nome/ciclo.md
 
-Criado pelo `/construtor-equipe-iniciar`. Só o gerente edita.
+Criado pelo `/construtor-iniciar`. Só o gerente edita.
 
 ```markdown
 # Ciclo N — <nome>
@@ -205,7 +209,7 @@ Status: rascunho | aprovado (AAAA-MM-DD) | encerrado (AAAA-MM-DD) | cancelado (A
 - <comando, comportamento observável ou medição>
 
 ## Briefing
-- P: ... — R: ...
+- <campo> — <valor> — dito | padrão
 
 ## Decidir depois
 - <decisão> — na etapa E — depende de: <pesquisa, prova ou resultado>
@@ -225,10 +229,10 @@ Status: rascunho | aprovado (AAAA-MM-DD) | encerrado (AAAA-MM-DD) | cancelado (A
 ## Git
 - Branch: ciclo-NN
 - Commit inicial: <hash>
-- Commit final: <hash, no /construtor-equipe-encerrar-ciclo>
+- Commit final: <hash, no /construtor-encerrar-ciclo>
 
 ## Lições
-<no /construtor-equipe-encerrar-ciclo: o que se repetiu, o que funcionou, o que atrapalhou; cada item com o que fazer a respeito (regra, convenção, nada)>
+<no /construtor-encerrar-ciclo: o que se repetiu, o que funcionou, o que atrapalhou; cada item com o que fazer a respeito (regra, convenção, nada)>
 
 ## Cancelamento
 <só se cancelado: motivo e o que o usuário decidiu sobre o que ficou fora do git>
@@ -260,10 +264,10 @@ Criado e mantido pela sessão da etapa. O gerente só escreve na seção "Revis�
 ```markdown
 # Ciclo N, etapa E — <nome> [tipo]
 
-Status: planejada | em andamento | concluída | bloqueada | decisão pendente | revisada
+Status: planejada | em andamento | aguardando | concluída | bloqueada | decisão pendente | revisada
 
-## Respostas da sessão de perguntas
-- P: ... — R: ...
+## Respostas e padrões usados
+- <pergunta> — <resposta> — dito | padrão
 
 ## Padrões a seguir
 - <arquivo existente em projeto/ a imitar> — <por quê> (ou "nenhum")
@@ -285,9 +289,10 @@ Status: planejada | em andamento | concluída | bloqueada | decisão pendente | 
 
 ## Fechamento
 - Data: AAAA-MM-DD
+- Se aguardando: Aguardando até: AAAA-MM-DD — <o que falta verificar e o que não pode mudar até lá>
 - Se bloqueada: <o que falta e por quê; em bug antigo: "Bug antigo (caso 3)", causa, passos para reproduzir e evidência>
 - Se decisão pendente: <a decisão e as opções>
 
 ## Revisão
-<do gerente, no /construtor-equipe-progresso: veredito, conversa com o usuário, correções pendentes>
+<do gerente, no /construtor-seguir: veredito, conversa com o usuário, correções pendentes>
 ```

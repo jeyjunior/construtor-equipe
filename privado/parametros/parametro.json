@@ -1,0 +1,9 @@
+{
+  "NomeDaEmpresa": {
+    "ApiKey": "",
+    "ApiSecret": ""
+  },
+  "Banco": {
+    "ConnectionString": ""
+  }
+}

@@ -1,13 +1,12 @@
 ---
-name: construtor-equipe-ciclo-curto
+name: construtor-ciclo-curto
 description: Trabalho pequeno, sem ciclo, numa sessão só - uma correção, um ajuste, uma mudança que cabe numa sessão e não pede decisão de projeto. Faz na branch curto-NNN a partir da principal, prova que funciona, atualiza a arquitetura e o README se a mudança os afeta, leva para a principal com o ok do usuário e registra no quadro, direto em "Feito". Também corrige bug antigo quando aberta pelo gerente durante um ciclo.
-disable-model-invocation: true
-argument-hint: "[o que fazer]"
+argument-hint: "[o que fazer, com o contexto que tiver]"
 ---
 
 # Ciclo curto
 
-Você é a **sessão de ciclo curto** (veja "Papéis" no `CLAUDE.md`). Há dois modos:
+Você é a **sessão de ciclo curto** (veja "Papéis" e "Contexto primeiro" no `CLAUDE.md`). Há dois modos:
 
 - **Sem ciclo aberto:** a sessão foi aberta pelo usuário. Você faz o trabalho, o merge na principal e o registro no quadro.
 - **Aberta pelo gerente, durante um ciclo:** o `prompt` traz o item `#NNN` de um bug antigo. Você corrige e faz o merge na principal, mas **não edita o quadro**: quem registra é o gerente.
@@ -16,20 +15,22 @@ Você é a **sessão de ciclo curto** (veja "Papéis" no `CLAUDE.md`). Há dois 
 
 ## 1. Situar
 
-1. Leia `privado/QUADRO.md` e `.claude/comandos.conf`. Sem quadro, o projeto ainda não começou: indique `/construtor-equipe-iniciar` e pare.
+1. Leia `privado/QUADRO.md` e `.claude/comandos.conf`. Sem quadro, o projeto ainda não começou: indique `/construtor-iniciar` e pare.
 2. Sem ciclo aberto: se a "Situação" aponta outra sessão aberta, pare e avise. Rode `git -C projeto status`: limpo e na principal; senão, mostre e pare.
-3. **Cabe aqui?** Se o trabalho pede decisão de projeto, pesquisa, alteração fora do git ou mais de uma sessão, não é ciclo curto. Diga isso, ofereça registrar no Backlog e indique `/construtor-equipe-iniciar`.
+   Com ciclo aberto e sem o `prompt` do gerente (o item `#NNN`): esta pasta é do ciclo, e trocar de branch aqui atropela a etapa. Pare: o pedido vai ao gerente (Backlog ou bug antigo).
+   Aberta pelo gerente: rode `git -C projeto status`. Tem de estar limpo (a etapa fechou com commit); senão, mostre e pare.
+3. **Cabe aqui?** Se o trabalho pede decisão de projeto, pesquisa, alteração fora do git ou mais de uma sessão, não é ciclo curto. Diga isso, ofereça registrar no Backlog e indique `/construtor-iniciar`.
 
 ## 2. Entender
 
-- **Bug:** siga a skill `construtor-equipe-depurar` até a causa confirmada, sem a parte de classificar, reproduzindo na principal. No modo aberto pelo gerente, se o bug não aparecer na principal, não corrija: diga "não se confirmou", com a evidência, mande o usuário voltar ao gerente e pare.
-- **Ajuste ou mudança:** leia o que for preciso e diga, em até 5 linhas, o que vai mudar, em quais arquivos e como vai provar que funcionou.
+- **Bug:** siga a skill `construtor-depurar` até a causa confirmada, sem a parte de classificar, reproduzindo na principal. No modo aberto pelo gerente, se o bug não aparecer na principal, não corrija: diga "não se confirmou", com a evidência, mande o usuário voltar ao gerente e pare.
+- **Ajuste ou mudança:** leia o que for preciso e diga, em até 5 linhas, o que vai mudar, em quais arquivos e como vai provar que funcionou, com as perguntas que faltam (cada uma com o padrão sugerido).
 
-Espere o ok do usuário.
+Espere o ok ("segue com os padrões" vale). Se o pedido já trouxe o que mudar e como provar, e não falta nada, siga e diga que seguiu.
 
 ## 3. Fazer
 
-1. Sem ciclo aberto, `NNN` é o número do item do Backlog que originou o trabalho ou, se não veio de lá, o maior número do quadro mais 1. Crie a branch:
+1. Sem ciclo aberto, `NNN` é o número do item do Backlog que originou o trabalho ou, se não veio de lá, um número novo (regra em "privado/QUADRO.md" de `.claude/modelos/documentos.md`). Crie a branch:
    ```bash
    git -C projeto switch <principal>
    ```
@@ -52,9 +53,13 @@ git -C projeto switch <principal>
 git -C projeto merge --no-ff curto-NNN -m "Merge: ciclo curto NNN — <o que foi feito>"
 ```
 
+Mantenha o começo da mensagem (`Merge: ciclo curto NNN`): é por ele que o gerente confere se a correção entrou. Com o merge feito, apague a branch: `git -C projeto branch -d curto-NNN`.
+
 ## 5. Registrar
 
 - **Sem ciclo aberto:** na principal, acrescente em "Feito" do quadro a linha `#NNN [curto] <o que foi feito e por quê> — AAAA-MM-DD — commit <hash curto>`; se veio do Backlog, tire de lá. Envie com `git -C projeto push origin <principal>` (pede confirmação; sem remoto, diga isso).
-- **Aberta pelo gerente:** não edite o quadro e não faça push. Diga ao usuário para voltar ao gerente e rodar `/construtor-equipe-progresso`.
+- **Aberta pelo gerente:** não edite o quadro e não faça push. Diga ao usuário para voltar ao gerente e dizer "segue" (`/construtor-seguir`).
+
+**Publicou uma versão do que está em "Feito"** (sem ciclo aberto, quando o usuário disser): mova os itens ou a linha `[ciclo]` para "Homologado" sob `### vX.Y.Z — AAAA-MM-DD — <onde>` (versão no formato e regras de "Versão e quadro" do `/construtor-encerrar-ciclo`) e, com o ok, crie e envie a tag como lá.
 
 Comece a última resposta pelo resultado (ex.: `Ciclo curto 014: feito`).

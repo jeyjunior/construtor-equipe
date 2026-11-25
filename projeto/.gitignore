@@ -1,8 +1,11 @@
 # Este repositório leva só código. O quadro e os documentos ficam em ../privado, fora do git.
-# O único .md permitido é o README.md da raiz.
+# Os únicos .md permitidos são o README.md e as notas de versão (CHANGELOG.md, release_X.Y.Z.md) da raiz.
 *.md
 *.markdown
 !/README.md
+!/CHANGELOG.md
+!/release_*.md
+!/release-*.md
 docs/
 
 # Segredos e chaves ficam em ../privado/parametros, nunca aqui.
@@ -17,6 +20,11 @@ docs/
 *.crt
 *.jks
 *.keystore
+*.connection
+*.ppk
+*.kdbx
+.pgpass
+.my.cnf
 id_rsa*
 id_ed25519*
 secrets.json
@@ -24,4 +32,4 @@ parametro.json
 segredo.json
 segredos.json
 
-# Padrões da stack: o /construtor-equipe-iniciar propõe quando a tecnologia é decidida (ex.: bin/ e obj/ em .NET).
+# Padrões da stack: o /construtor-iniciar propõe quando a tecnologia é decidida (ex.: bin/ e obj/ em .NET).

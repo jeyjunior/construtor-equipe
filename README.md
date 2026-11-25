@@ -1,230 +1,123 @@
 # Construtor Equipe
 
-Kit para o [Claude Code](https://claude.com/claude-code) que conduz um projeto de software com **um gerente e uma sessão separada para cada etapa**, em volta de **um quadro** que diz o que há para fazer, o que está sendo feito, o que foi feito e o que já foi homologado.
+Kit para o [Claude Code](https://claude.com/claude-code) que conduz um projeto com **um gerente e uma sessão separada para cada etapa**, em volta de **um quadro** (backlog, a fazer, fazendo, feito, homologado).
 
-Você abre uma sessão, roda `/construtor-equipe-iniciar` e ela descobre onde o projeto está. Se for trabalho novo, o gerente faz um briefing curto, manda pesquisar o que ninguém sabe, decide com você só o necessário, divide o trabalho em etapas e abre cada uma numa sessão própria, com contexto limpo. Se for algo pequeno, resolve na mesma sessão, sem ciclo.
+Você abre uma sessão no Root e diz o que quer, com todo o contexto que tiver: `/construtor-iniciar quero X, use .NET e JJCore, sem custo`. O gerente absorve o que você disse, mostra o que entendeu, pergunta **numa rodada só** o que falta (cada pergunta com um padrão sugerido; "segue com os padrões" aceita todos), planeja e abre as etapas. Pergunta que não bloqueia vira pendência no quadro.
 
-> **Experimental:** esta versão ainda não foi usada de ponta a ponta num projeto real. As travas e o conversor têm autoteste; o fluxo das skills, não.
+> **Estado:** v3 (3.0.0). Base: a v2 usada no Bot Loteria e no Benchmark Crypto, revista por três refatorações e duas análises. As travas, o conversor e o instalador têm autoteste; o fluxo das skills, não.
 
----
-
-## Como funciona
-
-### Estrutura
+## Estrutura
 
 ```
 meu-projeto/                ← o "Root": abra o Claude Code sempre aqui
-├── CLAUDE.md               regras do kit e papéis (carregadas em toda sessão)
-├── .claude/                skills, hooks, permissões e modelos do kit
-├── projeto/                só código e README.md. É o ÚNICO repositório git e o que vai para o GitHub
-├── privado/                fora de qualquer git
-│   ├── QUADRO.md           backlog, a fazer, fazendo, feito, homologado
-│   ├── docs/
-│   │   ├── objetivo.md, arquitetura.md
-│   │   ├── subagentes.md   registro de cada subagente: nota, conta, modelo, resultado
-│   │   ├── decisoes/       uma decisão por arquivo
-│   │   ├── pesquisas/      uma pesquisa por arquivo, com fonte e data
-│   │   └── ciclos/NN-nome/ ciclo.md (briefing, etapas, lições) e etapas/
-│   ├── parametros/         parametro.json, chaves e certificados (o Claude não lê nem grava)
-│   └── origem/             só depois de uma conversão: instruções e documentos antigos
-└── conversor/              entrada da conversão. Nunca vai para o GitHub.
+├── CLAUDE.md, .claude/     o kit (regras, skills, hooks, permissões, modelos)
+├── projeto/                código, README.md e notas de versão. ÚNICO repositório git, o que vai para o GitHub
+├── privado/                fora de qualquer git: QUADRO.md, docs/, parametros/ (o Claude não lê), origem/
+└── conversor/              entrada da conversão de um projeto existente
 ```
 
-O que é **produto** fica em `projeto/` e pode ser público; o que é **processo** (quadro, briefing, pesquisas, decisões, lições) fica em `privado/` e nunca vai para o GitHub. **`privado/` não tem histórico nem backup:** um arquivo sobrescrito ou perdido não volta. Cuide você do backup dessa pasta.
+Produto fica em `projeto/` e pode ser público; processo (quadro, briefing, pesquisas, decisões, lições) fica em `privado/`. **`privado/` não tem histórico nem backup**: cuide você do backup.
 
-### O quadro
+## Comandos
 
-`privado/QUADRO.md` é um arquivo só, com uma linha por item e o detalhe em `privado/docs/`:
-
-| Lista | O que tem |
-|---|---|
-| Situação | ciclo aberto, sessão aberta, próximo passo, decisões pendentes |
-| Backlog | ideias, pedidos e bugs que podem virar trabalho |
-| A fazer | as etapas do ciclo aberto que ainda não começaram |
-| Fazendo | a etapa com sessão aberta |
-| Feito | aprovado por você e já na branch do ciclo ou na principal |
-| Homologado | publicado ou validado, agrupado por versão |
-
-Só o gerente edita o quadro. As versões antigas de "Homologado" vão para `privado/docs/historico.md`, para o quadro não crescer sem limite.
-
-### Os dois caminhos
-
-**Ciclo** — uma implementação com começo, meio e fim, e um gerente só dela:
-
-1. **`/construtor-equipe-iniciar`**: briefing curto (o que, para quem, limite de custo, o que você já tem, o que fica de fora, o que entra: testes, deploy, resultados). Fecha com a lista do que não se sabe.
-2. **Pesquisa**: subagentes respondem essa lista com fonte e data. O que a pesquisa não confirma vira etapa de `prova`.
-3. **Decisões**: só o que a primeira etapa precisa. O resto fica anotado na etapa que vai precisar.
-4. **Etapas**: só as necessárias, cada uma com um tipo.
-5. **`/construtor-equipe-iniciar-etapa`**: abre a etapa numa sessão vinculada, com contexto limpo. Lá, o `/construtor-equipe-etapa` faz perguntas, mostra o plano, executa e fecha com evidência.
-6. **`/construtor-equipe-progresso`**: um subagente confere a entrega e você decide: aprovar, corrigir ou resolver uma pendência. Depois de pesquisa, prova ou resultados, o gerente pergunta se o plano muda.
-7. **`/construtor-equipe-encerrar-ciclo`**: confere o ciclo, registra as lições, atualiza a arquitetura e o README do projeto, leva para a principal com o seu ok e pergunta pela homologação. A sessão do gerente termina aqui.
-
-**Ciclo curto** — algo que cabe numa sessão e não pede decisão de projeto: `/construtor-equipe-ciclo-curto` (ou `/construtor-equipe-iniciar`, que oferece esse caminho). Faz, prova, atualiza os documentos que a mudança afeta, leva para a principal com o seu ok e registra direto em "Feito".
-
-**Consulta** — não é um caminho de trabalho: `/construtor-equipe-consultar`, numa sessão à parte, responde sobre a situação, o que foi feito e por quê, ou conversa sobre ideias, sem alterar nada e sem ocupar o gerente. Funciona com ciclo aberto. O que surgir dali você leva ao gerente.
-
-### Tipos de etapa
-
-| Tipo | O que entrega | O que fecha |
+| Onde | Comando | O que faz |
 |---|---|---|
-| `pesquisa` | um arquivo em `privado/docs/pesquisas/` | cada resposta com fonte e data |
-| `prova` | o menor código que responde "funciona?" | o comando executado e a saída |
-| `ambiente` | ferramentas, contas, esqueleto compilando | cada comando de verificação |
-| `código` | o código do plano e os testes, se houver | build, testes e critérios de aceite |
-| `deploy` | a publicação e como voltar atrás | a verificação no destino |
-| `resultados` | medições comparadas com o critério de pronto | de onde veio cada número |
+| Gerente | `/construtor-iniciar [contexto]` | Entrada única: conversão, projeto novo, ciclo novo ou ciclo curto. Um ok no plano inteiro. |
+| Gerente | `/construtor-seguir` (ou "segue") | Confere a etapa que fechou (subagente), aprova com você, faz o merge no ciclo e abre a próxima. Reabre etapa que caiu ou que esperava uma data. |
+| Gerente | `/construtor-encerrar-ciclo` | Fecha o ciclo: conferência, lições, documentos, merge na principal com o seu ok, versão e tag. `cancelar <motivo>` cancela. |
+| Qualquer | `/construtor-ciclo-curto [o quê]` | Trabalho pequeno numa sessão, direto para "Feito". |
+| Etapa | `/construtor-etapa` | Roda sozinha na sessão aberta pelo gerente: plano com um ok, execução, fechamento com evidência. |
 
-### Papéis e branches
+Por etapa, você dá **um** comando no gerente ("segue"); na sessão da etapa, aprova o plano. Perguntas sobre o projeto: qualquer sessão no Root, só lendo.
+
+## Ciclo
+
+1. **Iniciar:** briefing absorvido do seu contexto, pesquisa só do que ninguém sabe (escolha sua não é pesquisada), decisões só do que a primeira etapa precisa, etapas com tipo (`pesquisa`, `prova`, `ambiente`, `código`, `deploy`, `resultados`). Um ok. A primeira etapa abre em seguida.
+2. **Etapa:** sessão vinculada, contexto limpo, branch `ciclo-NN-etapa-EE`. Etapa que depende de tempo (7 dias de medição) fecha como `aguardando` e é reaberta na data, sem segurar a pasta.
+3. **Seguir:** conferência por subagente, sua decisão, merge no ciclo, branch da etapa apagada, próxima etapa.
+4. **Encerrar:** merge na principal só com ok explícito; versão, tag e "Homologado" quando o projeto usa versão.
 
 ```
-main ────────────────┬───────────────────────────────► merge no /construtor-equipe-encerrar-ciclo
+main ────────────────┬───────────────────────────────► merge no encerramento
   │                  └ curto-014 ──┘
   └─ ciclo-02 ──────┬───────────────────┬───────────┘
                     └ ciclo-02-etapa-01 └ ciclo-02-etapa-02
 ```
 
-| | Gerente | Sessão de etapa | Sessão de ciclo curto |
-|---|---|---|---|
-| Quem abre | você, no Root | o gerente | você, ou o gerente para um bug antigo |
-| Branch | principal e `ciclo-NN` | `ciclo-NN-etapa-EE` | `curto-NNN` |
-| Escreve código | não (o hook nega) | sim | sim |
-| Edita o quadro | sim | não (o hook nega) | só depois do merge na principal |
-| Merge | etapa no ciclo; ciclo na principal, com o seu ok | não | na principal, com o seu ok |
+## Biblioteca ou projeto publicado
 
-A regra é aplicada pela branch atual de `projeto/`: na principal e na branch do ciclo não se edita código (só o `README.md`); nas branches de etapa e de ciclo curto não se edita o quadro.
+A linha "Versão" de `.claude/rules/projeto.md` diz onde fica a versão, onde ficam as notas (`CHANGELOG.md`, `release_X.Y.Z.*` na raiz de `projeto/`, permitidas pelas travas), como empacota e publica e se há branch `release/X.Y.Z`. Publicar um pacote é uma etapa de `deploy`: o plano traz a versão nova, a nota e o comando; o push do pacote pede o seu ok e é marcado como irreversível. A linha "Commits" adota o padrão do histórico (ex.: `feat:`/`fix:`).
 
-### Subagentes e conta secundária
+## Subagentes
 
-Leitura pesada (pesquisa, conferência, diff, conversão, testes) vai para **subagentes**, que devolvem só a conclusão. Todo subagente, em qualquer sessão, segue a mesma regra (`.claude/skills/construtor-equipe-subagente/SKILL.md`): a tarefa ganha uma nota, a nota define o modelo e o esforço, e o gerente decide onde ela roda. Se você tem uma **segunda conta do Claude Code** na CLI, os subagentes podem rodar nela e poupar a conta principal, inclusive os que usam MCP (Trello, Notion e outros).
+Leitura pesada vai para subagentes (`.claude/skills/construtor-subagente/SKILL.md`): nota da tarefa → modelo e esforço, dentro dos liberados. Rodam no app ou **pela CLI** (`claude -p`, com `.claude/bin/subagente-cli.sh`):
 
-```mermaid
-flowchart TD
-    A[Tarefa para subagente] --> B["Pontuar a tarefa<br/>nota → modelo e esforço"]
-    B --> C{"Secundária disponível?<br/>escolhida e logada"}
-    C -- não --> P["Principal<br/>subagente do app"]
-    C -- sim --> D{"Precisa de MCP?<br/>Trello, Notion, outros"}
-    D -- não --> S["Secundária<br/>CLI, conta 2"]
-    D -- sim --> E{MCP conectado na CLI?}
-    E -- sim --> S
-    E -- não --> F[Pergunta ao usuário]
-    F -- habilitar na CLI e conferir de novo --> E
-    F -- principal --> P
-    F -- abortar --> X[Aborta]
-    P --> R{Resultado fraco?}
-    S --> R
-    R -- "sim, abaixo do teto" --> U["Sobe um nível<br/>modelo ou esforço"]
-    U --> C
-    R -- não --> G[Usa e registra]
-    classDef conta fill:#E1F5EE,stroke:#0F6E56,color:#085041
-    classDef usuario fill:#FAECE7,stroke:#993C1D,color:#712B13
-    class P,S conta
-    class F usuario
-```
-
-**Nota da tarefa.** Antes de cada disparo, de 0 a 2 em cada critério:
-
-| Critério | 0 | 1 | 2 |
-|---|---|---|---|
-| Raciocínio | buscar ou listar | comparar ou resumir | decidir, projetar, achar causa |
-| Volume | poucas fontes ou arquivos | dezenas | o projeto inteiro |
-| Custo do erro | fácil de notar e refazer | atrapalha a próxima etapa | vira decisão, código ou dado errado |
-| Rigor com dados | não se aplica | citar fonte | analisar sem inventar nem enviesar |
-
-| Soma | Nível | Modelo · esforço inicial | Exemplos |
-|---|---|---|---|
-| 0–1 | Simples | haiku · low | buscar um dado pontual, listar cartões, ler um arquivo |
-| 2–3 | Padrão | sonnet · medium | pesquisa com várias fontes, consulta, conferência de build e testes |
-| 4–5 | Análise | sonnet · high | comparar opções, analisar dados, lições do ciclo |
-| 6–8 | Crítico | opus · high | escrever testes, conversão, conferência final do ciclo |
-
-- A nota vale igual na conta principal e na secundária, sempre dentro dos modelos liberados e do esforço máximo que você definir. O `fable` só entra por subida de nível ou a seu pedido.
-- Antes de cada disparo, o gerente diz numa linha onde e com quê (`pesquisa de preços → secundária, sonnet/medium (nota 2)`). Você pode trocar.
-- Resultado fraco (sem a fonte pedida, fora do pedido, contraditório) roda de novo um nível acima, até o teto.
-- Cada disparo vira uma linha em `privado/docs/subagentes.md`. No `/construtor-equipe-encerrar-ciclo`, o gerente revisa esse registro e propõe ajustes na tabela.
-
-**MCP na secundária.** A CLI não pede confirmação no meio. Por isso só as ferramentas de leitura do MCP são liberadas; uma ação que altera algo fora do projeto (mover um cartão, editar uma página) só entra com o seu ok antes do disparo.
-
-**Preparar a conta secundária, uma vez por máquina** (PowerShell):
-
-```powershell
-$env:CLAUDE_CONFIG_DIR = "$HOME\.claude-secundaria"
-claude
-```
-
-Faça login com a conta secundária e saia com `/exit`. Para usar outra pasta, defina a variável de ambiente `CONSTRUTOR_CONTA_CLI` com o caminho dela. Os MCP dela são conectados nela mesma: no claude.ai da conta secundária ou com `claude mcp add` nesse terminal.
-
-**Configuração**, em `.claude/comandos.conf` (o gerente pergunta e grava na primeira sessão):
-
-| Campo | Valores | Vazio |
+| `comandos.conf` | Valores | Vazio |
 |---|---|---|
-| `SUBAGENTES_CONTA` | `principal` ou `secundaria` | pergunta a cada sessão |
-| `SUBAGENTES_MODELOS` | `haiku sonnet opus fable`, os que você liberar | `haiku sonnet opus` |
-| `SUBAGENTES_ESFORCO_MAX` | `low`, `medium`, `high`, `xhigh` ou `max` | `high` |
+| `SUBAGENTES_VIA` | `app` ou `cli` | `app` |
+| `SUBAGENTES_MODELOS` | `haiku sonnet opus fable` (os liberados) | `haiku sonnet opus` |
+| `SUBAGENTES_ESFORCO_MAX` | `low` … `max` | `high` |
 
-A cada chamada, `.claude/bin/secundaria.sh` entrega à secundária as suas regras globais (`~/.claude/CLAUDE.md` e os hooks de `~/.claude/settings.json`), o `CLAUDE.md` e as rules do projeto, as permissões e as travas do kit. Nada é gravado na pasta da secundária. Para ver o que vai: `bash .claude/bin/secundaria.sh regras` e `bash .claude/bin/secundaria.sh instrucoes`. As sessões de etapa e de ciclo curto continuam na conta principal: quem abre sessões é o app.
+Pela CLI, o subagente usa o **login atual da CLI** (rode `claude` num terminal uma vez e faça login). Para outro login, crie uma pasta de configuração (`$env:CLAUDE_CONFIG_DIR = "$HOME\.claude-cli2"; claude`, login, `/exit`) e defina a variável `CONSTRUTOR_CLI_CONFIG` com esse caminho. O script entrega à CLI as suas regras globais, o `CLAUDE.md` e as rules do projeto e as travas do kit; o que aqui pede confirmação lá é negado. Já vão liberados a leitura, a pesquisa e o git de leitura (`git -C projeto status|diff|log|show...`); `--verificar` libera o `BUILD` e o `TESTE` exatos (o subagente roda `cd projeto && <comando>`). A CLI nega caminho absoluto no `git -C` e `cd` antes de git: as instruções pedem a forma relativa. Para conferir: `bash .claude/bin/subagente-cli.sh regras | instrucoes | ferramentas --verificar`.
 
-### Travas
+## Travas
 
 | Trava | O que faz |
 |---|---|
-| `hooks/proteger-estrutura.sh` | Nega documentação e arquivo sensível em `projeto/`, qualquer coisa solta no Root e as edições que não cabem ao papel da branch atual. |
-| `git-hooks/pre-commit` | Recusa commit (de qualquer pessoa) com documentação, arquivo sensível ou segredo, e código direto na principal. |
-| `projeto/.gitignore` | Ignora `.md` (menos o `README.md` da raiz), `docs/`, `.env` e chaves. |
+| `hooks/proteger-estrutura.sh` | Nega documentação e arquivo sensível em `projeto/`, coisa solta no Root, código na principal e na branch do ciclo, e o quadro à sessão que editou código numa branch de trabalho. |
+| `git-hooks/pre-commit` | Recusa commit com documentação, arquivo sensível, segredo, ou código direto na principal. Aceita `git rm --cached` de sensível. |
 | `hooks/bloquear-segredos.sh` | Nega edições que escrevem chaves, tokens ou senhas literais. |
-| `hooks/bloquear-comandos.sh` | Bloqueia comandos destrutivos. |
-| `hooks/verificar-ambiente.sh` | Ao abrir a sessão, avisa se a estrutura está fora do padrão, se falta ferramenta ou se há projeto em `conversor/`. |
-| `hooks/formatar.sh` e `verificar-build.sh` | Formatam o arquivo depois de cada edição e compilam ao fim de cada resposta, só na sessão que editou código. |
-| `settings.json` | Nega leitura de `privado/parametros/`, `.env` e `parametro.json`, e pede confirmação para `git push`, `git init` e `reset --hard`. |
+| `hooks/bloquear-comandos.sh` | Bloqueia comandos destrutivos, os que desligam a trava de commit (`--no-verify`, `-n`, `core.hooksPath`; texto entre aspas não conta), leitura de `privado/parametros/` e `git branch -d` de etapa em "Fazendo". |
+| `hooks/verificar-ambiente.sh` | Ao abrir a sessão, avisa de estrutura fora do padrão, ferramenta faltando ou projeto em `conversor/`. |
+| `hooks/formatar.sh`, `verificar-build.sh` | Formatam depois de cada edição e compilam ao fim da resposta, só na sessão que editou código. |
+| `settings.json` | Nega ler segredos; pede confirmação para `git push`, `init`, `reset --hard` e `remote add`, no Bash e no PowerShell. |
 
-Limites conhecidos: o bloqueio de segredos olha edições e commits, não arquivos gravados por comando de shell (esses só são pegos no commit); e as listas de padrões pegam o óbvio, não tudo.
-
----
+Sensível em `projeto/`: `.env`, `parametro.json`, chaves e certificados, `*.connection`, `.pgpass`, `.my.cnf`, `*.ppk`, `*.kdbx`. Limites: o bloqueio de segredos olha edições e commits, não arquivos gravados por shell (pegos no commit); o de comandos olha o texto do comando, não o que um script roda por dentro.
 
 ## Requisitos
 
-- **App Claude desktop, aba Code**: as etapas rodam em sessões vinculadas, que só existem no app.
-- `git`
-- `bash`: no Windows, o Git Bash que vem com o Git for Windows
-- [`jq`](https://jqlang.org): recomendado. Sem ele, os bloqueios funcionam em modo menos preciso e o kit avisa. A conta secundária exige jq.
-- Opcional: uma segunda conta do Claude Code logada na CLI, para os subagentes (veja "Subagentes e conta secundária").
+App Claude desktop (aba Code: as etapas são sessões vinculadas), `git`, `bash` (no Windows, o Git Bash) e [`jq`](https://jqlang.org) (recomendado; sem ele os bloqueios ficam menos precisos e o subagente pela CLI não roda).
 
 ## Instalação
 
-O kit é uma **pasta modelo**: copie para um projeto novo e apague este `README.md`. O único repositório git deve ser `projeto/`; se você clonou o kit, apague também o `.git` do Root.
+No Windows, dê dois cliques em `instalar.cmd` (abre no Git Bash). Em qualquer sistema: `bash instalar.sh`.
 
-## Uso
+O script pergunta onde fica o Root e o nome da pasta, e segue pelo que encontrar:
 
-1. No app Claude desktop, abra uma sessão Code no Root. Essa é o gerente.
-2. Rode `/construtor-equipe-iniciar` e responda ao briefing. Ele pergunta antes de criar o git em `projeto/` e de ligar a trava de commit.
-3. Rode `/construtor-equipe-iniciar-etapa`. Na sessão que abrir, responda às perguntas e aprove o plano.
-4. Quando a etapa terminar, volte ao gerente e rode `/construtor-equipe-progresso`.
-5. Repita 3 e 4 até o fim das etapas e rode `/construtor-equipe-encerrar-ciclo`.
-6. Para o próximo trabalho, abra uma sessão nova no Root e rode `/construtor-equipe-iniciar` de novo.
+| A pasta | O que ele faz |
+|---|---|
+| Não existe ou está vazia | Cria o Root com o kit. Pergunta se há um projeto existente para trazer: se houver, copia para `conversor/` (sem `bin`, `obj`, `.vs`, `node_modules` e outras pastas geradas; o original não muda). |
+| Já tem o kit | Atualiza o kit (veja abaixo). |
+| Tem outra coisa | Para sem mexer. Para trazer esse projeto, use um Root novo e informe a pasta como o projeto existente. |
 
-Se o contexto do gerente ficar pesado no meio de um ciclo, feche e abra outro: ele continua pelo quadro.
+Depois, abra o Claude Code no Root e diga o que quer: `/construtor-iniciar <contexto>`. Com projeto em `conversor/`, o iniciar faz a conversão: para se houver código sem commit ou sem push, detecta e grava a branch principal (`main`, `master`...), traz o código com o histórico, guarda os documentos em `privado/origem/`, monta documentos e quadro a partir do código e passa as regras antigas pela sua aprovação numa rodada. Chaves e arquivos de conexão não vêm: você copia para `privado/parametros/`. Nada é alterado no servidor, no banco nem no registro de pacotes. Um repositório por conversão; submódulos não são copiados.
 
-## Trazer um projeto que já existe
-
-Serve para projeto sem kit, sem documentação ou sem git.
-
-1. Faça uma cópia nova do kit.
-2. Copie a pasta inteira do projeto, com o `.git`, para `conversor/`. O original fica intacto. Um projeto por vez, numa pasta própria.
-3. Abra uma sessão no Root e rode `/construtor-equipe-iniciar`. O gerente vê o material e pergunta se pode trazer.
-
-A conversão para se houver código sem commit ou sem push, renomeia as instruções antigas para não serem carregadas, traz o código com o histórico, guarda os documentos e o que é antigo em `privado/origem/` (em `projeto/` só fica código), monta os documentos e o quadro a partir do que o código faz e passa as regras antigas pela sua aprovação. Chaves não vêm: você copia para `privado/parametros/`. Nada é alterado no servidor nem no banco.
-
-Limites: um repositório por conversão; submódulos não são copiados.
+Sem perguntas: `bash instalar.sh <root> [projeto-existente]`.
 
 ## Atualizar o kit num projeto
 
-Troque `CLAUDE.md` e as pastas `.claude/skills/`, `.claude/hooks/`, `.claude/git-hooks/`, `.claude/bin/` e `.claude/modelos/` pelas da versão nova. Mantenha `.claude/comandos.conf`, `.claude/rules/` e `.claude/settings.json`, que são do projeto; confira à mão se a versão nova mudou algo nesses três.
+Feche as sessões do Claude Code do projeto e rode o instalador apontando para o Root dele. O script:
 
-## Personalização
+1. Guarda o kit atual em `privado/kit-anterior/<data>/`.
+2. Troca o que é do kit: `CLAUDE.md`, as skills `construtor-*` e as `construtor-equipe-*` da v2 (as que saíram do kit são apagadas; skills suas ficam, desde que o nome não comece com `construtor-`), `hooks/`, `git-hooks/`, `bin/`, `modelos/`, `rules/parametros.md` e `VERSAO`.
+3. Mantém o que é do projeto: o `comandos.conf` vai para o modelo novo com os seus valores (`SUBAGENTES_CONTA` da v2 vira `SUBAGENTES_VIA`); o `settings.json` recebe as permissões e hooks do kit novo e mantém as suas regras e chaves; `settings.local.json` e as outras `rules/` ficam; em `rules/projeto.md` entram as linhas "Commits" e "Versão" que faltarem.
+4. Liga a trava de commit, se estiver desligada, e mostra o que fica com você: as linhas novas do `projeto/.gitignore` (commit `Docs:` na principal) e as branches que já entraram no ciclo ou na principal (pergunta se apaga; o padrão é não).
+5. Roda os autotestes do kit.
 
-- **`.claude/comandos.conf`**: a branch principal, os comandos de build, testes, formatação e execução, o modelo das sessões de etapa e a conta, os modelos e o esforço máximo dos subagentes.
-- **`.claude/rules/`**: os dados do projeto (`projeto.md`, criado pelo `/construtor-equipe-iniciar`), as convenções de código e o padrão de parâmetros.
-- **`.claude/modelos/`**: os modelos dos documentos e de convenções por tecnologia.
-- **`.claude/hooks/padroes-segredos.txt`**: as expressões regulares de segredo.
+Não toca no quadro, em `privado/docs/` nem no código; o `privado/parametros/parametro.json` só é criado, com a estrutura base, se não existir. Rodar de novo não muda nada. Precisa do `jq`.
+
+Da v2: os comandos perdem o `equipe` do nome (`/construtor-equipe-iniciar` vira `/construtor-iniciar`, e assim por diante), e seis skills deixam de existir como comando:
+
+| Skill da v2 | Na v3 |
+|---|---|
+| `iniciar-etapa` | `/construtor-seguir` abre a próxima etapa |
+| `progresso` | `/construtor-seguir` confere a etapa que fechou, faz o merge no ciclo e atualiza o quadro |
+| `homologar` | `/construtor-encerrar-ciclo` registra versão, tag e "Homologado"; sem ciclo aberto, o `/construtor-ciclo-curto` faz o mesmo quando você publica o que está em "Feito" |
+| `cancelar-ciclo` | `/construtor-encerrar-ciclo cancelar <motivo>` |
+| `pesquisar` | subagentes de pesquisa no planejamento do `/construtor-iniciar`, ou etapa do tipo `pesquisa` |
+| `consultar` | qualquer sessão aberta no Root só para perguntar |
+
+Etapa presa em "Fazendo" esperando uma data passa a `aguardando`. No arquivo dela, `Status: aguardando` com `Aguardando até: AAAA-MM-DD` no "Fechamento"; no quadro, `aguardando até AAAA-MM-DD, sem sessão`. Se os subagentes rodavam pela CLI noutro login (`~/.claude-secundaria`), o script mostra como definir `CONSTRUTOR_CLI_CONFIG`.
 
 ## Testes do kit
 
@@ -235,3 +128,5 @@ bash .claude/bin/testar-hooks.sh
 ```bash
 bash .claude/bin/testar-converter.sh
 ```
+
+Rodam em pasta temporária, também dentro de um projeto real (usam um `projeto/` próprio, não o seu). Na pasta do kit, `bash testar-instalar.sh` testa o instalador.

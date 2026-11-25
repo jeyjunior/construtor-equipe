@@ -10,7 +10,7 @@
 
 ENTRADA=$(cat)
 # shellcheck source=comum.sh
-source "$(dirname "${BASH_SOURCE[0]}")/comum.sh"
+source "${BASH_SOURCE[0]%/*}/comum.sh"
 carregar_comandos || exit 0
 [ -n "${BUILD:-}" ] || exit 0   # sem comando de build: o projeto ainda está em planejamento
 SESSAO=$(sessao_da_entrada "$ENTRADA")

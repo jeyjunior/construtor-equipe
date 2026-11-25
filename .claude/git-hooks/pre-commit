@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Git pre-commit de projeto/: recusa o commit quando ele leva
-#  - documentação (.md e afins, pastas docs/), exceto o README.md da raiz;
-#  - arquivo sensível (.env com valores, chaves, certificados, parametro.json);
+#  - documentação (.md e afins, pastas docs/), exceto o README.md e as notas de versão da raiz;
+#  - arquivo sensível (.env com valores, chaves, certificados, arquivos de conexão, parametro.json);
 #  - segredo no conteúdo (padrões de .claude/hooks/padroes-segredos.txt);
-#  - código direto na branch principal: ela recebe merge e, direto, só o README.md e a
-#    configuração do git.
+#  - código direto na branch principal: ela recebe merge e, direto, só o README.md, as notas de
+#    versão e a configuração do git.
 # Vale para commits do Claude e de qualquer pessoa, por qualquer ferramenta.
 # Ligado por: git -C projeto config core.hooksPath ../.claude/git-hooks
 # As regras ficam em .claude/hooks/comum.sh, as mesmas do hook de edição do Claude.
@@ -24,20 +24,22 @@ SENSIVEIS=()
 NA_PRINCIPAL=0
 # Liberados na principal: o primeiro commit do repositório (ela ainda não existe) e a conclusão
 # de um merge que teve conflito (o merge sem conflito nem passa por este hook).
-if [ "$(git symbolic-ref --short -q HEAD)" = "$BRANCH_PRINCIPAL" ] \
+BRANCH_ATUAL=$(git symbolic-ref --short -q HEAD)
+if { [ "$BRANCH_ATUAL" = "$BRANCH_PRINCIPAL" ] || [[ $BRANCH_ATUAL =~ $RE_BRANCH_RELEASE ]]; } \
   && git rev-parse -q --verify HEAD >/dev/null \
   && ! git rev-parse -q --verify MERGE_HEAD >/dev/null; then
   NA_PRINCIPAL=1
 fi
 
-while IFS= read -r -d '' arq; do
-  if eh_sensivel "$arq"; then SENSIVEIS+=("$arq"); continue; fi
-  if eh_documentacao "$arq"; then
-    git ls-files --error-unmatch -- "$arq" >/dev/null 2>&1 && DOCS+=("$arq")
+while IFS= read -r -d '' estado && IFS= read -r -d '' arq; do
+  if eh_sensivel "$arq" || eh_documentacao "$arq"; then
+    # Tirar do git (git rm --cached) é justamente o conserto pedido pelo verificar-ambiente.sh.
+    [ "$estado" = D ] && continue
+    if eh_sensivel "$arq"; then SENSIVEIS+=("$arq"); else DOCS+=("$arq"); fi
     continue
   fi
   if [ $NA_PRINCIPAL -eq 1 ] && ! eh_doc_do_projeto "$arq"; then CODIGO_NA_PRINCIPAL+=("$arq"); fi
-done < <(git -c core.quotePath=false diff --cached --name-only --diff-filter=ACMRD -z)
+done < <(git -c core.quotePath=false diff --cached --name-status --no-renames --diff-filter=ACMD -z)
 
 # Segredos nas linhas adicionadas: "arquivo<TAB>linha", sem mostrar o valor encontrado.
 TAB=$'\t'
@@ -79,7 +81,7 @@ COM_SEGREDO=$(printf '%s' "$COM_SEGREDO" | sed '/^$/d' | sort -u)
   echo "Commit recusado pela regra do projeto."
   if [ ${#CODIGO_NA_PRINCIPAL[@]} -gt 0 ]; then
     echo
-    echo "$BRANCH_PRINCIPAL só recebe merge e, direto, o README.md e a configuração do git."
+    echo "$BRANCH_ATUAL só recebe merge e, direto, o README.md, as notas de versão e a configuração do git."
     echo "Código vai numa branch de etapa (ciclo-NN-etapa-EE) ou de ciclo curto (curto-NNN):"
     printf '  %s\n' "${CODIGO_NA_PRINCIPAL[@]}"
   fi

@@ -2,7 +2,8 @@
 # Autoteste do converter.sh em pastas temporárias. Não toca no kit nem em projeto real.
 # Uso: bash .claude/bin/testar-converter.sh
 
-KIT=$(cd "$(dirname "$0")/../.." && pwd)
+DIR_KIT=$(cd "$(dirname "$0")/.." && pwd)
+KIT=$(dirname "$DIR_KIT")
 BASE=$(mktemp -d)
 trap 'rm -rf "$BASE"' EXIT
 FALHAS=0
@@ -14,8 +15,11 @@ checar() { if eval "$2"; then ok "$1"; else falha "$1"; fi; }
 novo_kit() {
   K="$BASE/$1"
   mkdir -p "$K/.claude" "$K/privado" "$K/conversor"
-  cp -r "$KIT/.claude/hooks" "$KIT/.claude/bin" "$KIT/.claude/git-hooks" "$K/.claude/"
-  cp -r "$KIT/projeto" "$K/projeto"
+  cp -r "$DIR_KIT/hooks" "$DIR_KIT/bin" "$DIR_KIT/git-hooks" "$K/.claude/"
+  printf 'BRANCH_PRINCIPAL="main"\n' > "$K/.claude/comandos.conf"
+  # Só os arquivos de configuração do git: num projeto real, projeto/ tem o repositório de verdade.
+  mkdir -p "$K/projeto"
+  cp "$KIT/projeto/.gitignore" "$KIT/projeto/.gitattributes" "$K/projeto/" 2>/dev/null
   C="$K/.claude/bin/converter.sh"
 }
 
@@ -61,6 +65,7 @@ checar "item ignorado não veio" '[ ! -e "$K/projeto/bin" ]'
 checar "gitignore do projeto foi mantido" 'grep -Fxq "bin/" "$K/projeto/.gitignore"'
 checar "gitignore recebeu as regras do kit" 'grep -Fxq "parametro.json" "$K/projeto/.gitignore"'
 checar "trava de commit ligada" '[ "$(git -C "$K/projeto" config core.hooksPath)" = ../.claude/git-hooks ]'
+checar "branch principal detectada e gravada (master)" 'grep -Fxq "BRANCH_PRINCIPAL=\"master\"" "$K/.claude/comandos.conf"'
 checar "decisão foi guardada" '[ -f "$K/privado/origem/Projeto_Documento/decisoes/001.md" ]'
 checar "instrução antiga guardada com .antigo" '[ -f "$K/privado/origem/CLAUDE.md.antigo" ]'
 checar "chave não foi guardada" '! find "$K/privado/origem" -name "segredos.json" | grep -q .'
@@ -109,6 +114,26 @@ git -C "$K/projeto" init -q -b main
 checar "kit antigo sem git roda" 'bash "$C" copiar >/dev/null'
 checar "código de Projeto/ chegou em projeto/" '[ -f "$K/projeto/src/D.cs" ]'
 checar "documento antigo foi guardado" '[ -f "$K/privado/origem/Projeto_Documento/nota.md" ]'
+
+# --- Biblioteca: master + release/X, trabalho na release, testes ignorados com arquivo de conexão ---
+novo_kit kit6
+O="$K/conversor/lib"
+mkdir -p "$O/Lib" "$O/Testes"
+novo_repo "$O" master
+printf '/Testes/\n' > "$O/.gitignore"
+echo codigo > "$O/Lib/E.cs"; echo notas > "$O/release_1.0.0.txt"; echo notas > "$O/CHANGELOG.md"
+git -C "$O" add -A; git -C "$O" commit -qm inicial
+git -C "$O" switch -q -c release/1.0.0
+echo conexao > "$O/Testes/banco.connection"
+bash "$C" preparar >/dev/null
+checar "plano sugere a master, não a branch atual" 'bash "$C" plano | grep -Fq "Branch principal: master"'
+checar "arquivo .connection aparece como sensível" 'bash "$C" plano | grep -Fq "Testes/banco.connection"'
+checar "--principal inexistente é recusado" '! bash "$C" plano --principal nao-existe >/dev/null 2>&1'
+checar "copiar de biblioteca roda" 'bash "$C" copiar >/dev/null'
+checar "BRANCH_PRINCIPAL=master gravada com o trabalho na release" 'grep -Fxq "BRANCH_PRINCIPAL=\"master\"" "$K/.claude/comandos.conf"'
+checar "notas de versão ficam em projeto/" '[ -f "$K/projeto/release_1.0.0.txt" ] && [ -f "$K/projeto/CHANGELOG.md" ]'
+checar "CHANGELOG não vai para a guarda" '[ ! -e "$K/privado/origem/CHANGELOG.md" ]'
+checar "arquivo .connection não foi guardado nem copiado" '! find "$K/privado/origem" "$K/projeto" -name "*.connection" | grep -q .'
 
 # --- Recusas ---
 novo_kit kit4

@@ -22,7 +22,7 @@ Siga o primeiro caso que valer:
 1. **Há um projeto em `conversor/`** (liste só o primeiro nível) **e não existe `privado/QUADRO.md`:** siga `.claude/skills/construtor-converter/SKILL.md` (se o usuário já pediu a conversão; senão, pergunte numa linha).
 2. **Não existe `privado/QUADRO.md`:** projeto novo. Crie as pastas que faltarem (`projeto/`, `privado/docs/`, `privado/parametros/`) e vá ao passo 2. Se houver `privado/docs/objetivo.md` em `rascunho`, retome de onde parou.
 3. **Há um `privado/docs/ciclos/*/ciclo.md` em `rascunho`:** um planejamento parou no meio. `01-conversao`: siga o converter, que retoma. Senão, mostre de onde parou e siga dali com o mesmo número (padrão), ou descarte se o usuário pedir (`Status: cancelado (AAAA-MM-DD)` e o motivo; o número não volta).
-4. **O quadro mostra um ciclo aberto:** mostre a "Situação" e siga `.claude/skills/construtor-seguir/SKILL.md`. Pedido novo trazido agora vai para o Backlog.
+4. **O quadro mostra um ciclo aberto:** mostre a "Situação" e siga `.claude/skills/construtor-proxima-etapa/SKILL.md`. Pedido novo trazido agora vai para o Backlog.
 5. **O quadro mostra "nenhum aberto":**
    1. Se esta conversa já encerrou outro ciclo, peça uma sessão nova no Root: cada ciclo tem o seu gerente.
    2. `git -C projeto status`: algo não commitado, mostre e pare.
@@ -41,7 +41,7 @@ Monte o briefing a partir do que já existe: o pedido, o contexto que o usuário
 - o que entra: testes automatizados, publicação (deploy ou pacote), medição de resultados;
 - tecnologia e caminhos que o usuário já escolheu (viram decisão).
 
-Mostre a tabela dos campos com a origem de cada um: **dito** (por ele), **padrão** (sugerido por você, com o valor) ou **falta**. Pergunte numa rodada só o que falta e muda o trabalho, cada pergunta com o padrão sugerido. "Segue com os padrões" aceita todos. O que não bloqueia o planejamento vai para "Decidir depois" do `ciclo.md` ou para "Decisões pendentes" do quadro.
+Mostre a tabela dos campos com a origem de cada um: **dito** (por ele), **padrão** (sugerido por você, com o valor) ou **falta**. Pergunte numa rodada só o que falta e muda o trabalho, cada pergunta com o padrão sugerido. "Ok com os padrões" aceita todos. O que não bloqueia o planejamento vai para "Decidir depois" do `ciclo.md` ou para "Decisões pendentes" do quadro.
 
 Grave o rascunho: em projeto novo, `privado/docs/objetivo.md`; sempre, `<ciclo>/ciclo.md` com "Objetivo", "Critério de pronto" e "Briefing" (com a origem: dito ou padrão). O número do ciclo é o maior já usado em `privado/docs/ciclos/` mais 1, contando os cancelados. Um ciclo tem **um** objetivo: dois objetivos independentes viram dois ciclos, e um vai para o Backlog.
 
@@ -76,6 +76,6 @@ Com o ok:
    ```
    Repositório que já existe: confira a branch principal e grave em `BRANCH_PRINCIPAL`.
 2. `git -C projeto switch -c ciclo-NN` a partir da principal.
-3. Quadro (em projeto novo, crie no modelo): cada etapa ganha um número `#NNN` novo (regra em "privado/QUADRO.md" do modelo) e entra em "A fazer"; o item do Backlog que originou o ciclo sai de lá e é citado no "Objetivo" do `ciclo.md`; "Situação" com próximo passo `/construtor-seguir`.
+3. Quadro (em projeto novo, crie no modelo): cada etapa ganha um número `#NNN` novo (regra em "privado/QUADRO.md" do modelo) e entra em "A fazer"; o item do Backlog que originou o ciclo sai de lá e é citado no "Objetivo" do `ciclo.md`; "Situação" com próximo passo `/construtor-proxima-etapa`.
 4. Em `ciclo.md`: tabela de etapas com os números, a branch, o commit inicial (`git -C projeto rev-parse HEAD`) e `Status: aprovado (AAAA-MM-DD)`.
-5. Siga direto `.claude/skills/construtor-seguir/SKILL.md` para abrir a primeira etapa (o ok do plano já vale para abri-la).
+5. Siga direto `.claude/skills/construtor-proxima-etapa/SKILL.md` para abrir a primeira etapa (o ok do plano já vale para abri-la).

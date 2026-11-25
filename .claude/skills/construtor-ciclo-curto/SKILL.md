@@ -26,7 +26,7 @@ Você é a **sessão de ciclo curto** (veja "Papéis" e "Contexto primeiro" no `
 - **Bug:** siga a skill `construtor-depurar` até a causa confirmada, sem a parte de classificar, reproduzindo na principal. No modo aberto pelo gerente, se o bug não aparecer na principal, não corrija: diga "não se confirmou", com a evidência, mande o usuário voltar ao gerente e pare.
 - **Ajuste ou mudança:** leia o que for preciso e diga, em até 5 linhas, o que vai mudar, em quais arquivos e como vai provar que funcionou, com as perguntas que faltam (cada uma com o padrão sugerido).
 
-Espere o ok ("segue com os padrões" vale). Se o pedido já trouxe o que mudar e como provar, e não falta nada, siga e diga que seguiu.
+Espere o ok ("ok com os padrões" vale). Se o pedido já trouxe o que mudar e como provar, e não falta nada, siga e diga que seguiu.
 
 ## 3. Fazer
 
@@ -58,7 +58,7 @@ Mantenha o começo da mensagem (`Merge: ciclo curto NNN`): é por ele que o gere
 ## 5. Registrar
 
 - **Sem ciclo aberto:** na principal, acrescente em "Feito" do quadro a linha `#NNN [curto] <o que foi feito e por quê> — AAAA-MM-DD — commit <hash curto>`; se veio do Backlog, tire de lá. Envie com `git -C projeto push origin <principal>` (pede confirmação; sem remoto, diga isso).
-- **Aberta pelo gerente:** não edite o quadro e não faça push. Diga ao usuário para voltar ao gerente e dizer "segue" (`/construtor-seguir`).
+- **Aberta pelo gerente:** não edite o quadro e não faça push. Diga ao usuário para voltar ao gerente e rodar `/construtor-proxima-etapa`.
 
 **Publicou uma versão do que está em "Feito"** (sem ciclo aberto, quando o usuário disser): mova os itens ou a linha `[ciclo]` para "Homologado" sob `### vX.Y.Z — AAAA-MM-DD — <onde>` (versão no formato e regras de "Versão e quadro" do `/construtor-encerrar-ciclo`) e, com o ok, crie e envie a tag como lá.
 

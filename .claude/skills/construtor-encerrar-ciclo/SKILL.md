@@ -16,7 +16,7 @@ Você é o **gerente** (veja "Papéis" e "Contexto primeiro" no `CLAUDE.md`). O 
 Leia `privado/QUADRO.md` e `<ciclo>/ciclo.md`. Sem ciclo aberto, diga isso e pare. Sessão vinculada ainda trabalhando: peça para interromper (ela divide `projeto/`) e pare.
 
 - `$ARGUMENTS` começa com "cancelar", ou o usuário pediu para desistir: seção **Cancelar**.
-- Alguma etapa fora de "Feito": liste e ofereça seguir o ciclo (`/construtor-seguir`) ou cancelar. Pare.
+- Alguma etapa fora de "Feito": liste e ofereça seguir o ciclo (`/construtor-proxima-etapa`) ou cancelar. Pare.
 - Senão: `git -C projeto status` limpo e na branch `ciclo-NN`, e siga no passo 2.
 
 ## 2. Conferir (três subagentes, em paralelo)
@@ -33,7 +33,7 @@ Conferência falhou: mostre e pare. O que faltar vira etapa nova neste ciclo. O 
 
 ## 3. Lições e documentos (uma rodada)
 
-Mostre de uma vez: as lições, com a proposta para cada uma (regra em `.claude/rules/`, ajuste no kit, ou nada), o ajuste de subagentes se algum tipo de tarefa subiu de nível ou foi descartado mais de uma vez (em `privado/docs/subagentes.md`), e as atualizações de documento que o subagente apontou. O usuário corrige o que quiser; "segue" aceita tudo. Depois:
+Mostre de uma vez: as lições, com a proposta para cada uma (regra em `.claude/rules/`, ajuste no kit, ou nada), o ajuste de subagentes se algum tipo de tarefa subiu de nível ou foi descartado mais de uma vez (em `privado/docs/subagentes.md`), e as atualizações de documento que o subagente apontou. O usuário corrige o que quiser; "ok" aceita tudo. Depois:
 
 1. Grave "Lições" no `ciclo.md` (o próximo `/construtor-iniciar` lê) e aplique as regras aceitas.
 2. Atualize `privado/docs/arquitetura.md` (o que o ciclo decidiu ou construiu, cada escolha com o número da decisão, e a data) e `projeto/README.md` na branch do ciclo (o que o sistema faz hoje, como configurar e rodar). Nada de segredo nem de dado pessoal, de cliente ou interno. `objetivo.md` só muda com aprovação explícita, registrada em `privado/docs/decisoes/`.

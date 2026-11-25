@@ -5,10 +5,9 @@ Este arquivo é só do kit: os dados do projeto ficam em .claude/rules/projeto.m
 Versão instalada: .claude/VERSAO. Para atualizar, siga "Atualizar o kit num projeto" do README do kit.
 
   No gerente (sessão aberta no Root; um gerente novo a cada ciclo). Pode escrever junto o seu contexto:
-  /construtor-iniciar        → entrada única: conversão, projeto novo, ciclo novo ou ciclo curto
-  /construtor-seguir         → próximo passo do ciclo: confere a etapa que fechou e abre a próxima
-                                      (também responde a "segue", "continua", "confere a etapa")
-  /construtor-encerrar-ciclo → fecha o ciclo (ou cancela), versão e publicação opcionais
+  /construtor-iniciar         → entrada única: conversão, projeto novo, ciclo novo ou ciclo curto
+  /construtor-proxima-etapa   → próximo passo do ciclo: confere a etapa que fechou e abre a próxima
+  /construtor-encerrar-ciclo  → fecha o ciclo (ou cancela), versão e publicação opcionais
   Sozinhas: /construtor-ciclo-curto (trabalho pequeno). A sessão de etapa roda /construtor-etapa.
 -->
 
@@ -55,7 +54,7 @@ O usuário passa contexto livre (texto, arquivos, links, decisões que já tomou
 
 1. **Absorva.** Leia o que ele escreveu, os documentos e o código. Registre no lugar certo (briefing, decisão, etapa, Backlog). Tecnologia ou caminho que ele já escolheu é decisão dele: grave como decisão, sem pesquisa obrigatória.
 2. **Mostre o que entendeu**, em poucas linhas, separando o que veio dele, o que é padrão do kit e o que falta.
-3. **Pergunte uma vez só**, numa rodada, só o que falta e muda o trabalho. Cada pergunta traz um padrão sugerido. O usuário pode responder "segue com os padrões": aí vale o sugerido.
+3. **Pergunte uma vez só**, numa rodada, só o que falta e muda o trabalho. Cada pergunta traz um padrão sugerido. O usuário pode responder "ok com os padrões": aí vale o sugerido.
 4. **Não trave por pergunta que não bloqueia.** O que não muda o próximo passo vira pendência em "Decisões pendentes" do quadro (ou "Em aberto" do documento) e o trabalho segue.
 
 Parada obrigatória, com ok explícito, só para: merge na principal, push, ação fora do git, publicação, mudança do objetivo aprovado e o que apaga trabalho. Entre duas leituras que mudam o resultado: com um padrão razoável, siga com ele e diga qual usou; sem padrão, pergunte.

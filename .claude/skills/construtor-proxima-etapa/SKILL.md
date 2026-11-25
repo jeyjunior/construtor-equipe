@@ -1,6 +1,7 @@
 ---
-name: construtor-seguir
-description: Roda no gerente com um ciclo aberto e faz o próximo passo pelo quadro - confere a etapa (ou o ciclo curto) que fechou, aprova com o usuário, faz o merge no ciclo, e abre a próxima etapa numa sessão vinculada; reabre etapa que caiu ou que esperava uma data. Use quando o usuário disser "segue", "continua", "próxima etapa", "confere a etapa", "a etapa terminou", ou trouxer o resultado de uma etapa. Só na sessão do gerente: numa sessão de etapa ou de ciclo curto, "segue" é aprovação do plano, não esta skill.
+name: construtor-proxima-etapa
+description: Roda no gerente com um ciclo aberto e faz o próximo passo pelo quadro - confere a etapa (ou o ciclo curto) que fechou, aprova com o usuário, faz o merge no ciclo e abre a próxima etapa numa sessão vinculada; reabre etapa que caiu ou que esperava uma data. Só roda pelo comando /construtor-proxima-etapa, na sessão do gerente.
+disable-model-invocation: true
 argument-hint: "[número da etapa ou o que aconteceu, opcional]"
 ---
 
@@ -12,7 +13,7 @@ Você é o **gerente** (veja "Papéis" e "Contexto primeiro" no `CLAUDE.md`). A 
 
 ## 1. Situar
 
-0. Se esta sessão foi aberta para uma etapa ou um ciclo curto (o primeiro pedido dela foi "Você é a sessão da etapa…" ou "…de ciclo curto…"), não siga: diga para dizer "segue" no gerente e pare.
+0. Se esta sessão foi aberta para uma etapa ou um ciclo curto (o primeiro pedido dela foi "Você é a sessão da etapa…" ou "…de ciclo curto…"), não siga: diga para rodar `/construtor-proxima-etapa` no gerente e pare.
 1. Leia `privado/QUADRO.md` e `<ciclo>/ciclo.md`. Sem ciclo aberto, siga `.claude/skills/construtor-iniciar/SKILL.md`. Ciclo em `rascunho`: idem.
 2. Pela "Situação" e por "Fazendo":
    - **Sessão de ciclo curto aberta** (`curto-NNN`): passo 4.
@@ -93,7 +94,7 @@ Nos dois casos: na "Revisão" da etapa, o que aconteceu e `Status: planejada`; `
 3. `git -C projeto status`. Etapa nova: limpa e na branch `ciclo-NN`. Reaberta: pode estar na branch dela com o que a sessão anterior deixou (a sessão nova trata). Fora disso, mostre e pare.
 4. **Decisões desta etapa** ("Decidir depois" do `ciclo.md` e "Decisões pendentes" do quadro): proponha cada uma com a recomendação, na mesma rodada do ok de abertura; grave em `privado/docs/decisoes/`. A sessão da etapa só sabe o que está escrito.
 5. **Deploy sem remoto** (`git -C projeto remote` vazio): diga numa linha que o código publicado só vai existir nesta pasta e sugira criar o remoto antes (padrão: seguir sem; a resposta vai para "Repositório" de `.claude/rules/projeto.md`, para não repetir).
-6. Mostre numa linha qual etapa abre (e o que decidiu) e peça o ok. Com o ok, ou se o usuário já disse "segue":
+6. Mostre numa linha qual etapa abre (e o que decidiu) e peça o ok. Com o ok, ou se o usuário já pediu a próxima etapa:
    1. Quadro: o item vai de "A fazer" para "Fazendo", com a sessão e a data (reaberta: só atualize data e sessão); "Situação" atualizada.
    2. Abra **uma** sessão vinculada (ferramenta de iniciar sessão do app, `start_session`):
       - `initiation: "user_asked"`; `context: "fresh"` (nunca `fork`); `use_worktree: false`;
@@ -103,7 +104,7 @@ Nos dois casos: na "Revisão" da etapa, o que aconteceu e `Status: planejada`; `
       - `background` (mínimo de 80 caracteres): "Este projeto segue o kit Construtor Equipe. Os documentos em `privado/` são a fonte da verdade: o que não está escrito lá não existe. O gerente é outra sessão; esta cuida só da etapa EE do ciclo NN e, ao fechar, registra no arquivo da etapa como ela terminou."
 
       Vontade de explicar algo no `prompt`? Falta isso nos documentos: grave lá primeiro.
-   3. Diga, com o link, que a etapa segue lá e que, quando terminar, basta voltar aqui e dizer "segue" (ou `/construtor-seguir`).
+   3. Diga, com o link, que a etapa segue lá e que, quando terminar, basta voltar aqui e rodar `/construtor-proxima-etapa`.
 
 ## 6. Fechar
 

@@ -122,7 +122,7 @@ Dispare **um** subagente, só leitura:
 
 > Leia em `privado/origem/` e em `projeto/` as decisões técnicas, as regras e as instruções antigas (`.antigo`), e olhe as convenções que o código segue. Liste cada decisão e regra numa tabela, sem juntar nem omitir: origem, o que diz, se o código segue, e uma recomendação (manter, mudar ou descartar) com o motivo em uma linha. Grave em `privado/origem/analise/regras.md`. Devolva a tabela.
 
-Se a tabela vier vazia, diga isso e siga. Senão, **nenhuma decisão antiga vale até o usuário aprovar.** Mostre a tabela inteira numa rodada, com a recomendação de cada item; o usuário muda os itens que quiser e aceita o resto em bloco ("segue com as recomendações"). Tabela longa (mais de 15 itens): agrupe por tema (estilo, dados, infraestrutura). Para cada item:
+Se a tabela vier vazia, diga isso e siga. Senão, **nenhuma decisão antiga vale até o usuário aprovar.** Mostre a tabela inteira numa rodada, com a recomendação de cada item; o usuário muda os itens que quiser e aceita o resto em bloco ("ok com as recomendações"). Tabela longa (mais de 15 itens): agrupe por tema (estilo, dados, infraestrutura). Para cada item:
 
 - **Manter ou mudar:** grave em `privado/docs/decisoes/NNN-titulo-curto.md`, com numeração a partir de 001 e a origem no "Contexto". Regra de código vai para `.claude/rules/<stack>.md`, com `paths:` para as extensões em `projeto/`, partindo de `.claude/modelos/convencoes/` quando houver modelo.
 - **Descartar:** registre em `privado/origem/analise/regras.md`, com o motivo.

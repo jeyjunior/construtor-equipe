@@ -1,6 +1,6 @@
 ---
 name: construtor-etapa
-description: Roda na sessão vinculada aberta pelo gerente (/construtor-seguir). Conduz uma única etapa do ciclo - plano com um ok, execução conforme o tipo da etapa, fechamento com evidência e commit - registrando tudo no arquivo da etapa.
+description: Roda na sessão vinculada aberta pelo gerente (/construtor-proxima-etapa). Conduz uma única etapa do ciclo - plano com um ok, execução conforme o tipo da etapa, fechamento com evidência e commit - registrando tudo no arquivo da etapa.
 disable-model-invocation: true
 argument-hint: "[número da etapa]"
 ---
@@ -11,7 +11,7 @@ Você é a **sessão desta etapa**, aberta pelo gerente (outra sessão; veja "Pa
 
 `NN` é o ciclo, `EE` a etapa (dois dígitos), `<ciclo>` a pasta do ciclo indicada no quadro e `<etapa>` é `<ciclo>/etapas/EE-nome.md`.
 
-- **Um ok só antes de executar** (o do plano, passo 2). Depois dele, siga até o fechamento; pare de novo só para ação fora do git ou decisão que o plano não cobre. Nesta sessão, "segue" aprova o plano; não rode skills do gerente (iniciar, seguir, encerrar-ciclo).
+- **Um ok só antes de executar** (o do plano, passo 2). Depois dele, siga até o fechamento; pare de novo só para ação fora do git ou decisão que o plano não cobre. Nesta sessão, "ok" aprova o plano; não rode skills do gerente (iniciar, proxima-etapa, encerrar-ciclo).
 - **Você não edita `privado/QUADRO.md`** (o hook nega depois que você edita código). Tudo o que importa vai para `<etapa>`: o gerente não lê esta conversa.
 - **Decisão que o plano não cobre:** dentro do escopo da etapa, proponha com um padrão, siga e grave em `privado/docs/decisoes/`. Se muda objetivo, arquitetura ou outras etapas, não decida: feche com `decisão pendente`.
 - **Git:** só na branch `ciclo-NN-etapa-EE`, commit só no fechamento. Merge no ciclo e push são do gerente.
@@ -38,7 +38,7 @@ O tipo está no título da etapa em `ciclo.md`.
 ## 1. Situar
 
 1. Leia `privado/QUADRO.md`, `<ciclo>/ciclo.md` (a seção desta etapa e "Decidir depois"), `.claude/comandos.conf` e as decisões e pesquisas que a etapa cita. A etapa é a de `$ARGUMENTS` ou a que está em "Fazendo".
-2. Se a etapa não está em "Fazendo", diga que o gerente ainda não a liberou (`/construtor-seguir`) e pare.
+2. Se a etapa não está em "Fazendo", diga que o gerente ainda não a liberou (`/construtor-proxima-etapa`) e pare.
 3. `git -C projeto status`. Arquivos não commitados na branch desta etapa são de uma sessão anterior que caiu: mostre e faça o commit `Andamento: trabalho da sessão anterior` (padrão), ou descarte se o usuário pedir. Em outra branch, mostre e pare.
    Se a branch `ciclo-NN-etapa-EE` já existe, vá para ela e traga o que entrou no ciclo; conflito, resolva aqui e faça o commit.
    ```bash
@@ -54,7 +54,7 @@ O tipo está no título da etapa em `ciclo.md`.
    - `em andamento` com correções pendentes na "Revisão": faça só as correções e vá ao passo 4;
    - `em andamento`: passo 3, a partir do primeiro item não marcado;
    - `aguardando`: data chegou, mude para `em andamento` e siga no passo 3 com o que faltava; não chegou, diga a data e pare;
-   - `concluída`, `bloqueada` ou `decisão pendente`: já fechou. Diga para voltar ao gerente e dizer "segue". Pare;
+   - `concluída`, `bloqueada` ou `decisão pendente`: já fechou. Diga para voltar ao gerente e rodar `/construtor-proxima-etapa`. Pare;
    - `revisada`: já aprovada. Pare.
 
 ## 2. Plano (um ok)
@@ -62,7 +62,7 @@ O tipo está no título da etapa em `ciclo.md`.
 1. Confira para você o que a etapa precisa saber: escopo, dados, comportamento em erro e quando algo externo falha, números com unidade, nomes já usados no projeto, como saber que terminou. O que está nos documentos, no código ou no contexto que o usuário deu não vira pergunta.
 2. Crie `<etapa>` no modelo de `.claude/modelos/documentos.md`, com as respostas, os padrões a seguir, o plano em checklist e `Status: planejada`. Sem "a definir", sem contradição com os documentos, cada critério verificável do jeito do tipo; em `deploy`, cada ação fora do git e como desfazer.
 3. Mostre numa resposta só: tipo, objetivo, critérios de aceite, o que fica fora, o plano e as perguntas que faltam, cada uma com o padrão sugerido (se faltar alguma). Mudança nos entregáveis ou nos critérios é do gerente: feche com `decisão pendente`.
-4. Com o ok ("segue com os padrões" vale), crie a branch a partir do ciclo, se não existe, e mude o `Status` para `em andamento`. Algo não commitado: mostre e pare.
+4. Com o ok ("ok com os padrões" vale), crie a branch a partir do ciclo, se não existe, e mude o `Status` para `em andamento`. Algo não commitado: mostre e pare.
    ```bash
    git -C projeto switch -c ciclo-NN-etapa-EE
    ```
@@ -96,4 +96,4 @@ O tipo está no título da etapa em `ciclo.md`.
    - `bloqueada`: falta algo que não depende de você, com o porquê;
    - `decisão pendente`: a decisão e as opções.
 6. Commit do que mudou em `projeto/`, na branch da etapa, no padrão de commits do `CLAUDE.md` (etapa não `concluída`: `Andamento`). Mostre a mensagem. Trava recusou: corrija o que ela apontou. Etapa sem mudança em `projeto/` fecha sem commit: diga isso.
-7. Comece a última resposta pelo status (ex.: `Etapa 03: concluída`), com um resumo curto, e diga para voltar ao gerente e dizer "segue". Não comece outra etapa, não faça merge no ciclo nem push.
+7. Comece a última resposta pelo status (ex.: `Etapa 03: concluída`), com um resumo curto, e diga para voltar ao gerente e rodar `/construtor-proxima-etapa`. Não comece outra etapa, não faça merge no ciclo nem push.

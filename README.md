@@ -2,7 +2,7 @@
 
 Kit para o [Claude Code](https://claude.com/claude-code) que conduz um projeto com **um gerente e uma sessão separada para cada etapa**, em volta de **um quadro** (backlog, a fazer, fazendo, feito, homologado).
 
-Você abre uma sessão no Root e diz o que quer, com todo o contexto que tiver: `/construtor-iniciar quero X, use .NET e JJCore, sem custo`. O gerente absorve o que você disse, mostra o que entendeu, pergunta **numa rodada só** o que falta (cada pergunta com um padrão sugerido; "segue com os padrões" aceita todos), planeja e abre as etapas. Pergunta que não bloqueia vira pendência no quadro.
+Você abre uma sessão no Root e diz o que quer, com todo o contexto que tiver: `/construtor-iniciar quero X, use .NET e JJCore, sem custo`. O gerente absorve o que você disse, mostra o que entendeu, pergunta **numa rodada só** o que falta (cada pergunta com um padrão sugerido; "ok com os padrões" aceita todos), planeja e abre as etapas. Pergunta que não bloqueia vira pendência no quadro.
 
 > **Estado:** v3 (3.0.0). Base: a v2 usada no Bot Loteria e no Benchmark Crypto, revista por três refatorações e duas análises. As travas, o conversor e o instalador têm autoteste; o fluxo das skills, não.
 
@@ -23,12 +23,12 @@ Produto fica em `projeto/` e pode ser público; processo (quadro, briefing, pesq
 | Onde | Comando | O que faz |
 |---|---|---|
 | Gerente | `/construtor-iniciar [contexto]` | Entrada única: conversão, projeto novo, ciclo novo ou ciclo curto. Um ok no plano inteiro. |
-| Gerente | `/construtor-seguir` (ou "segue") | Confere a etapa que fechou (subagente), aprova com você, faz o merge no ciclo e abre a próxima. Reabre etapa que caiu ou que esperava uma data. |
+| Gerente | `/construtor-proxima-etapa` | Confere a etapa que fechou (subagente), aprova com você, faz o merge no ciclo e abre a próxima. Reabre etapa que caiu ou que esperava uma data. |
 | Gerente | `/construtor-encerrar-ciclo` | Fecha o ciclo: conferência, lições, documentos, merge na principal com o seu ok, versão e tag. `cancelar <motivo>` cancela. |
 | Qualquer | `/construtor-ciclo-curto [o quê]` | Trabalho pequeno numa sessão, direto para "Feito". |
 | Etapa | `/construtor-etapa` | Roda sozinha na sessão aberta pelo gerente: plano com um ok, execução, fechamento com evidência. |
 
-Por etapa, você dá **um** comando no gerente ("segue"); na sessão da etapa, aprova o plano. Perguntas sobre o projeto: qualquer sessão no Root, só lendo.
+Por etapa, você dá **um** comando no gerente (`/construtor-proxima-etapa`); na sessão da etapa, aprova o plano. Perguntas sobre o projeto: qualquer sessão no Root, só lendo.
 
 ## Ciclo
 
@@ -110,8 +110,8 @@ Da v2: os comandos perdem o `equipe` do nome (`/construtor-equipe-iniciar` vira 
 
 | Skill da v2 | Na v3 |
 |---|---|
-| `iniciar-etapa` | `/construtor-seguir` abre a próxima etapa |
-| `progresso` | `/construtor-seguir` confere a etapa que fechou, faz o merge no ciclo e atualiza o quadro |
+| `iniciar-etapa` | `/construtor-proxima-etapa` abre a próxima etapa |
+| `progresso` | `/construtor-proxima-etapa` confere a etapa que fechou, faz o merge no ciclo e atualiza o quadro |
 | `homologar` | `/construtor-encerrar-ciclo` registra versão, tag e "Homologado"; sem ciclo aberto, o `/construtor-ciclo-curto` faz o mesmo quando você publica o que está em "Feito" |
 | `cancelar-ciclo` | `/construtor-encerrar-ciclo cancelar <motivo>` |
 | `pesquisar` | subagentes de pesquisa no planejamento do `/construtor-iniciar`, ou etapa do tipo `pesquisa` |

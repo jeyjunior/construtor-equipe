@@ -30,7 +30,7 @@ O estado do projeto. Só o gerente edita (e a sessão de ciclo curto, depois do 
 ## Situação
 - Ciclo: N — <objetivo em uma linha> — `privado/docs/ciclos/NN-nome/` (ou "nenhum aberto")
 - Sessão aberta: ciclo-NN-etapa-EE | curto-NNN | nenhuma
-- Próximo passo: <ex.: "segue" (/construtor-seguir) quando a etapa 2 fechar | reabrir a etapa 3 em AAAA-MM-DD | /construtor-encerrar-ciclo | /construtor-iniciar num gerente novo>
+- Próximo passo: <ex.: /construtor-proxima-etapa quando a etapa 2 fechar | reabrir a etapa 3 em AAAA-MM-DD | /construtor-encerrar-ciclo | /construtor-iniciar num gerente novo>
 - Decisões pendentes: <decisão ou pergunta que não bloqueou — padrão em uso — precisa até a etapa E> (ou "nenhuma")
 
 ## Backlog
@@ -294,5 +294,5 @@ Status: planejada | em andamento | aguardando | concluída | bloqueada | decisã
 - Se decisão pendente: <a decisão e as opções>
 
 ## Revisão
-<do gerente, no /construtor-seguir: veredito, conversa com o usuário, correções pendentes>
+<do gerente, no /construtor-proxima-etapa: veredito, conversa com o usuário, correções pendentes>
 ```
